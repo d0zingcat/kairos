@@ -110,60 +110,6 @@ bun run db:studio   # 打开 Drizzle Studio
 bun run db:seed     # 填充示例数据
 ```
 
-## Changelog
-
-### v0.1.0 — 2026-02-26 (Initial Release)
-
-**项目初始化**
-- 使用 Next.js 16 (App Router) + Tailwind CSS v4 + shadcn/ui 搭建项目骨架
-- 配置 Bun 作为包管理器，Turbopack 开发构建
-
-**数据库**
-- PostgreSQL 16 + Drizzle ORM，定义 4 张核心表 (`books`, `music`, `watches`, `games`)
-- 5 个 PostgreSQL enum 类型（book_status, music_type, watch_type, watch_status, game_status）
-- drizzle-kit 脚本集成：generate / push / migrate / studio / seed
-- 示例种子数据（12 条记录覆盖全部类型）
-
-**认证系统**
-- 简单密码保护（bcrypt 哈希 + JWT 会话）
-- middleware 守护 `/dashboard` 路由，公开首页和登录页
-- HttpOnly cookie 存储 JWT，30 天过期
-
-**第三方 API 集成**
-- TMDB API — 电影 / 电视剧搜索与详情
-- Google Books API — 书籍搜索与元数据
-- RAWG API — 游戏搜索与详情
-- MusicBrainz + Last.fm — 音乐搜索与封面（Cover Art Archive 回退 Last.fm）
-- 统一代理路由 `/api/search/[type]`，避免前端暴露 API Key
-
-**核心 UI**
-- 深色主题优先（zinc-950 背景 + amber/orange 强调色渐变）
-- Geist / Geist Mono 字体，中文回退
-- 响应式布局：桌面侧边栏 + 移动端底部 Tab 栏
-- Dashboard Overview：活动热力图 + 统计卡片 + 最近活动 Timeline + 收藏网格
-- 四大分类页面（Books / Music / Watch / Games）：卡片网格 + 状态筛选 + 排序 + 搜索
-- 空状态设计，Skeleton 加载占位
-
-**快速录入系统**
-- ⌘K 全局命令面板（基于 cmdk），支持类型前缀 `/book`, `/music`, `/movie`, `/tv`, `/game`
-- 300ms debounce 搜索第三方 API，结果带封面缩略图
-- 录入 Dialog：自动填充元数据、⭐ 星星评分（键盘 1-5 快速评分）、日历选择日期、状态下拉、笔记、收藏
-- Server Actions 提交表单，自动 revalidate 相关路径
-
-**热力图**
-- 基于 react-activity-calendar v3，amber 色阶渐变
-- 全年数据填充，hover tooltip 显示各类型明细
-- 自定义 legend 色阶展示
-
-**动画**
-- Framer Motion：Nav 指示器 layoutId 动画、卡片 stagger 入场、Dialog 过渡
-- 登录页 Logo + 表单入场动画
-
-**部署**
-- 多阶段 Dockerfile（oven/bun 镜像，standalone 输出）
-- docker-compose.yml：PostgreSQL 16 + App，健康检查，持久化 volume
-- `.env.example` 列出所有必需环境变量
-
 ## 许可
 
 MIT
