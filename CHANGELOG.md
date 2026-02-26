@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.1.0] - 2026-02-26
+
+### Added
+
+- **Project Bootstrap**: Next.js 16 (App Router) + Tailwind CSS v4 + shadcn/ui, Bun package manager, Turbopack dev build.
+- **Database Schema**: PostgreSQL 16 + Drizzle ORM with 4 core tables (`books`, `music`, `watches`, `games`) and 5 PostgreSQL enum types (`book_status`, `music_type`, `watch_type`, `watch_status`, `game_status`).
+- **Database Tooling**: drizzle-kit scripts for generate / push / migrate / studio / seed; seed script with 12 sample entries covering all media types.
+- **Authentication**: Single-password protection using bcrypt hash verification + JWT sessions (jose); middleware guards `/dashboard` routes; HttpOnly cookie with 30-day expiry.
+- **TMDB API Client**: Movie and TV series search and detail endpoints.
+- **Google Books API Client**: Book search with ISBN extraction and cover URL normalization.
+- **RAWG API Client**: Game search with platform and genre normalization.
+- **MusicBrainz API Client**: Album/track search via MusicBrainz + Cover Art Archive, with Last.fm fallback for cover images.
+- **Unified Search Proxy**: `/api/search/[type]` route supporting book, movie, tv, game, and music types — keeps API keys server-side.
+- **Dashboard Layout**: Responsive sidebar navigation (desktop) + bottom tab bar (mobile) with framer-motion `layoutId` active indicator.
+- **Dashboard Overview Page**: Activity heatmap, stats cards, recent activity timeline, and favorites grid.
+- **Media Category Pages**: Books, Music, Watches, and Games pages with card grids, status filtering, sorting, and search.
+- **Command Palette (⌘K)**: Global quick-entry powered by cmdk; prefix-based search (`/book`, `/music`, `/movie`, `/tv`, `/game`); 300ms debounced API calls with cover thumbnails in results.
+- **Entry Recording Dialog**: Auto-filled metadata from API search, star rating (1–5 mapped to 2–10), calendar date picker, status select, notes textarea, favorite toggle.
+- **Activity Heatmap**: react-activity-calendar v3 with amber color scale, year-long data fill, hover tooltip showing per-type breakdown.
+- **Dark Theme Design System**: zinc-950 background + amber/orange gradient accents, Geist / Geist Mono fonts with Chinese fallback.
+- **Animations**: Framer Motion card stagger entrance, dialog transitions, login page entrance animation.
+- **Empty States**: Illustrated empty state components with call-to-action for each media category.
+- **Docker Deployment**: Multi-stage Dockerfile (oven/bun base, standalone output), docker-compose.yml with PostgreSQL 16 + app service, health checks, persistent volume.
+- **Environment Configuration**: `.env.example` documenting all required and optional environment variables.
+
+[Unreleased]: https://github.com/user/kairos/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/user/kairos/releases/tag/v0.1.0
