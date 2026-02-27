@@ -1,6 +1,10 @@
+import { createLogger } from "@/lib/logger"
+
 const MUSICBRAINZ_BASE = "https://musicbrainz.org/ws/2"
 const LASTFM_BASE = "https://ws.audioscrobbler.com/2.0"
 const COVER_ART_BASE = "https://coverartarchive.org"
+
+const logger = createLogger("api/musicbrainz")
 
 export interface MusicSearchResult {
   id: string
@@ -27,6 +31,10 @@ interface MBRecording {
   releases?: { id: string; title: string }[]
 }
 
+interface SearchLogContext {
+  traceId?: string
+}
+
 function getLastfmKey(): string {
   const key = process.env.LASTFM_API_KEY
   if (!key) throw new Error("LASTFM_API_KEY not configured")
@@ -42,14 +50,18 @@ async function fetchWithUA(url: string): Promise<Response> {
   })
 }
 
-export async function searchAlbums(query: string): Promise<MusicSearchResult[]> {
+export async function searchAlbums(query: string, context?: SearchLogContext): Promise<MusicSearchResult[]> {
+  const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${MUSICBRAINZ_BASE}/release-group/?query=${encodeURIComponent(query)}&type=album&limit=10&fmt=json`
   const res = await fetchWithUA(url)
-  if (!res.ok) throw new Error(`MusicBrainz search failed: ${res.status}`)
+  if (!res.ok) {
+    logger.warn("album search returned non-200", { query, status: res.status, ...traceMeta })
+    throw new Error(`MusicBrainz search failed: ${res.status}`)
+  }
   const data = await res.json()
 
   const groups: MBReleaseGroup[] = data["release-groups"] ?? []
-  return Promise.all(
+  const results = await Promise.all(
     groups.map(async (rg) => ({
       id: rg.id,
       title: rg.title,
@@ -59,16 +71,23 @@ export async function searchAlbums(query: string): Promise<MusicSearchResult[]> 
       releaseDate: rg["first-release-date"] ?? null,
     }))
   )
+
+  logger.debug("album search completed", { query, count: results.length, ...traceMeta })
+  return results
 }
 
-export async function searchTracks(query: string): Promise<MusicSearchResult[]> {
+export async function searchTracks(query: string, context?: SearchLogContext): Promise<MusicSearchResult[]> {
+  const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${MUSICBRAINZ_BASE}/recording/?query=${encodeURIComponent(query)}&limit=10&fmt=json`
   const res = await fetchWithUA(url)
-  if (!res.ok) throw new Error(`MusicBrainz recording search failed: ${res.status}`)
+  if (!res.ok) {
+    logger.warn("track search returned non-200", { query, status: res.status, ...traceMeta })
+    throw new Error(`MusicBrainz recording search failed: ${res.status}`)
+  }
   const data = await res.json()
 
   const recordings: MBRecording[] = data.recordings ?? []
-  return Promise.all(
+  const results = await Promise.all(
     recordings.map(async (rec) => {
       const releaseId = rec.releases?.[0]?.id
       return {
@@ -81,6 +100,9 @@ export async function searchTracks(query: string): Promise<MusicSearchResult[]> 
       }
     })
   )
+
+  logger.debug("track search completed", { query, count: results.length, ...traceMeta })
+  return results
 }
 
 async function getCoverArt(releaseGroupId: string): Promise<string | null> {

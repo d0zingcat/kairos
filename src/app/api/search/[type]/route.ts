@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { searchMovies, searchTV, posterUrl } from "@/lib/api/tmdb"
 import { searchBooks, normalizeBookResult } from "@/lib/api/google-books"
+import { searchHardcoverBooks } from "@/lib/api/hardcover"
 import { searchGames, normalizeGameResult } from "@/lib/api/rawg"
 import { searchAlbums, searchTracks } from "@/lib/api/musicbrainz"
+import { db } from "@/db"
+import { books, games, music, watches } from "@/db/schema"
+import { and, desc, eq, ilike, or, sql } from "drizzle-orm"
+import { createLogger } from "@/lib/logger"
+
+const logger = createLogger("api/search")
 
 export interface SearchResultItem {
   externalId: string
@@ -13,24 +20,125 @@ export interface SearchResultItem {
   meta: Record<string, unknown>
 }
 
+function mergeUniqueResults(items: SearchResultItem[]): SearchResultItem[] {
+  const seen = new Set<string>()
+  return items.filter((item) => {
+    const key = `${item.type}::${item.title.toLowerCase()}::${(item.subtitle ?? "").toLowerCase()}`
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ type: string }> }
 ) {
+  const traceId = request.headers.get("x-trace-id") || crypto.randomUUID()
   const { type } = await params
-  const query = request.nextUrl.searchParams.get("q")
+  const query = request.nextUrl.searchParams.get("q")?.trim()
+
+  const withTrace = (payload: Record<string, unknown>) => ({
+    ...payload,
+    traceId,
+  })
+
+  const jsonWithTrace = (payload: Record<string, unknown>) =>
+    NextResponse.json(payload, {
+      headers: {
+        "x-trace-id": traceId,
+      },
+    })
 
   if (!query || query.length < 2) {
-    return NextResponse.json({ results: [] })
+    return jsonWithTrace({ results: [] })
   }
+
+  logger.debug("search request received", withTrace({ type, query }))
 
   try {
     let results: SearchResultItem[] = []
 
     switch (type) {
       case "book": {
-        const books = await searchBooks(query)
-        results = books.map((b) => {
+        const localBooks = await db.query.books.findMany({
+          where: and(
+            or(
+              ilike(books.title, `%${query}%`),
+              ilike(books.subtitle, `%${query}%`),
+              sql`array_to_string(${books.authors}, ',') ilike ${`%${query}%`}`,
+              sql`array_to_string(${books.tags}, ',') ilike ${`%${query}%`}`
+            )
+          ),
+          orderBy: [desc(books.updatedAt)],
+          limit: 10,
+        })
+
+        const localResults: SearchResultItem[] = localBooks.map((book) => ({
+          externalId: book.externalId ?? book.id,
+          title: book.title,
+          subtitle: book.authors?.join(", ") ?? null,
+          coverUrl: book.coverUrl,
+          type: "book",
+          meta: {
+            source: "local",
+            localId: book.id,
+            subtitle: book.subtitle,
+            authors: book.authors ?? [],
+            categories: book.tags ?? [],
+            isbn: book.isbn,
+            pageCount: book.pageCount,
+            notes: book.notes,
+            startDate: book.startDate,
+            finishDate: book.finishDate,
+            status: book.status,
+            rating: book.rating,
+            favorite: book.favorite,
+            coverUrl: book.coverUrl,
+            externalId: book.externalId,
+          },
+        }))
+
+        const [hardcoverBooks, googleBooks] = await Promise.all([
+          searchHardcoverBooks(query, { traceId }).catch((error) => {
+            logger.warn("hardcover search failed", {
+              query,
+              error: error instanceof Error ? error.message : "unknown",
+              traceId,
+            })
+            return []
+          }),
+          searchBooks(query, { traceId }).catch((error) => {
+            logger.warn("google books search failed", {
+              query,
+              error: error instanceof Error ? error.message : "unknown",
+              traceId,
+            })
+            return []
+          }),
+        ])
+
+        const hardcoverResults = hardcoverBooks.map((book) => ({
+          externalId: book.externalId,
+          title: book.title,
+          subtitle: book.authors.join(", ") || null,
+          coverUrl: book.coverUrl,
+          type: "book",
+          meta: {
+            source: "hardcover",
+            subtitle: book.subtitle,
+            authors: book.authors,
+            categories: book.categories,
+            isbn: book.isbn,
+            pageCount: book.pageCount,
+            coverUrl: book.coverUrl,
+            externalId: book.externalId,
+          },
+        }))
+
+        const googleResults = googleBooks.map((b) => {
           const normalized = normalizeBookResult(b)
           return {
             externalId: normalized.externalId,
@@ -41,12 +149,65 @@ export async function GET(
             meta: normalized,
           }
         })
+
+        results = mergeUniqueResults([
+          ...localResults,
+          ...hardcoverResults,
+          ...googleResults,
+        ])
+        logger.debug("book search completed", {
+          query,
+          localCount: localResults.length,
+          hardcoverCount: hardcoverResults.length,
+          googleCount: googleResults.length,
+          mergedCount: results.length,
+          traceId,
+        })
         break
       }
 
       case "movie": {
-        const movies = await searchMovies(query)
-        results = movies.map((m) => ({
+        const localMovies = await db.query.watches.findMany({
+          where: and(eq(watches.type, "movie"), ilike(watches.title, `%${query}%`)),
+          orderBy: [desc(watches.updatedAt)],
+          limit: 10,
+        })
+
+        const localResults: SearchResultItem[] = localMovies.map((movie) => ({
+          externalId: movie.externalId ?? movie.id,
+          title: movie.title,
+          subtitle: movie.director ?? null,
+          coverUrl: movie.posterUrl,
+          type: "movie",
+          meta: {
+            source: "local",
+            localId: movie.id,
+            genre: movie.genre ?? [],
+            status: movie.status,
+            watchDate: movie.watchDate,
+            rating: movie.rating,
+            favorite: movie.favorite,
+            notes: movie.notes,
+            type: movie.type,
+            director: movie.director,
+            posterUrl: movie.posterUrl,
+            runtime: movie.runtime,
+            seasonNumber: movie.seasonNumber,
+            episodeNumber: movie.episodeNumber,
+            tags: movie.tags ?? [],
+            externalId: movie.externalId,
+          },
+        }))
+
+        const movies = await searchMovies(query, { traceId }).catch((error) => {
+          logger.warn("movie search failed", {
+            query,
+            error: error instanceof Error ? error.message : "unknown",
+            traceId,
+          })
+          return []
+        })
+        const remoteResults = movies.map((m) => ({
           externalId: String(m.id),
           title: m.title ?? m.name ?? "",
           subtitle: m.release_date?.slice(0, 4) ?? null,
@@ -54,12 +215,53 @@ export async function GET(
           type: "movie",
           meta: { genre_ids: m.genre_ids, overview: m.overview },
         }))
+
+        results = mergeUniqueResults([...localResults, ...remoteResults])
         break
       }
 
       case "tv": {
-        const shows = await searchTV(query)
-        results = shows.map((s) => ({
+        const localShows = await db.query.watches.findMany({
+          where: and(eq(watches.type, "tv"), ilike(watches.title, `%${query}%`)),
+          orderBy: [desc(watches.updatedAt)],
+          limit: 10,
+        })
+
+        const localResults: SearchResultItem[] = localShows.map((show) => ({
+          externalId: show.externalId ?? show.id,
+          title: show.title,
+          subtitle: show.director ?? null,
+          coverUrl: show.posterUrl,
+          type: "tv",
+          meta: {
+            source: "local",
+            localId: show.id,
+            genre: show.genre ?? [],
+            status: show.status,
+            watchDate: show.watchDate,
+            rating: show.rating,
+            favorite: show.favorite,
+            notes: show.notes,
+            type: show.type,
+            director: show.director,
+            posterUrl: show.posterUrl,
+            runtime: show.runtime,
+            seasonNumber: show.seasonNumber,
+            episodeNumber: show.episodeNumber,
+            tags: show.tags ?? [],
+            externalId: show.externalId,
+          },
+        }))
+
+        const shows = await searchTV(query, { traceId }).catch((error) => {
+          logger.warn("tv search failed", {
+            query,
+            error: error instanceof Error ? error.message : "unknown",
+            traceId,
+          })
+          return []
+        })
+        const remoteResults = shows.map((s) => ({
           externalId: String(s.id),
           title: s.name ?? s.title ?? "",
           subtitle: s.first_air_date?.slice(0, 4) ?? null,
@@ -67,12 +269,58 @@ export async function GET(
           type: "tv",
           meta: { genre_ids: s.genre_ids, overview: s.overview },
         }))
+
+        results = mergeUniqueResults([...localResults, ...remoteResults])
         break
       }
 
       case "game": {
-        const games = await searchGames(query)
-        results = games.map((g) => {
+        const localGames = await db.query.games.findMany({
+          where: or(
+            ilike(games.title, `%${query}%`),
+            ilike(games.developer, `%${query}%`),
+            sql`array_to_string(${games.platforms}, ',') ilike ${`%${query}%`}`,
+            sql`array_to_string(${games.genre}, ',') ilike ${`%${query}%`}`,
+            sql`array_to_string(${games.tags}, ',') ilike ${`%${query}%`}`
+          ),
+          orderBy: [desc(games.updatedAt)],
+          limit: 10,
+        })
+
+        const localResults: SearchResultItem[] = localGames.map((game) => ({
+          externalId: game.externalId ?? game.id,
+          title: game.title,
+          subtitle: game.platforms?.slice(0, 3).join(", ") ?? null,
+          coverUrl: game.coverUrl,
+          type: "game",
+          meta: {
+            source: "local",
+            localId: game.id,
+            platforms: game.platforms ?? [],
+            genre: game.genre ?? [],
+            developer: game.developer,
+            status: game.status,
+            startDate: game.startDate,
+            finishDate: game.finishDate,
+            playTimeMinutes: game.playTimeMinutes,
+            rating: game.rating,
+            favorite: game.favorite,
+            notes: game.notes,
+            coverUrl: game.coverUrl,
+            tags: game.tags ?? [],
+            externalId: game.externalId,
+          },
+        }))
+
+        const remoteGames = await searchGames(query, { traceId }).catch((error) => {
+          logger.warn("game search failed", {
+            query,
+            error: error instanceof Error ? error.message : "unknown",
+            traceId,
+          })
+          return []
+        })
+        const remoteResults = remoteGames.map((g) => {
           const normalized = normalizeGameResult(g)
           return {
             externalId: normalized.externalId,
@@ -83,16 +331,68 @@ export async function GET(
             meta: normalized,
           }
         })
+
+        results = mergeUniqueResults([...localResults, ...remoteResults])
         break
       }
 
       case "music": {
+        const localMusic = await db.query.music.findMany({
+          where: or(
+            ilike(music.title, `%${query}%`),
+            ilike(music.artist, `%${query}%`),
+            ilike(music.albumTitle, `%${query}%`),
+            sql`array_to_string(${music.genre}, ',') ilike ${`%${query}%`}`,
+            sql`array_to_string(${music.tags}, ',') ilike ${`%${query}%`}`
+          ),
+          orderBy: [desc(music.updatedAt)],
+          limit: 10,
+        })
+
+        const localResults: SearchResultItem[] = localMusic.map((item) => ({
+          externalId: item.externalId ?? item.id,
+          title: item.title,
+          subtitle: item.artist ?? null,
+          coverUrl: item.coverUrl,
+          type: "music",
+          meta: {
+            source: "local",
+            localId: item.id,
+            musicType: item.type,
+            releaseDate: null,
+            artist: item.artist,
+            albumTitle: item.albumTitle,
+            genre: item.genre ?? [],
+            tags: item.tags ?? [],
+            coverUrl: item.coverUrl,
+            externalId: item.externalId,
+            listenDate: item.listenDate,
+            rating: item.rating,
+            favorite: item.favorite,
+            notes: item.notes,
+          },
+        }))
+
         const [albums, tracks] = await Promise.all([
-          searchAlbums(query).catch(() => []),
-          searchTracks(query).catch(() => []),
+          searchAlbums(query, { traceId }).catch((error) => {
+            logger.warn("music album search failed", {
+              query,
+              error: error instanceof Error ? error.message : "unknown",
+              traceId,
+            })
+            return []
+          }),
+          searchTracks(query, { traceId }).catch((error) => {
+            logger.warn("music track search failed", {
+              query,
+              error: error instanceof Error ? error.message : "unknown",
+              traceId,
+            })
+            return []
+          }),
         ])
         const combined = [...albums, ...tracks].slice(0, 10)
-        results = combined.map((m) => ({
+        const remoteResults = combined.map((m) => ({
           externalId: m.id,
           title: m.title,
           subtitle: m.artist,
@@ -100,16 +400,24 @@ export async function GET(
           type: "music",
           meta: { musicType: m.type, releaseDate: m.releaseDate },
         }))
+
+        results = mergeUniqueResults([...localResults, ...remoteResults])
         break
       }
 
       default:
-        return NextResponse.json({ error: "Invalid type" }, { status: 400 })
+        return NextResponse.json({ error: "Invalid type" }, {
+          status: 400,
+          headers: {
+            "x-trace-id": traceId,
+          },
+        })
     }
 
-    return NextResponse.json({ results })
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Search failed"
-    return NextResponse.json({ error: message }, { status: 500 })
+    logger.debug("search response sent", withTrace({ type, query, resultCount: results.length }))
+    return jsonWithTrace({ results })
+  } catch {
+    logger.error("search route failed unexpectedly", withTrace({ type, query }))
+    return jsonWithTrace({ results: [] })
   }
 }
