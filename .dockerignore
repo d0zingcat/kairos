@@ -1,0 +1,34 @@
+# VCS
+.git
+.gitignore
+
+# Dependencies
+node_modules
+
+# Build artifacts
+.next
+out
+coverage
+
+# Local env and configs
+.env
+.env.*
+!.env.example
+
+# Logs and caches
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.eslintcache
+
+# OS/editor
+.DS_Store
+.vscode
+.idea
+
+# Docs / local tooling (not needed for runtime image)
+.github
+CHANGELOG.md
+TODO.md
