@@ -1,6 +1,8 @@
 import { compare } from "bcryptjs"
 import { SignJWT, jwtVerify } from "jose"
 import { cookies } from "next/headers"
+import { readFileSync } from "node:fs"
+import { join } from "node:path"
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret-change-me"
@@ -9,11 +11,54 @@ const JWT_SECRET = new TextEncoder().encode(
 const COOKIE_NAME = "kairos-session"
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days
 
-export async function verifyPassword(password: string): Promise<boolean> {
-  const hash = process.env.ADMIN_PASSWORD_HASH
-  if (!hash) {
-    throw new Error("ADMIN_PASSWORD_HASH not configured")
+function normalizeHash(value: string): string {
+  const trimmed = value.trim()
+  const unquoted = trimmed.replace(/^['"]|['"]$/g, "")
+  return unquoted.replace(/\\\$/g, "$")
+}
+
+function isBcryptHash(value: string): boolean {
+  return /^\$2[aby]\$\d{2}\$/.test(value)
+}
+
+function extractHashFromDotEnv(): string | null {
+  try {
+    const content = readFileSync(join(process.cwd(), ".env"), "utf8")
+    const line = content
+      .split("\n")
+      .find((entry) => entry.trim().startsWith("ADMIN_PASSWORD_HASH="))
+
+    if (!line) {
+      return null
+    }
+
+    const rawValue = line.slice(line.indexOf("=") + 1)
+    const normalized = normalizeHash(rawValue)
+    return isBcryptHash(normalized) ? normalized : null
+  } catch {
+    return null
   }
+}
+
+function getAdminPasswordHash(): string {
+  const fromEnv = process.env.ADMIN_PASSWORD_HASH
+  if (fromEnv) {
+    const normalized = normalizeHash(fromEnv)
+    if (isBcryptHash(normalized)) {
+      return normalized
+    }
+  }
+
+  const fromDotEnv = extractHashFromDotEnv()
+  if (fromDotEnv) {
+    return fromDotEnv
+  }
+
+  throw new Error("ADMIN_PASSWORD_HASH not configured")
+}
+
+export async function verifyPassword(password: string): Promise<boolean> {
+  const hash = getAdminPasswordHash()
   return compare(password, hash)
 }
 

@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Hardcover Book Search Source**: Added backend Hardcover GraphQL search client and merged results into `/api/search/book` pipeline to improve Chinese book discovery.
+- **Leveled Logging System**: Added centralized logger with `debug` / `info` / `warn` / `error` levels and configurable `LOG_LEVEL`.
+- **Traceable Search Requests**: Added per-request `traceId` propagation across search route and upstream API clients; search responses now include `x-trace-id` header.
+- **Direct Card Editing**: Added click-to-edit flows for all categories (books, music, watches, games) using entry dialog with prefilled local metadata.
+- **Books Editing UX**: Added calendar selectors for start/end reading dates and richer edit metadata fallback.
+
+### Changed
+
+- **Command Palette Input Model**: Refactored slash-command behavior to separate search mode from query text (e.g. `/book` sets mode, input keeps only keyword).
+- **Search Aggregation Strategy**: Unified local-first fallback behavior across all media types; upstream failures now degrade gracefully instead of blocking results.
+- **Hydration Stability**: Deferred command palette rendering until client mount to avoid Radix dialog SSR/CSR ID mismatch warnings.
+- **Book Default Status**: Changed default book status in entry dialog to `want_to_read`.
+
+### Fixed
+
+- **Hook Order Error**: Resolved React hooks order issue in `EntryDialog` caused by conditional early return position.
+- **Book Activity SQL Grouping**: Fixed `getActivityData` aggregation query shape to match PostgreSQL grouping rules.
+- **Password Hash Loading**: Hardened admin password hash loading to avoid env expansion corruption edge cases.
+- **Date/Rating Interaction Bug**: Prevented date input typing from triggering global quick-rating keyboard shortcuts.
+- **Local Record Data Loss on Update**: Fixed update payloads to preserve existing fields when editing local items.
+
 ## [0.1.0] - 2026-02-26
 
 ### Added
@@ -32,5 +55,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker Deployment**: Multi-stage Dockerfile (oven/bun base, standalone output), docker-compose.yml with PostgreSQL 16 + app service, health checks, persistent volume.
 - **Environment Configuration**: `.env.example` documenting all required and optional environment variables.
 
-[Unreleased]: https://github.com/user/kairos/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/user/kairos/releases/tag/v0.1.0
+[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/d0zingcat/kairos/releases/tag/v0.1.0

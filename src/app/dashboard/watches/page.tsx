@@ -4,7 +4,8 @@ import { Suspense } from "react"
 import { getWatches } from "@/lib/actions/entries"
 import { WATCH_STATUSES } from "@/lib/constants"
 import { FilterBar } from "@/components/dashboard/filter-bar"
-import { MediaCard, EmptyState } from "@/components/dashboard/media-card"
+import { EmptyState } from "@/components/dashboard/media-card"
+import { WatchesGrid } from "@/components/dashboard/watches-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Film } from "lucide-react"
 
@@ -59,26 +60,7 @@ async function WatchGrid({
     return <EmptyState type="影视" />
   }
 
-  const getStatusLabel = (s: string) =>
-    WATCH_STATUSES.find((ws) => ws.value === s)?.label ?? s
-
-  return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-      {watchList.map((w, i) => (
-        <MediaCard
-          key={w.id}
-          title={w.title}
-          subtitle={w.director}
-          coverUrl={w.posterUrl}
-          rating={w.rating}
-          favorite={w.favorite}
-          statusLabel={getStatusLabel(w.status)}
-          date={w.watchDate}
-          index={i}
-        />
-      ))}
-    </div>
-  )
+  return <WatchesGrid watchList={watchList} />
 }
 
 function FilterBarSkeleton() {
