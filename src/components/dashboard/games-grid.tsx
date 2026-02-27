@@ -26,9 +26,10 @@ interface GameGridItem {
 
 interface GamesGridProps {
   gameList: GameGridItem[]
+  canEdit: boolean
 }
 
-export function GamesGrid({ gameList }: GamesGridProps) {
+export function GamesGrid({ gameList, canEdit }: GamesGridProps) {
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
 
@@ -38,6 +39,8 @@ export function GamesGrid({ gameList }: GamesGridProps) {
   )
 
   const openEditor = (item: GameGridItem) => {
+    if (!canEdit) return
+
     setSelectedItem({
       externalId: item.externalId ?? item.id,
       title: item.title,
@@ -81,7 +84,7 @@ export function GamesGrid({ gameList }: GamesGridProps) {
             note={g.notes}
             date={g.finishDate}
             index={i}
-            onClick={() => openEditor(g)}
+            onClick={canEdit ? () => openEditor(g) : undefined}
           />
         ))}
       </div>
@@ -91,6 +94,7 @@ export function GamesGrid({ gameList }: GamesGridProps) {
         onOpenChange={setEntryDialogOpen}
         item={selectedItem}
         mediaType="game"
+        canEdit={canEdit}
       />
     </>
   )

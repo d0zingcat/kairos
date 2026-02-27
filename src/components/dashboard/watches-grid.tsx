@@ -27,9 +27,10 @@ interface WatchGridItem {
 
 interface WatchesGridProps {
   watchList: WatchGridItem[]
+  canEdit: boolean
 }
 
-export function WatchesGrid({ watchList }: WatchesGridProps) {
+export function WatchesGrid({ watchList, canEdit }: WatchesGridProps) {
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
 
@@ -39,6 +40,8 @@ export function WatchesGrid({ watchList }: WatchesGridProps) {
   )
 
   const openEditor = (item: WatchGridItem) => {
+    if (!canEdit) return
+
     setSelectedItem({
       externalId: item.externalId ?? item.id,
       title: item.title,
@@ -83,7 +86,7 @@ export function WatchesGrid({ watchList }: WatchesGridProps) {
             note={w.notes}
             date={w.watchDate}
             index={i}
-            onClick={() => openEditor(w)}
+            onClick={canEdit ? () => openEditor(w) : undefined}
           />
         ))}
       </div>
@@ -93,6 +96,7 @@ export function WatchesGrid({ watchList }: WatchesGridProps) {
         onOpenChange={setEntryDialogOpen}
         item={selectedItem}
         mediaType="watch"
+        canEdit={canEdit}
       />
     </>
   )

@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/dashboard/media-card"
 import { MusicGrid } from "@/components/dashboard/music-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Music } from "lucide-react"
+import { verifyAdminSession } from "@/lib/auth"
 
 interface PageProps {
   searchParams: Promise<{ sort?: string; search?: string }>
@@ -45,13 +46,14 @@ async function MusicGridContent({
   sort?: string
   search?: string
 }) {
+  const canEdit = await verifyAdminSession()
   const musicList = await getMusicList({ sort, search })
 
   if (musicList.length === 0) {
     return <EmptyState type="音乐" />
   }
 
-  return <MusicGrid musicList={musicList} />
+  return <MusicGrid musicList={musicList} canEdit={canEdit} />
 }
 
 function FilterBarSkeleton() {

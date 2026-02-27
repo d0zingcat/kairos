@@ -7,10 +7,9 @@ import { RecentTimeline } from "@/components/dashboard/recent-timeline"
 import { FavoritesGrid } from "@/components/dashboard/favorites-grid"
 
 export default async function DashboardPage() {
-  const year = new Date().getFullYear()
   const [stats, activity, recent, favorites] = await Promise.all([
     getStats(),
-    getActivityData(year),
+    getActivityData(365),
     getRecentActivity(15),
     getFavorites(),
   ])
@@ -28,7 +27,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Heatmap */}
-      <ActivityHeatmap data={activity} year={year} />
+      <ActivityHeatmap data={activity} />
 
       {/* Stats */}
       <StatsCards stats={stats} />
