@@ -5,9 +5,18 @@ import { books, music, watches, games } from "@/db/schema"
 import type { NewBook, NewMusic, NewWatch, NewGame } from "@/db/schema"
 import { eq, desc, sql, and, ilike, count } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
+import { verifyAdminSession } from "@/lib/auth"
+
+async function assertCanEdit() {
+  const isAdmin = await verifyAdminSession()
+  if (!isAdmin) {
+    throw new Error("UNAUTHORIZED")
+  }
+}
 
 // ── Books ────────────────────────────────────────────────
 export async function createBook(data: NewBook) {
+  await assertCanEdit()
   const [book] = await db.insert(books).values(data).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
@@ -15,6 +24,7 @@ export async function createBook(data: NewBook) {
 }
 
 export async function updateBook(id: string, data: Partial<NewBook>) {
+  await assertCanEdit()
   const [book] = await db.update(books).set(data).where(eq(books.id, id)).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
@@ -22,6 +32,7 @@ export async function updateBook(id: string, data: Partial<NewBook>) {
 }
 
 export async function deleteBook(id: string) {
+  await assertCanEdit()
   await db.delete(books).where(eq(books.id, id))
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
@@ -62,6 +73,7 @@ export async function getBook(id: string) {
 
 // ── Music ────────────────────────────────────────────────
 export async function createMusic(data: NewMusic) {
+  await assertCanEdit()
   const [item] = await db.insert(music).values(data).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
@@ -69,6 +81,7 @@ export async function createMusic(data: NewMusic) {
 }
 
 export async function updateMusic(id: string, data: Partial<NewMusic>) {
+  await assertCanEdit()
   const [item] = await db.update(music).set(data).where(eq(music.id, id)).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
@@ -76,6 +89,7 @@ export async function updateMusic(id: string, data: Partial<NewMusic>) {
 }
 
 export async function deleteMusic(id: string) {
+  await assertCanEdit()
   await db.delete(music).where(eq(music.id, id))
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
@@ -108,6 +122,7 @@ export async function getMusicList(options?: {
 
 // ── Watches ──────────────────────────────────────────────
 export async function createWatch(data: NewWatch) {
+  await assertCanEdit()
   const [item] = await db.insert(watches).values(data).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
@@ -115,6 +130,7 @@ export async function createWatch(data: NewWatch) {
 }
 
 export async function updateWatch(id: string, data: Partial<NewWatch>) {
+  await assertCanEdit()
   const [item] = await db.update(watches).set(data).where(eq(watches.id, id)).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
@@ -122,6 +138,7 @@ export async function updateWatch(id: string, data: Partial<NewWatch>) {
 }
 
 export async function deleteWatch(id: string) {
+  await assertCanEdit()
   await db.delete(watches).where(eq(watches.id, id))
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
@@ -162,6 +179,7 @@ export async function getWatches(options?: {
 
 // ── Games ────────────────────────────────────────────────
 export async function createGame(data: NewGame) {
+  await assertCanEdit()
   const [item] = await db.insert(games).values(data).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
@@ -169,6 +187,7 @@ export async function createGame(data: NewGame) {
 }
 
 export async function updateGame(id: string, data: Partial<NewGame>) {
+  await assertCanEdit()
   const [item] = await db.update(games).set(data).where(eq(games.id, id)).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
@@ -176,6 +195,7 @@ export async function updateGame(id: string, data: Partial<NewGame>) {
 }
 
 export async function deleteGame(id: string) {
+  await assertCanEdit()
   await db.delete(games).where(eq(games.id, id))
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
@@ -211,9 +231,12 @@ export async function getGames(options?: {
 }
 
 // ── Aggregations ─────────────────────────────────────────
-export async function getActivityData(year: number) {
-  const startDate = `${year}-01-01`
-  const endDate = `${year}-12-31`
+export async function getActivityData(days = 365) {
+  const now = new Date()
+  const endDate = now.toISOString().slice(0, 10)
+  const start = new Date(now)
+  start.setDate(start.getDate() - Math.max(1, days) + 1)
+  const startDate = start.toISOString().slice(0, 10)
 
   const bookDateExpr = sql<string>`date(${books.createdAt})`
   const musicDateExpr = sql<string>`date(${music.createdAt})`

@@ -36,6 +36,12 @@ export const gameStatusEnum = pgEnum("game_status", [
   "platinum",
 ])
 
+export const siteVisibilityEnum = pgEnum("site_visibility", [
+  "public",
+  "private",
+  "password",
+])
+
 // ── Shared timestamps ────────────────────────────────────
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -126,6 +132,13 @@ export const games = pgTable("games", {
   ...timestamps,
 })
 
+// ── App settings ───────────────────────────────────────
+export const appSettings = pgTable("app_settings", {
+  key: text("key").primaryKey(),
+  visibility: siteVisibilityEnum("visibility").notNull().default("private"),
+  ...timestamps,
+})
+
 // ── Type exports ─────────────────────────────────────────
 export type Book = typeof books.$inferSelect
 export type NewBook = typeof books.$inferInsert
@@ -135,3 +148,5 @@ export type Watch = typeof watches.$inferSelect
 export type NewWatch = typeof watches.$inferInsert
 export type Game = typeof games.$inferSelect
 export type NewGame = typeof games.$inferInsert
+export type AppSetting = typeof appSettings.$inferSelect
+export type NewAppSetting = typeof appSettings.$inferInsert

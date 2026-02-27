@@ -6,13 +6,34 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret-change-me"
 )
 
-const PUBLIC_PATHS = ["/", "/login", "/api/auth/login"]
+const ADMIN_COOKIE_NAME = "kairos-admin-session"
+const ADMIN_ONLY_PREFIXES = ["/api/search"]
+
+async function hasRoleSession(token: string | undefined, role: "admin" | "viewer") {
+  if (!token) return false
+
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET)
+    return payload.role === role
+  } catch {
+    return false
+  }
+}
+
+function deny(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const loginUrl = new URL("/login", request.url)
+  loginUrl.searchParams.set("next", request.nextUrl.pathname)
+  return NextResponse.redirect(loginUrl)
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (
-    PUBLIC_PATHS.some((path) => pathname === path) ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
     pathname.includes(".")
@@ -20,18 +41,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const token = request.cookies.get("kairos-session")?.value
+  const adminToken = request.cookies.get(ADMIN_COOKIE_NAME)?.value
+  const isAdmin = await hasRoleSession(adminToken, "admin")
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url))
+  if (ADMIN_ONLY_PREFIXES.some((prefix) => pathname.startsWith(prefix)) && !isAdmin) {
+    return deny(request)
   }
-
-  try {
-    await jwtVerify(token, JWT_SECRET)
-    return NextResponse.next()
-  } catch {
-    return NextResponse.redirect(new URL("/login", request.url))
-  }
+  return NextResponse.next()
 }
 
 export const config = {
