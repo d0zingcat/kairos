@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/dashboard/media-card"
 import { GamesGrid } from "@/components/dashboard/games-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Gamepad2 } from "lucide-react"
+import { verifyAdminSession } from "@/lib/auth"
 
 interface PageProps {
   searchParams: Promise<{ status?: string; sort?: string; search?: string }>
@@ -54,13 +55,14 @@ async function GameGrid({
   sort?: string
   search?: string
 }) {
+  const canEdit = await verifyAdminSession()
   const gameList = await getGames({ status, sort, search })
 
   if (gameList.length === 0) {
     return <EmptyState type="游戏" />
   }
 
-  return <GamesGrid gameList={gameList} />
+  return <GamesGrid gameList={gameList} canEdit={canEdit} />
 }
 
 function FilterBarSkeleton() {

@@ -8,6 +8,7 @@ import { db } from "@/db"
 import { books, games, music, watches } from "@/db/schema"
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm"
 import { createLogger } from "@/lib/logger"
+import { verifyAdminSession } from "@/lib/auth"
 
 const logger = createLogger("api/search")
 
@@ -36,6 +37,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ type: string }> }
 ) {
+  const isAdmin = await verifyAdminSession()
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
   const traceId = request.headers.get("x-trace-id") || crypto.randomUUID()
   const { type } = await params
   const query = request.nextUrl.searchParams.get("q")?.trim()

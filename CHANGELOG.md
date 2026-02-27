@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Traceable Search Requests**: Added per-request `traceId` propagation across search route and upstream API clients; search responses now include `x-trace-id` header.
 - **Direct Card Editing**: Added click-to-edit flows for all categories (books, music, watches, games) using entry dialog with prefilled local metadata.
 - **Books Editing UX**: Added calendar selectors for start/end reading dates and richer edit metadata fallback.
+- **Access Control Modes**: Added `public` / `private` / `password` site visibility modes with separate admin/viewer sessions.
+- **Admin Settings Page**: Added `/dashboard/settings` to switch visibility mode at runtime (stored in database with env fallback).
+- **Settings Persistence Table**: Added `app_settings` schema for site-level runtime configuration.
+- **Project TODO List**: Added `TODO.md` to track upcoming integration tasks.
 
 ### Changed
 
@@ -21,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Search Aggregation Strategy**: Unified local-first fallback behavior across all media types; upstream failures now degrade gracefully instead of blocking results.
 - **Hydration Stability**: Deferred command palette rendering until client mount to avoid Radix dialog SSR/CSR ID mismatch warnings.
 - **Book Default Status**: Changed default book status in entry dialog to `want_to_read`.
+- **Activity Heatmap Window**: Switched from calendar-year view to rolling last 365 days through today.
 
 ### Fixed
 
@@ -29,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Password Hash Loading**: Hardened admin password hash loading to avoid env expansion corruption edge cases.
 - **Date/Rating Interaction Bug**: Prevented date input typing from triggering global quick-rating keyboard shortcuts.
 - **Local Record Data Loss on Update**: Fixed update payloads to preserve existing fields when editing local items.
+- **Login Session UX**: Login page now redirects authenticated users to `/dashboard` to avoid conflicting states.
+- **Search Route Protection**: Added server-side admin session check to `/api/search/[type]` in addition to middleware guard.
 
 ## [0.1.0] - 2026-02-26
 
