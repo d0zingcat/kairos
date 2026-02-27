@@ -1,4 +1,7 @@
 const GOOGLE_BOOKS_BASE = "https://www.googleapis.com/books/v1"
+import { createLogger } from "@/lib/logger"
+
+const logger = createLogger("api/google-books")
 
 export interface GoogleBookResult {
   id: string
@@ -18,10 +21,13 @@ export interface GoogleBookResult {
   }
 }
 
-function getApiKey(): string {
-  const key = process.env.GOOGLE_BOOKS_API_KEY
-  if (!key) throw new Error("GOOGLE_BOOKS_API_KEY not configured")
-  return key
+interface SearchLogContext {
+  traceId?: string
+}
+
+function getApiKey(): string | null {
+  const key = process.env.GOOGLE_BOOKS_API_KEY?.trim()
+  return key ? key : null
 }
 
 function coverUrl(imageLinks?: GoogleBookResult["volumeInfo"]["imageLinks"]): string | null {
@@ -38,19 +44,50 @@ function extractIsbn(identifiers?: { type: string; identifier: string }[]): stri
   return isbn13?.identifier ?? isbn10?.identifier ?? null
 }
 
-export async function searchBooks(query: string): Promise<GoogleBookResult[]> {
+export async function searchBooks(query: string, context?: SearchLogContext): Promise<GoogleBookResult[]> {
   const key = getApiKey()
-  const url = `${GOOGLE_BOOKS_BASE}/volumes?q=${encodeURIComponent(query)}&maxResults=10&key=${key}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Google Books search failed: ${res.status}`)
-  const data = await res.json()
-  return data.items ?? []
+  const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
+
+  const searchWithQuery = async (q: string): Promise<GoogleBookResult[]> => {
+    const url = new URL(`${GOOGLE_BOOKS_BASE}/volumes`)
+    url.searchParams.set("q", q)
+    url.searchParams.set("maxResults", "10")
+    if (key) {
+      url.searchParams.set("key", key)
+    }
+
+    try {
+      const res = await fetch(url.toString())
+      if (!res.ok) {
+        logger.warn("google books returned non-200", { status: res.status, query: q, ...traceMeta })
+        return []
+      }
+      const data = await res.json()
+      return data.items ?? []
+    } catch {
+      logger.warn("google books request failed", { query: q, ...traceMeta })
+      return []
+    }
+  }
+
+  const primary = await searchWithQuery(query)
+  if (primary.length > 0) {
+    logger.debug("google books primary search hit", { query, count: primary.length, ...traceMeta })
+    return primary
+  }
+
+  logger.info("google books primary empty, using intitle fallback", { query, ...traceMeta })
+  return searchWithQuery(`intitle:${query}`)
 }
 
 export async function getBookDetail(id: string): Promise<GoogleBookResult> {
   const key = getApiKey()
-  const url = `${GOOGLE_BOOKS_BASE}/volumes/${id}?key=${key}`
-  const res = await fetch(url)
+  const url = new URL(`${GOOGLE_BOOKS_BASE}/volumes/${id}`)
+  if (key) {
+    url.searchParams.set("key", key)
+  }
+
+  const res = await fetch(url.toString())
   if (!res.ok) throw new Error(`Google Books detail failed: ${res.status}`)
   return res.json()
 }
@@ -62,6 +99,7 @@ export function normalizeBookResult(item: GoogleBookResult) {
     title: v.title,
     subtitle: v.subtitle ?? null,
     authors: v.authors ?? [],
+    categories: v.categories ?? [],
     coverUrl: coverUrl(v.imageLinks),
     isbn: extractIsbn(v.industryIdentifiers),
     pageCount: v.pageCount ?? null,

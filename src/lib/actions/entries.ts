@@ -215,9 +215,14 @@ export async function getActivityData(year: number) {
   const startDate = `${year}-01-01`
   const endDate = `${year}-12-31`
 
+  const bookDateExpr = sql<string>`date(${books.createdAt})`
+  const musicDateExpr = sql<string>`date(${music.createdAt})`
+  const watchDateExpr = sql<string>`date(${watches.createdAt})`
+  const gameDateExpr = sql<string>`date(${games.createdAt})`
+
   const [bookActivity, musicActivity, watchActivity, gameActivity] = await Promise.all([
     db
-      .select({ date: books.createdAt, count: count() })
+      .select({ date: bookDateExpr, count: count() })
       .from(books)
       .where(
         and(
@@ -225,9 +230,9 @@ export async function getActivityData(year: number) {
           sql`${books.createdAt} <= ${endDate}::date`
         )
       )
-      .groupBy(sql`date(${books.createdAt})`),
+      .groupBy(bookDateExpr),
     db
-      .select({ date: music.createdAt, count: count() })
+      .select({ date: musicDateExpr, count: count() })
       .from(music)
       .where(
         and(
@@ -235,9 +240,9 @@ export async function getActivityData(year: number) {
           sql`${music.createdAt} <= ${endDate}::date`
         )
       )
-      .groupBy(sql`date(${music.createdAt})`),
+      .groupBy(musicDateExpr),
     db
-      .select({ date: watches.createdAt, count: count() })
+      .select({ date: watchDateExpr, count: count() })
       .from(watches)
       .where(
         and(
@@ -245,9 +250,9 @@ export async function getActivityData(year: number) {
           sql`${watches.createdAt} <= ${endDate}::date`
         )
       )
-      .groupBy(sql`date(${watches.createdAt})`),
+      .groupBy(watchDateExpr),
     db
-      .select({ date: games.createdAt, count: count() })
+      .select({ date: gameDateExpr, count: count() })
       .from(games)
       .where(
         and(
@@ -255,15 +260,15 @@ export async function getActivityData(year: number) {
           sql`${games.createdAt} <= ${endDate}::date`
         )
       )
-      .groupBy(sql`date(${games.createdAt})`),
+      .groupBy(gameDateExpr),
   ])
 
   // Merge all activity into a date map
   const dateMap = new Map<string, { total: number; books: number; music: number; watches: number; games: number }>()
 
-  const addToMap = (entries: { date: Date; count: number }[], key: "books" | "music" | "watches" | "games") => {
+  const addToMap = (entries: { date: string; count: number }[], key: "books" | "music" | "watches" | "games") => {
     for (const entry of entries) {
-      const dateStr = new Date(entry.date).toISOString().split("T")[0]
+      const dateStr = entry.date
       const existing = dateMap.get(dateStr) ?? { total: 0, books: 0, music: 0, watches: 0, games: 0 }
       existing[key] += entry.count
       existing.total += entry.count
