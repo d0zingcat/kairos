@@ -16,6 +16,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 RUN bun run build
+RUN bun run build:migrate
 
 # ── Stage 3: Production runner ────────────────────────
 FROM oven/bun:1-slim AS runner
@@ -28,6 +29,7 @@ ENV NODE_ENV=production
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=bun:bun /app/.next/standalone ./
 COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
+COPY --from=builder --chown=bun:bun /app/dist/migrate.js ./dist/migrate.js
 
 # Drizzle migrations
 COPY --from=builder /app/drizzle ./drizzle
