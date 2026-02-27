@@ -3,7 +3,8 @@ export const dynamic = "force-dynamic"
 import { Suspense } from "react"
 import { getMusicList } from "@/lib/actions/entries"
 import { FilterBar } from "@/components/dashboard/filter-bar"
-import { MediaCard, EmptyState } from "@/components/dashboard/media-card"
+import { EmptyState } from "@/components/dashboard/media-card"
+import { MusicGrid } from "@/components/dashboard/music-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Music } from "lucide-react"
 
@@ -31,13 +32,13 @@ export default async function MusicPage({ searchParams }: PageProps) {
       </Suspense>
 
       <Suspense fallback={<GridSkeleton />}>
-        <MusicGrid sort={params.sort} search={params.search} />
+        <MusicGridContent sort={params.sort} search={params.search} />
       </Suspense>
     </div>
   )
 }
 
-async function MusicGrid({
+async function MusicGridContent({
   sort,
   search,
 }: {
@@ -50,22 +51,7 @@ async function MusicGrid({
     return <EmptyState type="音乐" />
   }
 
-  return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-      {musicList.map((m, i) => (
-        <MediaCard
-          key={m.id}
-          title={m.title}
-          subtitle={m.artist}
-          coverUrl={m.coverUrl}
-          rating={m.rating}
-          favorite={m.favorite}
-          date={m.listenDate}
-          index={i}
-        />
-      ))}
-    </div>
-  )
+  return <MusicGrid musicList={musicList} />
 }
 
 function FilterBarSkeleton() {

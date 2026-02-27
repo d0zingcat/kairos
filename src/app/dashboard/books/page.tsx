@@ -4,7 +4,8 @@ import { Suspense } from "react"
 import { getBooks } from "@/lib/actions/entries"
 import { BOOK_STATUSES } from "@/lib/constants"
 import { FilterBar } from "@/components/dashboard/filter-bar"
-import { MediaCard, EmptyState } from "@/components/dashboard/media-card"
+import { EmptyState } from "@/components/dashboard/media-card"
+import { BooksGrid } from "@/components/dashboard/books-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BookOpen } from "lucide-react"
 
@@ -59,26 +60,7 @@ async function BookGrid({
     return <EmptyState type="书籍" />
   }
 
-  const getStatusLabel = (s: string) =>
-    BOOK_STATUSES.find((bs) => bs.value === s)?.label ?? s
-
-  return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-      {books.map((book, i) => (
-        <MediaCard
-          key={book.id}
-          title={book.title}
-          subtitle={book.authors?.join(", ")}
-          coverUrl={book.coverUrl}
-          rating={book.rating}
-          favorite={book.favorite}
-          statusLabel={getStatusLabel(book.status)}
-          date={book.finishDate}
-          index={i}
-        />
-      ))}
-    </div>
-  )
+  return <BooksGrid books={books} />
 }
 
 function FilterBarSkeleton() {
