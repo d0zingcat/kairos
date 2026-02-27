@@ -15,6 +15,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+RUN bun run db:generate
 RUN bun run build
 RUN bun run build:migrate
 
