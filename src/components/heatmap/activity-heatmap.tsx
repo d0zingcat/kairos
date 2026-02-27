@@ -3,6 +3,7 @@
 import { ActivityCalendar } from "react-activity-calendar"
 import type { ThemeInput } from "react-activity-calendar"
 import { Tooltip as ReactTooltip } from "react-tooltip"
+import { format } from "date-fns"
 import "react-tooltip/dist/react-tooltip.css"
 
 interface ActivityDay {
@@ -19,22 +20,22 @@ interface ActivityDay {
 
 interface ActivityHeatmapProps {
   data: ActivityDay[]
-  year: number
 }
 
 const kairosTheme: ThemeInput = {
   dark: ["#1c1917", "#4a3728", "#92400e", "#d97706", "#f59e0b"],
 }
 
-function generateFullYearData(data: ActivityDay[], year: number): ActivityDay[] {
+function generateRollingYearData(data: ActivityDay[]): ActivityDay[] {
   const dataMap = new Map(data.map((d) => [d.date, d]))
   const result: ActivityDay[] = []
 
-  const start = new Date(year, 0, 1)
-  const end = new Date(year, 11, 31)
+  const end = new Date()
+  const start = new Date()
+  start.setDate(end.getDate() - 364)
 
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const dateStr = d.toISOString().split("T")[0]
+    const dateStr = format(d, "yyyy-MM-dd")
     const existing = dataMap.get(dateStr)
     result.push(
       existing ?? {
@@ -48,14 +49,14 @@ function generateFullYearData(data: ActivityDay[], year: number): ActivityDay[] 
   return result
 }
 
-export function ActivityHeatmap({ data, year }: ActivityHeatmapProps) {
-  const fullData = generateFullYearData(data, year)
+export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
+  const fullData = generateRollingYearData(data)
 
   return (
     <div className="overflow-x-auto rounded-xl border border-zinc-800/50 bg-zinc-900/30 p-4 sm:p-6">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-mono text-sm font-semibold text-zinc-300">
-          {year} 活动记录
+          最近一年活动记录
         </h2>
         <div className="flex items-center gap-2 text-[10px] text-zinc-500">
           <span>少</span>

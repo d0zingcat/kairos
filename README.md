@@ -13,13 +13,14 @@
 ## 特性
 
 - 📊 **GitHub 风格活动热力图** — 一眼看到你的记录频率
+- 📆 **最近一年热力图** — 展示「过去 365 天到今天」，避免未来日期空白格
 - ⌘ **Cmd+K 快速录入** — 命令面板搜索并录入（自动从 Hardcover/Google Books/TMDB/RAWG/MusicBrainz 填充元数据）
 - 📚 **四大媒体类型** — 书 / 音乐 / 影视 / 游戏
 - ✏️ **卡片点击即编辑** — Books / Music / Watch / Games 支持直接点击已有卡片编辑
 - 🔎 **搜索高可用兜底** — 本地库优先 + 多上游聚合，第三方 API 不可用时仍可搜索本地数据
 - 🧭 **可观测性增强** — 搜索链路分级日志 + `x-trace-id` 端到端追踪
 - 🌙 **深色主题优先** — Linear/Raycast 风格极简 UI
-- 🔒 **简单密码保护** — 管理入口密码保护，前端公开
+- 🔒 **三种访问模式** — 支持 `public` / `private` / `password`，可在「管理设置」页实时切换（`/dashboard/settings`）
 - 🐳 **Docker 一键部署** — PostgreSQL + App 容器化
 
 ## 快速开始
@@ -36,8 +37,8 @@ cp .env.example .env
 # 编辑 .env，填入你的 API Keys 和管理密码 hash
 
 # 3. 生成密码 hash
-bunx bcryptjs hash "your-password"
-# 将输出填入 .env 的 ADMIN_PASSWORD_HASH
+bun -e "import { hash } from 'bcryptjs'; console.log(await hash('your-password', 10))"
+# 将输出填入 .env 的 ADMIN_PASSWORD_HASH（注意把 `$` 写成 `\$`）
 
 # 4. 启动
 docker compose up -d
@@ -84,7 +85,9 @@ bun run dev
 |------|------|:----:|
 | `DATABASE_URL` | PostgreSQL 连接字符串 | ✅ |
 | `ADMIN_PASSWORD_HASH` | bcrypt 密码哈希 | ✅ |
+| `VIEWER_PASSWORD_HASH` | 访客密码 hash（`password` 模式可选，默认回退 ADMIN） | 可选 |
 | `JWT_SECRET` | JWT 签名密钥（≥32字符） | ✅ |
+| `SITE_VISIBILITY` | 默认访问模式（数据库未初始化时兜底） | 可选 |
 | `LOG_LEVEL` | 服务端日志级别（debug/info/warn/error） | 可选 |
 | `TMDB_API_KEY` | TMDB API Key（影视搜索） | 搜索时需要 |
 | `GOOGLE_BOOKS_API_KEY` | Google Books API Key | 搜索时需要 |
@@ -93,6 +96,8 @@ bun run dev
 | `LASTFM_API_KEY` | Last.fm API Key（音乐封面） | 搜索时需要 |
 
 > 搜索 API 会在响应头返回 `x-trace-id`，可用该值串联后端日志排查问题。
+> 访问模式优先读取数据库中的管理设置；若无设置则回退到 `SITE_VISIBILITY`。
+> bcrypt hash 写入 `.env` 时需要转义 `$`（示例：`\$2b\$10\$...`），否则会被环境变量展开导致登录失败。
 
 ## 技术栈
 

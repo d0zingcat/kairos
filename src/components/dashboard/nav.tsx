@@ -4,13 +4,13 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { MEDIA_TYPES } from "@/lib/constants"
-import { LayoutDashboard, LogOut, Command } from "lucide-react"
+import { LayoutDashboard, LogOut, Command, SlidersHorizontal } from "lucide-react"
 import { logoutAction } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { useCommandPalette } from "@/components/command-palette/provider"
 import { motion } from "framer-motion"
 
-const navItems = [
+const baseNavItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: MEDIA_TYPES.book.href, label: MEDIA_TYPES.book.labelPlural, icon: MEDIA_TYPES.book.icon },
   { href: MEDIA_TYPES.music.href, label: MEDIA_TYPES.music.labelPlural, icon: MEDIA_TYPES.music.icon },
@@ -18,9 +18,20 @@ const navItems = [
   { href: MEDIA_TYPES.game.href, label: MEDIA_TYPES.game.labelPlural, icon: MEDIA_TYPES.game.icon },
 ]
 
-export function DashboardNav() {
+interface DashboardNavProps {
+  canEdit: boolean
+  hasSession: boolean
+}
+
+export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
   const pathname = usePathname()
   const { setOpen } = useCommandPalette()
+  const navItems = canEdit
+    ? [
+        ...baseNavItems,
+        { href: "/dashboard/settings", label: "Settings", icon: SlidersHorizontal },
+      ]
+    : baseNavItems
 
   return (
     <>
@@ -43,9 +54,10 @@ export function DashboardNav() {
               variant="outline"
               className="w-full justify-start gap-2 border-zinc-800 bg-zinc-900/50 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
               onClick={() => setOpen(true)}
+              disabled={!canEdit}
             >
               <Command className="h-3.5 w-3.5" />
-              <span>快速录入</span>
+              <span>{canEdit ? "快速录入" : "只读模式"}</span>
               <kbd className="ml-auto rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] text-zinc-500">
                 ⌘K
               </kbd>
@@ -85,16 +97,28 @@ export function DashboardNav() {
 
           {/* Logout */}
           <div className="border-t border-zinc-800/50 p-4">
-            <form action={logoutAction}>
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-2 text-sm text-zinc-500 hover:text-zinc-300"
-                type="submit"
-              >
-                <LogOut className="h-4 w-4" />
-                退出
-              </Button>
-            </form>
+            {hasSession ? (
+              <form action={logoutAction}>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 text-sm text-zinc-500 hover:text-zinc-300"
+                  type="submit"
+                >
+                  <LogOut className="h-4 w-4" />
+                  退出
+                </Button>
+              </form>
+            ) : (
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 text-sm text-zinc-500 hover:text-zinc-300"
+                  type="button"
+                >
+                  管理员登录
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </aside>
@@ -114,6 +138,7 @@ export function DashboardNav() {
           size="icon"
           className="text-zinc-400"
           onClick={() => setOpen(true)}
+          disabled={!canEdit}
         >
           <Command className="h-4 w-4" />
         </Button>
