@@ -5,12 +5,14 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:migrate": "bun build src/db/migrate.ts --target=node --outfile=dist/migrate.js",
     "start": "next start",
     "lint": "eslint",
     "prepare": "git config core.hooksPath .githooks || true",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
+    "db:migrate:runtime": "bun dist/migrate.js",
     "db:studio": "drizzle-kit studio",
     "db:seed": "bun run src/db/seed.ts"
   },
