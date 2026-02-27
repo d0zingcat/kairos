@@ -32,3 +32,6 @@ yarn-error.log*
 .github
 CHANGELOG.md
 TODO.md
+
+# runtime build artifacts
+dist
