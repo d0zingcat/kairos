@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/dashboard/media-card"
 import { WatchesGrid } from "@/components/dashboard/watches-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Film } from "lucide-react"
+import { verifyAdminSession } from "@/lib/auth"
 
 interface PageProps {
   searchParams: Promise<{ status?: string; sort?: string; search?: string }>
@@ -54,13 +55,14 @@ async function WatchGrid({
   sort?: string
   search?: string
 }) {
+  const canEdit = await verifyAdminSession()
   const watchList = await getWatches({ status, sort, search })
 
   if (watchList.length === 0) {
     return <EmptyState type="影视" />
   }
 
-  return <WatchesGrid watchList={watchList} />
+  return <WatchesGrid watchList={watchList} canEdit={canEdit} />
 }
 
 function FilterBarSkeleton() {

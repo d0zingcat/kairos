@@ -23,13 +23,16 @@ interface MusicGridItem {
 
 interface MusicGridProps {
   musicList: MusicGridItem[]
+  canEdit: boolean
 }
 
-export function MusicGrid({ musicList }: MusicGridProps) {
+export function MusicGrid({ musicList, canEdit }: MusicGridProps) {
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
 
   const openEditor = (item: MusicGridItem) => {
+    if (!canEdit) return
+
     setSelectedItem({
       externalId: item.externalId ?? item.id,
       title: item.title,
@@ -70,7 +73,7 @@ export function MusicGrid({ musicList }: MusicGridProps) {
             note={m.notes}
             date={m.listenDate}
             index={i}
-            onClick={() => openEditor(m)}
+            onClick={canEdit ? () => openEditor(m) : undefined}
           />
         ))}
       </div>
@@ -80,6 +83,7 @@ export function MusicGrid({ musicList }: MusicGridProps) {
         onOpenChange={setEntryDialogOpen}
         item={selectedItem}
         mediaType="music"
+        canEdit={canEdit}
       />
     </>
   )
