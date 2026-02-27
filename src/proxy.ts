@@ -8,12 +8,11 @@ const JWT_SECRET = new TextEncoder().encode(
 
 const PUBLIC_PATHS = ["/", "/login", "/api/auth/login"]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow public paths and static assets
   if (
-    PUBLIC_PATHS.some((p) => pathname === p) ||
+    PUBLIC_PATHS.some((path) => pathname === path) ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
     pathname.includes(".")
@@ -21,7 +20,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check session for protected routes
   const token = request.cookies.get("kairos-session")?.value
 
   if (!token) {

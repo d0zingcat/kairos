@@ -4,6 +4,8 @@
 
 一个现代化的个人生活动态记录应用，追踪你的书、音乐、影视和游戏。
 
+详细更新记录请见 [CHANGELOG.md](CHANGELOG.md)。
+
 ![Kairos](https://img.shields.io/badge/Next.js-15-black?style=flat-square)
 ![Tailwind](https://img.shields.io/badge/Tailwind-v4-blue?style=flat-square)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square)
@@ -11,8 +13,11 @@
 ## 特性
 
 - 📊 **GitHub 风格活动热力图** — 一眼看到你的记录频率
-- ⌘ **Cmd+K 快速录入** — 命令面板搜索并录入（自动从 TMDB/Google Books/RAWG/MusicBrainz 填充元数据）
+- ⌘ **Cmd+K 快速录入** — 命令面板搜索并录入（自动从 Hardcover/Google Books/TMDB/RAWG/MusicBrainz 填充元数据）
 - 📚 **四大媒体类型** — 书 / 音乐 / 影视 / 游戏
+- ✏️ **卡片点击即编辑** — Books / Music / Watch / Games 支持直接点击已有卡片编辑
+- 🔎 **搜索高可用兜底** — 本地库优先 + 多上游聚合，第三方 API 不可用时仍可搜索本地数据
+- 🧭 **可观测性增强** — 搜索链路分级日志 + `x-trace-id` 端到端追踪
 - 🌙 **深色主题优先** — Linear/Raycast 风格极简 UI
 - 🔒 **简单密码保护** — 管理入口密码保护，前端公开
 - 🐳 **Docker 一键部署** — PostgreSQL + App 容器化
@@ -80,10 +85,14 @@ bun run dev
 | `DATABASE_URL` | PostgreSQL 连接字符串 | ✅ |
 | `ADMIN_PASSWORD_HASH` | bcrypt 密码哈希 | ✅ |
 | `JWT_SECRET` | JWT 签名密钥（≥32字符） | ✅ |
+| `LOG_LEVEL` | 服务端日志级别（debug/info/warn/error） | 可选 |
 | `TMDB_API_KEY` | TMDB API Key（影视搜索） | 搜索时需要 |
 | `GOOGLE_BOOKS_API_KEY` | Google Books API Key | 搜索时需要 |
+| `HARDCOVER_API_TOKEN` | Hardcover API Token（中文书搜索增强） | 推荐 |
 | `RAWG_API_KEY` | RAWG API Key（游戏搜索） | 搜索时需要 |
 | `LASTFM_API_KEY` | Last.fm API Key（音乐封面） | 搜索时需要 |
+
+> 搜索 API 会在响应头返回 `x-trace-id`，可用该值串联后端日志排查问题。
 
 ## 技术栈
 

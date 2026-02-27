@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode } from "react"
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { CommandPalette } from "./command-palette"
 
 interface CommandPaletteContextType {
@@ -18,12 +18,17 @@ export function useCommandPalette() {
 }
 
 export function CommandPaletteProvider({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <CommandPaletteContext.Provider value={{ open, setOpen }}>
       {children}
-      <CommandPalette open={open} onOpenChange={setOpen} />
+      {mounted ? <CommandPalette open={open} onOpenChange={setOpen} /> : null}
     </CommandPaletteContext.Provider>
   )
 }

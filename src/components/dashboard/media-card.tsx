@@ -15,7 +15,10 @@ interface MediaCardProps {
   statusLabel?: string
   date?: string | null
   tags?: string[] | null
+  metaLines?: string[]
+  note?: string | null
   index?: number
+  onClick?: () => void
 }
 
 export function MediaCard({
@@ -26,14 +29,22 @@ export function MediaCard({
   favorite,
   statusLabel,
   date,
+  tags,
+  metaLines,
+  note,
   index = 0,
+  onClick,
 }: MediaCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.3 }}
-      className="group relative overflow-hidden rounded-xl border border-zinc-800/40 bg-zinc-900/30 transition-all hover:border-zinc-700/50 hover:bg-zinc-800/30"
+      className={cn(
+        "group relative overflow-hidden rounded-xl border border-zinc-800/40 bg-zinc-900/30 transition-all hover:border-zinc-700/50 hover:bg-zinc-800/30",
+        onClick ? "cursor-pointer" : undefined
+      )}
+      onClick={onClick}
     >
       {/* Cover */}
       <div className="relative aspect-[2/3] overflow-hidden">
@@ -70,6 +81,35 @@ export function MediaCard({
             {subtitle}
           </p>
         )}
+
+        {metaLines && metaLines.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {metaLines.map((line) => (
+              <p key={line} className="line-clamp-1 text-[11px] text-zinc-500">
+                {line}
+              </p>
+            ))}
+          </div>
+        )}
+
+        {tags && tags.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {tags.slice(0, 2).map((tag) => (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="border-zinc-700/50 px-1.5 py-0 text-[10px] text-zinc-500"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {note && (
+          <p className="mt-2 line-clamp-2 text-[11px] text-zinc-500">“{note}”</p>
+        )}
+
         <div className="mt-2 flex items-center gap-2">
           {rating && rating > 0 ? (
             <div className="flex items-center gap-0.5">
