@@ -262,7 +262,7 @@ function chunk<T>(items: T[], size: number): T[][] {
 }
 
 export async function importGoodreadsCsv(
-  database: PostgresJsDatabase<any>,
+  database: PostgresJsDatabase<Record<string, unknown>>,
   csvContent: string,
   options?: { clear?: boolean }
 ): Promise<GoodreadsImportSummary> {
