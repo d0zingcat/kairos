@@ -26,9 +26,10 @@ interface BookGridItem {
 
 interface BooksGridProps {
   books: BookGridItem[]
+  canEdit: boolean
 }
 
-export function BooksGrid({ books }: BooksGridProps) {
+export function BooksGrid({ books, canEdit }: BooksGridProps) {
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
 
@@ -38,6 +39,8 @@ export function BooksGrid({ books }: BooksGridProps) {
   )
 
   const openEditor = (book: BookGridItem) => {
+    if (!canEdit) return
+
     setSelectedItem({
       externalId: book.externalId ?? book.id,
       title: book.title,
@@ -83,7 +86,7 @@ export function BooksGrid({ books }: BooksGridProps) {
             ].filter(Boolean)}
             note={book.notes}
             index={i}
-            onClick={() => openEditor(book)}
+            onClick={canEdit ? () => openEditor(book) : undefined}
           />
         ))}
       </div>
@@ -93,6 +96,7 @@ export function BooksGrid({ books }: BooksGridProps) {
         onOpenChange={setEntryDialogOpen}
         item={selectedItem}
         mediaType="book"
+        canEdit={canEdit}
       />
     </>
   )

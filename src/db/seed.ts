@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
-import { books, music, watches, games } from "./schema"
+import { books, music, watches, games, appSettings } from "./schema"
 
 const connectionString = process.env.DATABASE_URL!
 const client = postgres(connectionString)
@@ -14,6 +14,12 @@ async function seed() {
   await db.delete(music)
   await db.delete(watches)
   await db.delete(games)
+  await db.delete(appSettings)
+
+  await db.insert(appSettings).values({
+    key: "site",
+    visibility: "private",
+  })
 
   // ── Books ──────────────────────────────────────────
   await db.insert(books).values([

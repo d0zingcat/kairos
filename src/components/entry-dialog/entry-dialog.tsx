@@ -46,6 +46,7 @@ interface EntryDialogProps {
   onOpenChange: (open: boolean) => void
   item: SearchResultItem | null
   mediaType: MediaType | null
+  canEdit?: boolean
 }
 
 export function EntryDialog({
@@ -53,6 +54,7 @@ export function EntryDialog({
   onOpenChange,
   item,
   mediaType,
+  canEdit = true,
 }: EntryDialogProps) {
   const toDateString = (value: unknown): string => {
     if (typeof value === "string") return value
@@ -89,6 +91,7 @@ export function EntryDialog({
           ? "completed"
           : undefined
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!item || !mediaType) return
 
@@ -125,8 +128,9 @@ export function EntryDialog({
     setFavorite(existingFavorite)
     setStatus(existingStatus)
   }, [item, mediaType])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
-  if (!item || !mediaType) return null
+  if (!item || !mediaType || !canEdit) return null
 
   const handleSave = () => {
     startTransition(async () => {
