@@ -21,6 +21,7 @@
 - 🧭 **可观测性增强** — 搜索链路分级日志 + `x-trace-id` 端到端追踪
 - 🌙 **深色主题优先** — Linear/Raycast 风格极简 UI
 - 🔒 **三种访问模式** — 支持 `public` / `private` / `password`，可在「管理设置」页实时切换（`/dashboard/settings`）
+- 📥 **Goodreads 一键导入** — 在「管理设置」页上传 CSV，自动追加导入并跳过重复
 - 🐳 **Docker 一键部署** — PostgreSQL + App 容器化
 
 ## 快速开始
@@ -122,7 +123,11 @@ bun run db:push     # 推送 schema 到数据库
 bun run db:migrate  # 运行迁移
 bun run db:studio   # 打开 Drizzle Studio
 bun run db:seed     # 填充示例数据
+bun run db:import:goodreads -- /path/to/goodreads_library_export.csv          # 导入 Goodreads 书单
+bun run db:import:goodreads -- /path/to/goodreads_library_export.csv --clear  # 导入前清空 books 表
 ```
+
+后台导入入口：`/dashboard/settings` → Goodreads 导入。
 
 ## 许可
 
