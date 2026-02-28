@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Finalize Trigger Keywords**: Updated workflow trigger keywords to `收尾` and `ship` (removed `/ship` to avoid shell command confusion).
 
+### Fixed
+
+- **Books Edit Dialog Date Parsing**: Prevented invalid legacy `startDate` / `finishDate` strings from crashing the books edit dialog; dialog now safely handles malformed dates and still opens.
+
 ## [0.3.2] - 2026-02-28
 
 ### Fixed

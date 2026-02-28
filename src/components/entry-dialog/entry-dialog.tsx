@@ -56,9 +56,22 @@ export function EntryDialog({
   mediaType,
   canEdit = true,
 }: EntryDialogProps) {
+  const parseDateInput = (value: unknown): Date | null => {
+    if (typeof value !== "string" || !value) return null
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? null : parsed
+  }
+
+  const toNormalizedDateString = (value: unknown): string => {
+    const parsed = parseDateInput(value)
+    return parsed ? format(parsed, "yyyy-MM-dd") : ""
+  }
+
   const toDateString = (value: unknown): string => {
-    if (typeof value === "string") return value
-    if (value instanceof Date) return format(value, "yyyy-MM-dd")
+    if (typeof value === "string") return toNormalizedDateString(value)
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return format(value, "yyyy-MM-dd")
+    }
     return ""
   }
 
@@ -107,12 +120,6 @@ export function EntryDialog({
     const existingFavorite = typeof meta.favorite === "boolean" ? meta.favorite : false
     const existingStatus = typeof meta.status === "string" ? meta.status : ""
 
-    const parseDateInput = (value: unknown): Date | null => {
-      if (typeof value !== "string" || !value) return null
-      const parsed = new Date(value)
-      return Number.isNaN(parsed.getTime()) ? null : parsed
-    }
-
     const activityDate =
       parseDateInput(meta.listenDate) ??
       parseDateInput(meta.watchDate) ??
@@ -131,6 +138,9 @@ export function EntryDialog({
   /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!item || !mediaType || !canEdit) return null
+
+  const bookStartDateObject = parseDateInput(bookStartDate)
+  const bookFinishDateObject = parseDateInput(bookFinishDate)
 
   const handleSave = () => {
     startTransition(async () => {
@@ -472,15 +482,15 @@ export function EntryDialog({
                         className="w-full justify-start border-zinc-800 bg-zinc-900 text-left text-zinc-300 hover:bg-zinc-800"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {bookStartDate
-                          ? format(new Date(bookStartDate), "yyyy年MM月dd日", { locale: zhCN })
+                        {bookStartDateObject
+                          ? format(bookStartDateObject, "yyyy年MM月dd日", { locale: zhCN })
                           : "选择开始日期"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto border-zinc-800 bg-zinc-900 p-0">
                       <Calendar
                         mode="single"
-                        selected={bookStartDate ? new Date(bookStartDate) : undefined}
+                        selected={bookStartDateObject ?? undefined}
                         onSelect={(d) => setBookStartDate(d ? format(d, "yyyy-MM-dd") : "")}
                         initialFocus
                       />
@@ -498,15 +508,15 @@ export function EntryDialog({
                         className="w-full justify-start border-zinc-800 bg-zinc-900 text-left text-zinc-300 hover:bg-zinc-800"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {bookFinishDate
-                          ? format(new Date(bookFinishDate), "yyyy年MM月dd日", { locale: zhCN })
+                        {bookFinishDateObject
+                          ? format(bookFinishDateObject, "yyyy年MM月dd日", { locale: zhCN })
                           : "选择结束日期"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto border-zinc-800 bg-zinc-900 p-0">
                       <Calendar
                         mode="single"
-                        selected={bookFinishDate ? new Date(bookFinishDate) : undefined}
+                        selected={bookFinishDateObject ?? undefined}
                         onSelect={(d) => setBookFinishDate(d ? format(d, "yyyy-MM-dd") : "")}
                         initialFocus
                       />
