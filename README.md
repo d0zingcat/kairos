@@ -149,6 +149,12 @@ bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId> --
 
 后台导入入口：`/dashboard/settings` → Goodreads 导入。
 
+## Agent 协作约定
+
+- 仓库根目录新增 `AGENTS.md`，用于统一 Codex / Claude Code 的默认收尾流程。
+- 可通过口令 `执行收尾流程` 或 `/ship` 触发：更新文档、更新 `CHANGELOG`、bump version、commit、push、创建/更新 PR。
+- 禁止代理直接向 `main` 提交，所有变更必须通过 PR 合并。
+
 ## 许可
 
 MIT
