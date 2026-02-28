@@ -18,14 +18,14 @@ export function ProfileVisibilityForm({
   >(toggleProfileVisibilityAction, null)
 
   return (
-    <form action={formAction} className="space-y-4 rounded-2xl border border-zinc-800/60 bg-zinc-900/40 p-5">
+    <form action={formAction} className="space-y-4 rounded-2xl border border-border/60 bg-card/50 p-5">
       <input type="hidden" name="isPublicProfile" value={String(isPublicProfile)} />
 
       <div className="flex items-start gap-3">
         <Globe className="mt-0.5 h-4 w-4 text-sky-300" />
         <div>
-          <h2 className="text-sm font-semibold text-zinc-100">公开广场可见性</h2>
-          <p className="mt-1 text-xs text-zinc-500">
+          <h2 className="text-sm font-semibold text-foreground">公开广场可见性</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
             开启后，你的摘要统计与最近动态会出现在广场页面。
           </p>
         </div>
@@ -39,14 +39,14 @@ export function ProfileVisibilityForm({
             "w-full rounded-xl border px-4 py-3 text-left transition-colors",
             isPublicProfile
               ? "border-emerald-500/60 bg-emerald-500/10"
-              : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700"
+              : "border-border bg-card/70 hover:bg-accent/70"
           )}
         >
           <div className="flex items-center gap-3">
-            <Globe className={cn("h-4 w-4", isPublicProfile ? "text-emerald-300" : "text-zinc-500")} />
+            <Globe className={cn("h-4 w-4", isPublicProfile ? "text-emerald-300" : "text-muted-foreground")} />
             <div>
-              <p className={cn("text-sm font-medium", isPublicProfile ? "text-zinc-100" : "text-zinc-300")}>公开到广场</p>
-              <p className="mt-0.5 text-xs text-zinc-500">其他人可在广场看到你的摘要动态</p>
+              <p className={cn("text-sm font-medium", isPublicProfile ? "text-foreground" : "text-foreground/85")}>公开到广场</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">其他人可在广场看到你的摘要动态</p>
             </div>
           </div>
         </button>
@@ -58,14 +58,14 @@ export function ProfileVisibilityForm({
             "w-full rounded-xl border px-4 py-3 text-left transition-colors",
             !isPublicProfile
               ? "border-amber-500/60 bg-amber-500/10"
-              : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700"
+              : "border-border bg-card/70 hover:bg-accent/70"
           )}
         >
           <div className="flex items-center gap-3">
-            <Lock className={cn("h-4 w-4", !isPublicProfile ? "text-amber-300" : "text-zinc-500")} />
+            <Lock className={cn("h-4 w-4", !isPublicProfile ? "text-amber-300" : "text-muted-foreground")} />
             <div>
-              <p className={cn("text-sm font-medium", !isPublicProfile ? "text-zinc-100" : "text-zinc-300")}>仅自己可见</p>
-              <p className="mt-0.5 text-xs text-zinc-500">你的摘要不会出现在广场</p>
+              <p className={cn("text-sm font-medium", !isPublicProfile ? "text-foreground" : "text-foreground/85")}>仅自己可见</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">你的摘要不会出现在广场</p>
             </div>
           </div>
         </button>

@@ -1,9 +1,14 @@
 import Link from "next/link"
 import { BookOpen, Music, Film, Gamepad2, ArrowRight } from "lucide-react"
+import { ThemeToggle } from "@/components/theme/theme-toggle"
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-950">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <div className="fixed right-4 top-4 z-40">
+        <ThemeToggle />
+      </div>
+
       {/* Hero */}
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
         <div className="mx-auto max-w-2xl">
@@ -12,18 +17,18 @@ export default function Home() {
             <span className="text-3xl font-bold text-white">K</span>
           </div>
 
-          <h1 className="font-mono text-4xl font-bold tracking-tight text-zinc-100 sm:text-5xl">
+          <h1 className="font-mono text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Kairos
           </h1>
-          <p className="mt-3 text-lg text-zinc-400">
+          <p className="mt-3 text-lg text-muted-foreground">
             记录生命中的每个瞬间
           </p>
-          <p className="mt-1 text-sm text-zinc-600">
+          <p className="mt-1 text-sm text-muted-foreground">
             καιρός — 希腊语「恰当的时刻」
           </p>
 
           {/* Categories */}
-          <div className="mt-10 flex items-center justify-center gap-6 text-zinc-600">
+          <div className="mt-10 flex items-center justify-center gap-6 text-muted-foreground">
             <div className="flex flex-col items-center gap-1.5">
               <BookOpen className="h-5 w-5 text-emerald-500" />
               <span className="text-xs">书</span>
@@ -54,7 +59,7 @@ export default function Home() {
 
             <Link
               href="/plaza"
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/60 px-6 py-2.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800"
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card/60 px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
             >
               查看广场
             </Link>
@@ -63,7 +68,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-xs text-zinc-700">
+      <footer className="py-6 text-center text-xs text-muted-foreground">
         Built with Next.js, Tailwind CSS &amp; shadcn/ui
       </footer>
     </div>

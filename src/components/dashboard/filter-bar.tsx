@@ -42,11 +42,11 @@ export function FilterBar({
     <div className="flex flex-wrap items-center gap-3">
       {/* Search */}
       <div className="relative flex-1 sm:max-w-xs">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           defaultValue={currentSearch}
           placeholder="搜索..."
-          className="border-zinc-800 bg-zinc-900/50 pl-9 text-zinc-300 placeholder:text-zinc-600"
+          className="border-border bg-card/60 pl-9 text-foreground placeholder:text-muted-foreground"
           onChange={(e) => {
             const value = e.target.value
             // Debounce: only update after 300ms of no typing
@@ -62,10 +62,10 @@ export function FilterBar({
           value={currentStatus || "all"}
           onValueChange={(v) => updateParam("status", v)}
         >
-          <SelectTrigger className="w-28 border-zinc-800 bg-zinc-900/50 text-zinc-300">
+          <SelectTrigger className="w-28 border-border bg-card/60 text-foreground">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="border-zinc-800 bg-zinc-900">
+          <SelectContent className="border-border bg-popover">
             <SelectItem value="all">全部</SelectItem>
             {statuses.map((s) => (
               <SelectItem key={s.value} value={s.value}>
@@ -81,10 +81,10 @@ export function FilterBar({
         value={currentSort || "date"}
         onValueChange={(v) => updateParam("sort", v)}
       >
-        <SelectTrigger className="w-24 border-zinc-800 bg-zinc-900/50 text-zinc-300">
+        <SelectTrigger className="w-24 border-border bg-card/60 text-foreground">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent className="border-zinc-800 bg-zinc-900">
+        <SelectContent className="border-border bg-popover">
           {SORT_OPTIONS.map((s) => (
             <SelectItem key={s.value} value={s.value}>
               {s.label}

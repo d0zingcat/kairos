@@ -30,7 +30,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
     ...Object.entries(MEDIA_TYPES).map(([key, config]) => ({
       label: config.label,
       value: stats.total[key === "watch" ? "watches" : `${key}s`] ?? stats.total[key] ?? 0,
-      color: "from-zinc-800/50 to-zinc-800/30",
+      color: "from-muted/70 to-muted/40",
       icon: config.icon,
     })),
   ]
@@ -45,13 +45,13 @@ export function StatsCards({ stats }: StatsCardsProps) {
           initial="hidden"
           animate="visible"
         >
-          <Card className="border-zinc-800/50 bg-gradient-to-br ${card.color} backdrop-blur">
+          <Card className={`border-border/60 bg-gradient-to-br ${card.color} backdrop-blur`}>
             <CardContent className="px-4 py-3">
               <div className="flex items-center gap-2">
-                {card.icon && <card.icon className="h-3.5 w-3.5 text-zinc-500" />}
-                <p className="text-xs font-medium text-zinc-500">{card.label}</p>
+                {card.icon && <card.icon className="h-3.5 w-3.5 text-muted-foreground" />}
+                <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
               </div>
-              <p className="mt-1 font-mono text-2xl font-bold text-zinc-100">
+              <p className="mt-1 font-mono text-2xl font-bold text-foreground">
                 {card.value}
               </p>
             </CardContent>
