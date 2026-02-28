@@ -30,6 +30,34 @@ When executing `ship` / `收尾`, enforce the following to avoid malformed PR de
 4. After creating/updating PR, **must verify** title/body rendering is correct (headings, bullets, line breaks).
 5. If formatting is broken, immediately fix by re-running `gh pr edit --body-file <file>` before finishing.
 
+### Standard PR Body Template
+
+When writing PR body content, use this default template unless user asks for a different format:
+
+```markdown
+## Summary
+
+- <change 1>
+- <change 2>
+- <change 3>
+
+## Verification
+
+- <command or test 1>
+- <command or test 2>
+
+## Notes
+
+- <risk / migration / follow-up notes>
+```
+
+Template rules:
+
+- Keep headings exactly as `Summary`, `Verification`, `Notes`.
+- Keep bullets concise and action-oriented.
+- Prefer plain text in bullets; avoid shell-sensitive inline composition.
+- If there are no notes, still keep the `Notes` section and write `- None`.
+
 ## Branch Protection Rule
 
 - Never commit directly to `main`.
