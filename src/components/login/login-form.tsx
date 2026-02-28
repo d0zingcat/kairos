@@ -8,7 +8,11 @@ import { Lock, User } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 
-export function LoginForm() {
+type LoginFormProps = {
+  next?: string
+}
+
+export function LoginForm({ next }: LoginFormProps) {
   const [state, formAction, isPending] = useActionState(loginAction, null)
 
   return (
@@ -37,6 +41,8 @@ export function LoginForm() {
         </div>
 
         <form action={formAction} className="space-y-4">
+          <input name="next" type="hidden" value={next ?? ""} />
+
           <div className="relative">
             <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
             <Input
