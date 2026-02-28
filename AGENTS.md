@@ -18,6 +18,18 @@ If the user says any of the following, run the full workflow above immediately:
 - `收尾`
 - `ship`
 
+## `ship` Safety Constraints (Mandatory)
+
+When executing `ship` / `收尾`, enforce the following to avoid malformed PR descriptions:
+
+1. **Never** pass multi-line PR Markdown via inline `gh pr create --body "..."`.
+2. **Always** write PR content to a temp file and use:
+	- `gh pr create --body-file <file>` or
+	- `gh pr edit --body-file <file>`
+3. In PR body text, avoid shell-sensitive inline command composition; keep literal Markdown in the file.
+4. After creating/updating PR, **must verify** title/body rendering is correct (headings, bullets, line breaks).
+5. If formatting is broken, immediately fix by re-running `gh pr edit --body-file <file>` before finishing.
+
 ## Branch Protection Rule
 
 - Never commit directly to `main`.
