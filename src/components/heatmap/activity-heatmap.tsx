@@ -3,6 +3,7 @@
 import { ActivityCalendar } from "react-activity-calendar"
 import type { ThemeInput } from "react-activity-calendar"
 import { Tooltip as ReactTooltip } from "react-tooltip"
+import { useThemeMode } from "@/components/theme/theme-provider"
 import "react-tooltip/dist/react-tooltip.css"
 
 interface ActivityDay {
@@ -22,6 +23,7 @@ interface ActivityHeatmapProps {
 }
 
 const kairosTheme: ThemeInput = {
+  light: ["#f5f5f4", "#fed7aa", "#fdba74", "#fb923c", "#ea580c"],
   dark: ["#1c1917", "#4a3728", "#92400e", "#d97706", "#f59e0b"],
 }
 
@@ -88,17 +90,19 @@ function generateRollingYearData(data: ActivityDay[]): ActivityDay[] {
 
 export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
   const fullData = generateRollingYearData(data)
+  const { resolvedTheme } = useThemeMode()
+  const legendColors = resolvedTheme === "dark" ? kairosTheme.dark : kairosTheme.light
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-zinc-800/50 bg-zinc-900/30 p-4 sm:p-6">
+    <div className="overflow-x-auto rounded-xl border border-border/60 bg-card/60 p-4 sm:p-6">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-mono text-sm font-semibold text-zinc-300">
+        <h2 className="font-mono text-sm font-semibold text-foreground">
           最近一年活动记录
         </h2>
-        <div className="flex items-center gap-2 text-[10px] text-zinc-500">
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
           <span>少</span>
           <div className="flex gap-0.5">
-            {["#1c1917", "#4a3728", "#92400e", "#d97706", "#f59e0b"].map(
+            {(legendColors ?? []).map(
               (color) => (
                 <div
                   key={color}
@@ -114,7 +118,7 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
       <ActivityCalendar
         data={fullData}
         theme={kairosTheme}
-        colorScheme="dark"
+        colorScheme={resolvedTheme}
         blockSize={12}
         blockMargin={3}
         blockRadius={3}
@@ -144,7 +148,7 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
       />
       <ReactTooltip
         id="heatmap-tooltip"
-        className="!rounded-lg !border !border-zinc-700 !bg-zinc-800 !px-3 !py-1.5 !text-xs !text-zinc-200"
+        className="!rounded-lg !border !border-border !bg-popover !px-3 !py-1.5 !text-xs !text-popover-foreground"
       />
     </div>
   )

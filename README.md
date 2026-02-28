@@ -21,7 +21,7 @@
 - ✏️ **卡片点击即编辑** — Books / Music / Watch / Games 支持直接点击已有卡片编辑
 - 🔎 **搜索高可用兜底** — 本地库优先 + 多上游聚合，第三方 API 不可用时仍可搜索本地数据
 - 🧭 **可观测性增强** — 搜索链路分级日志 + `x-trace-id` 端到端追踪
-- 🌙 **深色主题优先** — Linear/Raycast 风格极简 UI
+- 🌓 **白天/暗夜/自动主题** — 支持手动切换和跟随系统主题自动切换
 - 🔒 **三种访问模式** — 支持 `public` / `private` / `password`，可在「管理设置」页实时切换（`/dashboard/settings`）
 - 👥 **多用户账号体系** — 支持注册账号，每位用户默认仅查看自己的时间线
 - 🌐 **公开广场（Plaza）** — 用户可切换“是否公开摘要动态”，广场展示公开用户的最近活动
@@ -141,6 +141,19 @@ bun run db:seed     # 填充示例数据
 bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId>          # 导入 Goodreads 书单
 bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId> --clear  # 导入前清空该用户 books
 ```
+
+### Migration 基线重置说明（破坏性）
+
+- 当前仓库已重置为新的 Drizzle 基线迁移：`drizzle/0000_init.sql`。
+- 启动时自动迁移仅调用 Drizzle 官方 migrator，不会手动修改 Drizzle metadata。
+- 若你的数据库里仍有旧结构且不需要保留数据，请先执行一次：
+
+```sql
+drop schema if exists public cascade;
+create schema public;
+```
+
+- 然后再启动应用（`bun run dev` / `bun run start`）让自动迁移重建表结构。
 
 后台导入入口：`/dashboard/settings` → Goodreads 导入。
 

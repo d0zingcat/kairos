@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
 import { zhCN } from "date-fns/locale"
 import { MEDIA_TYPES, type MediaType } from "@/lib/constants"
@@ -26,12 +27,12 @@ export function RecentTimeline({ items }: RecentTimelineProps) {
   if (items.length === 0) {
     return (
       <div>
-        <h2 className="mb-4 font-mono text-lg font-semibold text-zinc-100">
+        <h2 className="mb-4 font-mono text-lg font-semibold text-foreground">
           最近活动
         </h2>
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-800 py-16">
-          <p className="text-sm text-zinc-500">还没有记录</p>
-          <p className="mt-1 text-xs text-zinc-600">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16">
+          <p className="text-sm text-muted-foreground">还没有记录</p>
+          <p className="mt-1 text-xs text-muted-foreground">
             按 ⌘K 开始录入
           </p>
         </div>
@@ -41,7 +42,7 @@ export function RecentTimeline({ items }: RecentTimelineProps) {
 
   return (
     <div>
-      <h2 className="mb-4 font-mono text-lg font-semibold text-zinc-100">
+      <h2 className="mb-4 font-mono text-lg font-semibold text-foreground">
         最近活动
       </h2>
       <div className="space-y-2">
@@ -54,23 +55,26 @@ export function RecentTimeline({ items }: RecentTimelineProps) {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05, duration: 0.3 }}
-              className="group flex items-center gap-3 rounded-lg border border-zinc-800/40 bg-zinc-900/30 p-3 transition-colors hover:bg-zinc-800/30"
+              className="group flex items-center gap-3 rounded-lg border border-border/50 bg-card/60 p-3 transition-colors hover:bg-accent/70"
             >
               {cover ? (
-                <img
+                <Image
                   src={cover}
                   alt={item.title}
+                  width={36}
+                  height={48}
+                  unoptimized
                   className="h-12 w-9 rounded object-cover"
                 />
               ) : (
-                <div className="flex h-12 w-9 items-center justify-center rounded bg-zinc-800">
-                  <config.icon className="h-4 w-4 text-zinc-600" />
+                <div className="flex h-12 w-9 items-center justify-center rounded bg-muted">
+                  <config.icon className="h-4 w-4 text-muted-foreground" />
                 </div>
               )}
 
               <div className="flex-1 overflow-hidden">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-medium text-zinc-200">
+                  <p className="truncate text-sm font-medium text-foreground/90">
                     {item.title}
                   </p>
                   <Badge
@@ -84,12 +88,12 @@ export function RecentTimeline({ items }: RecentTimelineProps) {
                   {item.rating && item.rating > 0 && (
                     <div className="flex items-center gap-0.5">
                       <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                      <span className="text-xs text-zinc-400">
+                      <span className="text-xs text-muted-foreground">
                         {item.rating / 2}
                       </span>
                     </div>
                   )}
-                  <span className="text-xs text-zinc-600">
+                  <span className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(item.createdAt), {
                       addSuffix: true,
                       locale: zhCN,
