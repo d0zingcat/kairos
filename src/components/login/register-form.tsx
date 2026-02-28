@@ -1,15 +1,15 @@
 "use client"
 
-import { useActionState } from "react"
-import { loginAction } from "@/lib/actions/auth"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Lock, User } from "lucide-react"
-import { motion } from "framer-motion"
 import Link from "next/link"
+import { motion } from "framer-motion"
+import { useActionState } from "react"
+import { Lock, User } from "lucide-react"
+import { registerAction } from "@/lib/actions/auth"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
-export function LoginForm() {
-  const [state, formAction, isPending] = useActionState(loginAction, null)
+export function RegisterForm() {
+  const [state, formAction, isPending] = useActionState(registerAction, null)
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950">
@@ -29,10 +29,10 @@ export function LoginForm() {
             <span className="text-2xl font-bold text-white">K</span>
           </motion.div>
           <h1 className="font-mono text-2xl font-semibold tracking-tight text-zinc-100">
-            Kairos
+            创建账号
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            输入你的账号密码
+            首个注册用户将自动成为管理员
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export function LoginForm() {
             <Input
               name="username"
               type="text"
-              placeholder="用户名"
+              placeholder="用户名（小写字母/数字/_-.）"
               autoFocus
               autoComplete="username"
               className="border-zinc-800 bg-zinc-900 pl-10 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-amber-500/50"
@@ -54,13 +54,24 @@ export function LoginForm() {
             <Input
               name="password"
               type="password"
-              placeholder="密码"
-              autoComplete="current-password"
+              placeholder="密码（至少 8 位）"
+              autoComplete="new-password"
               className="border-zinc-800 bg-zinc-900 pl-10 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-amber-500/50"
             />
           </div>
 
-          {state?.error && (
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+            <Input
+              name="confirmPassword"
+              type="password"
+              placeholder="确认密码"
+              autoComplete="new-password"
+              className="border-zinc-800 bg-zinc-900 pl-10 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-amber-500/50"
+            />
+          </div>
+
+          {state?.error ? (
             <motion.p
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
@@ -68,20 +79,20 @@ export function LoginForm() {
             >
               {state.error}
             </motion.p>
-          )}
+          ) : null}
 
           <Button
             type="submit"
             disabled={isPending}
             className="w-full bg-gradient-to-r from-amber-500 to-orange-600 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-700 disabled:opacity-50"
           >
-            {isPending ? "登录中..." : "登录"}
+            {isPending ? "创建中..." : "注册并进入"}
           </Button>
 
           <p className="text-center text-xs text-zinc-500">
-            没有账号？
-            <Link href="/register" className="ml-1 text-amber-400 hover:text-amber-300">
-              注册一个
+            已有账号？
+            <Link href="/login" className="ml-1 text-amber-400 hover:text-amber-300">
+              去登录
             </Link>
           </p>
         </form>
