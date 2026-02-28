@@ -23,6 +23,7 @@
 - 🔒 **三种访问模式** — 支持 `public` / `private` / `password`，可在「管理设置」页实时切换（`/dashboard/settings`）
 - 📥 **Goodreads 一键导入** — 在「管理设置」页上传 CSV，自动追加导入并跳过重复
 - 🐳 **Docker 一键部署** — PostgreSQL + App 容器化
+- 🗄️ **镜像内可执行迁移** — `latest` 镜像内置 `dist/migrate.js`，支持无源码环境初始化数据库
 
 ## 快速开始
 
@@ -51,6 +52,17 @@ docker compose exec app bun run db:push
 docker compose exec app bun run db:seed
 
 # 访问 http://localhost:3000
+```
+
+### 仅镜像部署时初始化数据库
+
+```bash
+# 远端只有镜像、没有源码时可直接执行
+docker run --rm \
+  --network <your_network> \
+  -e DATABASE_URL='postgresql://user:pass@db:5432/kairos' \
+  ghcr.io/<owner>/<repo>:latest \
+  bun dist/migrate.js
 ```
 
 ### 本地开发
@@ -116,11 +128,13 @@ bun run dev
 ```bash
 bun run dev         # 开发服务器
 bun run build       # 生产构建
+bun run build:migrate # 构建运行时迁移脚本
 bun run start       # 启动生产服务器
 bun run lint        # ESLint 检查
 bun run db:generate # 生成迁移文件
 bun run db:push     # 推送 schema 到数据库
 bun run db:migrate  # 运行迁移
+bun run db:migrate:runtime # 执行镜像内运行时迁移脚本
 bun run db:studio   # 打开 Drizzle Studio
 bun run db:seed     # 填充示例数据
 bun run db:import:goodreads -- /path/to/goodreads_library_export.csv          # 导入 Goodreads 书单
