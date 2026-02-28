@@ -232,7 +232,7 @@ function mapRowToBook(row: GoodreadsRow, userId: string): NewBook {
     pageCount: parseIntOrNull(row["Number of Pages"]),
     status,
     rating: mapRating(row["My Rating"]),
-    startDate: status === "reading" ? addedDate : null,
+    startDate: status === "want_to_read" ? null : addedDate,
     finishDate,
     notes: mapNotes(row["My Review"], row["Private Notes"]),
     favorite: false,

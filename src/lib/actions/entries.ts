@@ -250,23 +250,20 @@ export async function getActivityData(days = 365) {
   start.setDate(start.getDate() - Math.max(1, days) + 1)
   const startDate = start.toISOString().slice(0, 10)
 
-  const bookDateExpr = sql<string>`date(${books.createdAt})`
   const musicDateExpr = sql<string>`date(${music.createdAt})`
   const watchDateExpr = sql<string>`date(${watches.createdAt})`
   const gameDateExpr = sql<string>`date(${games.createdAt})`
 
-  const [bookActivity, musicActivity, watchActivity, gameActivity] = await Promise.all([
+  const [bookRows, musicActivity, watchActivity, gameActivity] = await Promise.all([
     db
-      .select({ date: bookDateExpr, count: count() })
+      .select({ createdAt: books.createdAt, startDate: books.startDate, finishDate: books.finishDate })
       .from(books)
       .where(
         and(
           eq(books.userId, user.id),
-          sql`${books.createdAt} >= ${startDate}::date`,
           sql`${books.createdAt} <= ${endDate}::date`
         )
-      )
-      .groupBy(bookDateExpr),
+      ),
     db
       .select({ date: musicDateExpr, count: count() })
       .from(music)
@@ -302,8 +299,33 @@ export async function getActivityData(days = 365) {
       .groupBy(gameDateExpr),
   ])
 
-  // Merge all activity into a date map
   const dateMap = new Map<string, { total: number; books: number; music: number; watches: number; games: number }>()
+  const isDateInRange = (date: string) => date >= startDate && date <= endDate
+
+  for (const row of bookRows) {
+    const bookDates = new Set<string>()
+
+    if (row.startDate && isDateInRange(row.startDate)) {
+      bookDates.add(row.startDate)
+    }
+    if (row.finishDate && isDateInRange(row.finishDate)) {
+      bookDates.add(row.finishDate)
+    }
+
+    if (bookDates.size === 0) {
+      const createdDate = new Date(row.createdAt).toISOString().slice(0, 10)
+      if (isDateInRange(createdDate)) {
+        bookDates.add(createdDate)
+      }
+    }
+
+    for (const date of bookDates) {
+      const existing = dateMap.get(date) ?? { total: 0, books: 0, music: 0, watches: 0, games: 0 }
+      existing.books += 1
+      existing.total += 1
+      dateMap.set(date, existing)
+    }
+  }
 
   const addToMap = (entries: { date: string; count: number }[], key: "books" | "music" | "watches" | "games") => {
     for (const entry of entries) {
@@ -315,7 +337,6 @@ export async function getActivityData(days = 365) {
     }
   }
 
-  addToMap(bookActivity, "books")
   addToMap(musicActivity, "music")
   addToMap(watchActivity, "watches")
   addToMap(gameActivity, "games")
