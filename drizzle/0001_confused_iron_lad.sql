@@ -10,10 +10,46 @@ CREATE TABLE "users" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "books" ADD COLUMN "user_id" uuid NOT NULL;--> statement-breakpoint
-ALTER TABLE "games" ADD COLUMN "user_id" uuid NOT NULL;--> statement-breakpoint
-ALTER TABLE "music" ADD COLUMN "user_id" uuid NOT NULL;--> statement-breakpoint
-ALTER TABLE "watches" ADD COLUMN "user_id" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "books" ADD COLUMN "user_id" uuid;--> statement-breakpoint
+ALTER TABLE "games" ADD COLUMN "user_id" uuid;--> statement-breakpoint
+ALTER TABLE "music" ADD COLUMN "user_id" uuid;--> statement-breakpoint
+ALTER TABLE "watches" ADD COLUMN "user_id" uuid;--> statement-breakpoint
+DO $$
+DECLARE
+	default_user_id uuid;
+BEGIN
+	SELECT "id" INTO default_user_id
+	FROM "users"
+	ORDER BY "created_at" ASC
+	LIMIT 1;
+
+	IF default_user_id IS NULL THEN
+		INSERT INTO "users" (
+			"username",
+			"password_hash",
+			"role",
+			"is_public_profile",
+			"is_active"
+		)
+		VALUES (
+			'legacy_migrated_user',
+			'migrated-no-login',
+			'member',
+			false,
+			false
+		)
+		RETURNING "id" INTO default_user_id;
+	END IF;
+
+	UPDATE "books" SET "user_id" = default_user_id WHERE "user_id" IS NULL;
+	UPDATE "games" SET "user_id" = default_user_id WHERE "user_id" IS NULL;
+	UPDATE "music" SET "user_id" = default_user_id WHERE "user_id" IS NULL;
+	UPDATE "watches" SET "user_id" = default_user_id WHERE "user_id" IS NULL;
+END $$;--> statement-breakpoint
+ALTER TABLE "books" ALTER COLUMN "user_id" SET NOT NULL;--> statement-breakpoint
+ALTER TABLE "games" ALTER COLUMN "user_id" SET NOT NULL;--> statement-breakpoint
+ALTER TABLE "music" ALTER COLUMN "user_id" SET NOT NULL;--> statement-breakpoint
+ALTER TABLE "watches" ALTER COLUMN "user_id" SET NOT NULL;--> statement-breakpoint
 CREATE UNIQUE INDEX "users_username_unique" ON "users" USING btree ("username");--> statement-breakpoint
 CREATE INDEX "users_role_idx" ON "users" USING btree ("role");--> statement-breakpoint
 CREATE INDEX "users_public_profile_idx" ON "users" USING btree ("is_public_profile");--> statement-breakpoint
