@@ -45,10 +45,7 @@ cp .env.example .env
 # 4. 启动
 docker compose up -d
 
-# 5. 运行数据库迁移
-docker compose exec app bun run db:migrate:runtime
-
-# 6. （可选）填充示例数据
+# 5. （可选）填充示例数据
 docker compose exec app bun run db:seed
 
 # 访问 http://localhost:3000
@@ -82,14 +79,11 @@ docker run -d --name kairos-pg \
 # 配置环境变量
 cp .env.example .env
 
-# 推送 schema 到数据库
-bun run db:push
-
-# 填充示例数据
-bun run db:seed
-
-# 启动开发服务器
+# 启动开发服务器（启动时会自动执行 migration）
 bun run dev
+
+# （可选）填充示例数据
+bun run db:seed
 ```
 
 ## 环境变量
@@ -97,6 +91,7 @@ bun run dev
 | 变量 | 说明 | 必须 |
 |------|------|:----:|
 | `DATABASE_URL` | PostgreSQL 连接字符串 | ✅ |
+| `DB_AUTO_MIGRATE` | 启动时自动执行 migration（默认开启） | 可选 |
 | `JWT_SECRET` | JWT 签名密钥（≥32字符） | ✅ |
 | `SITE_VISIBILITY` | 默认访问模式（数据库未初始化时兜底） | 可选 |
 | `LOG_LEVEL` | 服务端日志级别（debug/info/warn/error） | 可选 |
@@ -138,7 +133,7 @@ bun run build:migrate # 构建运行时迁移脚本
 bun run start       # 启动生产服务器
 bun run lint        # ESLint 检查
 bun run db:generate # 生成迁移文件
-bun run db:push     # 推送 schema 到数据库（本地开发/含 devDependencies 环境）
+bun run db:push     # 推送 schema 到数据库（可选：本地快速同步 schema）
 bun run db:migrate  # 运行迁移
 bun run db:migrate:runtime # 执行镜像内运行时迁移脚本（远端/生产镜像推荐）
 bun run db:studio   # 打开 Drizzle Studio
