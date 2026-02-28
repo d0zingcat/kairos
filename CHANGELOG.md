@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Agent Finalization Workflow**: Added repository-level `AGENTS.md` instructions to standardize post-change tasks for coding agents (`docs/changelog/version bump/commit/push/PR`).
+- **Main Branch Protection Rule**: Added explicit agent rule to never commit directly to `main`; all changes must go through PR.
+
 ## [0.3.2] - 2026-02-28
 
 ### Fixed
