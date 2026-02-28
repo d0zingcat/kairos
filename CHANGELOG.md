@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Main Branch Protection Rule**: Added explicit agent rule to never commit directly to `main`; all changes must go through PR.
 - **Theme Mode System**: Added full `light` / `dark` / `system` theme modes with persistence and system preference auto-follow behavior.
 - **Global Theme Toggle**: Added user-facing theme switcher in core navigation and home page entry points for quick mode switching.
+- **Ship PR Template**: Added a standard PR body template (`Summary` / `Verification` / `Notes`) in `AGENTS.md` for consistent agent-authored PR descriptions.
 
 ### Changed
 
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Database Error Copy**: Updated login/register/settings database failure messages to reflect auto-migration and connection readiness instead of instructing users to run `db:push`.
 - **Finalize Trigger Keywords**: Updated workflow trigger keywords to `收尾` and `ship` (removed `/ship` to avoid shell command confusion).
 - **Theme Token Coverage**: Replaced remaining hardcoded dark color classes with semantic theme tokens across dashboard, plaza, auth, command palette, and entry dialog surfaces.
+- **Ship Safety Constraints**: Added mandatory `ship` guardrails requiring `gh pr create/edit --body-file`, post-update rendering verification, and immediate PR body repair when formatting is broken.
 
 ### Fixed
 
