@@ -3,7 +3,6 @@
 import { ActivityCalendar } from "react-activity-calendar"
 import type { ThemeInput } from "react-activity-calendar"
 import { Tooltip as ReactTooltip } from "react-tooltip"
-import { format } from "date-fns"
 import "react-tooltip/dist/react-tooltip.css"
 
 interface ActivityDay {
@@ -26,16 +25,54 @@ const kairosTheme: ThemeInput = {
   dark: ["#1c1917", "#4a3728", "#92400e", "#d97706", "#f59e0b"],
 }
 
+function normalizeDateKey(value: string) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value
+  if (/^\d{4}-\d{2}-\d{2}T/.test(value)) return value.slice(0, 10)
+
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return value
+  return parsed.toISOString().slice(0, 10)
+}
+
 function generateRollingYearData(data: ActivityDay[]): ActivityDay[] {
-  const dataMap = new Map(data.map((d) => [d.date, d]))
+  const dataMap = new Map<string, ActivityDay>()
+
+  for (const day of data) {
+    const dateKey = normalizeDateKey(day.date)
+    const existing = dataMap.get(dateKey)
+
+    if (!existing) {
+      dataMap.set(dateKey, {
+        ...day,
+        date: dateKey,
+        level: day.level ?? (Math.min(4, day.count) as 0 | 1 | 2 | 3 | 4),
+      })
+      continue
+    }
+
+    const mergedCount = existing.count + day.count
+    dataMap.set(dateKey, {
+      date: dateKey,
+      count: mergedCount,
+      level: Math.min(4, mergedCount) as 0 | 1 | 2 | 3 | 4,
+      details: {
+        books: (existing.details?.books ?? 0) + (day.details?.books ?? 0),
+        music: (existing.details?.music ?? 0) + (day.details?.music ?? 0),
+        watches: (existing.details?.watches ?? 0) + (day.details?.watches ?? 0),
+        games: (existing.details?.games ?? 0) + (day.details?.games ?? 0),
+      },
+    })
+  }
+
   const result: ActivityDay[] = []
 
-  const end = new Date()
-  const start = new Date()
-  start.setDate(end.getDate() - 364)
+  const now = new Date()
+  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+  const start = new Date(end)
+  start.setUTCDate(start.getUTCDate() - 364)
 
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const dateStr = format(d, "yyyy-MM-dd")
+  for (let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+    const dateStr = d.toISOString().slice(0, 10)
     const existing = dataMap.get(dateStr)
     result.push(
       existing ?? {
