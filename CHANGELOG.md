@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Startup Auto Migration**: Added Next.js startup hook (`src/instrumentation.ts`) that auto-runs Drizzle migrations before serving requests, with process-level single-run guard and PostgreSQL advisory lock to prevent concurrent multi-instance migration conflicts.
 - **Agent Finalization Workflow**: Added repository-level `AGENTS.md` instructions to standardize post-change tasks for coding agents (`docs/changelog/version bump/commit/push/PR`).
 - **Main Branch Protection Rule**: Added explicit agent rule to never commit directly to `main`; all changes must go through PR.
 
 ### Changed
 
+- **Deployment Initialization Flow**: Updated setup documentation to default to startup auto-migration, making manual `db:migrate` steps optional for normal app boot.
+- **Database Error Copy**: Updated login/register/settings database failure messages to reflect auto-migration and connection readiness instead of instructing users to run `db:push`.
 - **Finalize Trigger Keywords**: Updated workflow trigger keywords to `收尾` and `ship` (removed `/ship` to avoid shell command confusion).
 
 ## [0.3.2] - 2026-02-28
