@@ -142,6 +142,19 @@ bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId>   
 bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId> --clear  # 导入前清空该用户 books
 ```
 
+### Migration 基线重置说明（破坏性）
+
+- 当前仓库已重置为新的 Drizzle 基线迁移：`drizzle/0000_init.sql`。
+- 启动时自动迁移仅调用 Drizzle 官方 migrator，不会手动修改 Drizzle metadata。
+- 若你的数据库里仍有旧结构且不需要保留数据，请先执行一次：
+
+```sql
+drop schema if exists public cascade;
+create schema public;
+```
+
+- 然后再启动应用（`bun run dev` / `bun run start`）让自动迁移重建表结构。
+
 后台导入入口：`/dashboard/settings` → Goodreads 导入。
 
 ## Agent 协作约定
