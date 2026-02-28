@@ -5,6 +5,7 @@ import { books, music, watches, games } from "@/db/schema"
 import type { NewBook, NewMusic, NewWatch, NewGame } from "@/db/schema"
 import { eq, desc, sql, and, ilike, count } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
 
 type BookInput = Omit<NewBook, "userId">
@@ -15,7 +16,7 @@ type GameInput = Omit<NewGame, "userId">
 async function requireCurrentUser() {
   const user = await getCurrentUser()
   if (!user) {
-    throw new Error("UNAUTHORIZED")
+    redirect("/login?next=%2Fdashboard")
   }
   return user
 }
