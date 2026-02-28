@@ -14,6 +14,7 @@
 
 - 📊 **GitHub 风格活动热力图** — 一眼看到你的记录频率
 - 📆 **最近一年热力图** — 展示「过去 365 天到今天」，避免未来日期空白格
+- 📚 **书籍活动按阅读日期计入** — 书籍优先按 `startDate` / `finishDate` 计入热力图；仅在缺失时回退 `createdAt`
 - ⌘ **Cmd+K 快速录入** — 命令面板搜索并录入（自动从 Hardcover/Google Books/TMDB/RAWG/MusicBrainz 填充元数据）
 - 📚 **四大媒体类型** — 书 / 音乐 / 影视 / 游戏
 - ✏️ **卡片点击即编辑** — Books / Music / Watch / Games 支持直接点击已有卡片编辑
