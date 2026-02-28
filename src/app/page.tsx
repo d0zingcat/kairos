@@ -43,13 +43,20 @@ export default function Home() {
           </div>
 
           {/* CTA */}
-          <div className="mt-10">
+          <div className="mt-10 flex items-center justify-center gap-3">
             <Link
               href="/dashboard"
               className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-amber-500/20 transition-all hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/30"
             >
               进入仪表盘
               <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <Link
+              href="/plaza"
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/60 px-6 py-2.5 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-800"
+            >
+              查看广场
             </Link>
           </div>
         </div>

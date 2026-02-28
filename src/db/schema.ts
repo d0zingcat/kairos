@@ -7,6 +7,8 @@ import {
   timestamp,
   pgEnum,
   date,
+  uniqueIndex,
+  index,
 } from "drizzle-orm/pg-core"
 
 // ── Enums ────────────────────────────────────────────────
@@ -42,6 +44,8 @@ export const siteVisibilityEnum = pgEnum("site_visibility", [
   "password",
 ])
 
+export const userRoleEnum = pgEnum("user_role", ["admin", "member"])
+
 // ── Shared timestamps ────────────────────────────────────
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -53,9 +57,25 @@ const timestamps = {
     .$onUpdate(() => new Date()),
 }
 
+// ── Users ────────────────────────────────────────────────
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  username: text("username").notNull(),
+  passwordHash: text("password_hash").notNull(),
+  role: userRoleEnum("role").notNull().default("member"),
+  isPublicProfile: boolean("is_public_profile").notNull().default(false),
+  isActive: boolean("is_active").notNull().default(true),
+  ...timestamps,
+}, (table) => ({
+  usernameUnique: uniqueIndex("users_username_unique").on(table.username),
+  roleIdx: index("users_role_idx").on(table.role),
+  publicProfileIdx: index("users_public_profile_idx").on(table.isPublicProfile),
+}))
+
 // ── Books ────────────────────────────────────────────────
 export const books = pgTable("books", {
   id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   externalId: text("external_id"),
   title: text("title").notNull(),
   subtitle: text("subtitle"),
@@ -71,11 +91,14 @@ export const books = pgTable("books", {
   favorite: boolean("favorite").notNull().default(false),
   tags: text("tags").array(),
   ...timestamps,
-})
+}, (table) => ({
+  userIdx: index("books_user_idx").on(table.userId),
+}))
 
 // ── Music ────────────────────────────────────────────────
 export const music = pgTable("music", {
   id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   externalId: text("external_id"),
   type: musicTypeEnum("type").notNull().default("album"),
   title: text("title").notNull(),
@@ -89,11 +112,14 @@ export const music = pgTable("music", {
   notes: text("notes"),
   tags: text("tags").array(),
   ...timestamps,
-})
+}, (table) => ({
+  userIdx: index("music_user_idx").on(table.userId),
+}))
 
 // ── Watches (Movies / TV) ────────────────────────────────
 export const watches = pgTable("watches", {
   id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   externalId: text("external_id"),
   type: watchTypeEnum("type").notNull().default("movie"),
   title: text("title").notNull(),
@@ -110,11 +136,14 @@ export const watches = pgTable("watches", {
   notes: text("notes"),
   tags: text("tags").array(),
   ...timestamps,
-})
+}, (table) => ({
+  userIdx: index("watches_user_idx").on(table.userId),
+}))
 
 // ── Games ────────────────────────────────────────────────
 export const games = pgTable("games", {
   id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   externalId: text("external_id"),
   title: text("title").notNull(),
   coverUrl: text("cover_url"),
@@ -130,7 +159,9 @@ export const games = pgTable("games", {
   notes: text("notes"),
   tags: text("tags").array(),
   ...timestamps,
-})
+}, (table) => ({
+  userIdx: index("games_user_idx").on(table.userId),
+}))
 
 // ── App settings ───────────────────────────────────────
 export const appSettings = pgTable("app_settings", {
@@ -150,3 +181,5 @@ export type Game = typeof games.$inferSelect
 export type NewGame = typeof games.$inferInsert
 export type AppSetting = typeof appSettings.$inferSelect
 export type NewAppSetting = typeof appSettings.$inferInsert
+export type User = typeof users.$inferSelect
+export type NewUser = typeof users.$inferInsert
