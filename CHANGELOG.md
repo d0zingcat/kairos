@@ -10,11 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Startup Auto Migration**: Added Next.js startup hook (`src/instrumentation.ts`) that auto-runs Drizzle migrations before serving requests, with process-level single-run guard and PostgreSQL advisory lock to prevent concurrent multi-instance migration conflicts.
+- **Agent Finalization Workflow**: Added repository-level `AGENTS.md` instructions to standardize post-change tasks for coding agents (`docs/changelog/version bump/commit/push/PR`).
+- **Main Branch Protection Rule**: Added explicit agent rule to never commit directly to `main`; all changes must go through PR.
 
 ### Changed
 
 - **Deployment Initialization Flow**: Updated setup documentation to default to startup auto-migration, making manual `db:migrate` steps optional for normal app boot.
 - **Database Error Copy**: Updated login/register/settings database failure messages to reflect auto-migration and connection readiness instead of instructing users to run `db:push`.
+- **Finalize Trigger Keywords**: Updated workflow trigger keywords to `收尾` and `ship` (removed `/ship` to avoid shell command confusion).
 
 ## [0.3.1] - 2026-02-28
 
@@ -112,7 +115,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker Deployment**: Multi-stage Dockerfile (oven/bun base, standalone output), docker-compose.yml with PostgreSQL 16 + app service, health checks, persistent volume.
 - **Environment Configuration**: `.env.example` documenting all required and optional environment variables.
 
-[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/d0zingcat/kairos/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/d0zingcat/kairos/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/d0zingcat/kairos/compare/v0.2.0...v0.3.0
 [0.2.1]: https://github.com/d0zingcat/kairos/compare/v0.2.0...v0.2.1
