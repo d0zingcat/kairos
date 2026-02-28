@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-02-28
+
+### Fixed
+
+- **Dashboard Auth Redirect Loop**: Unauthenticated visits to `/dashboard` now redirect to `/login?next=/dashboard` instead of bouncing back to Plaza in public mode.
+- **Unauthorized Dashboard Crash**: Replaced `UNAUTHORIZED` throw paths in entry server actions with login redirect flow to avoid hard server errors when sessions expire.
+- **Post-login Return Path**: Login flow now honors a validated `next` parameter and returns users to the page they originally attempted to access.
+
 ## [0.3.0] - 2026-02-28
 
 ### Added
@@ -95,7 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker Deployment**: Multi-stage Dockerfile (oven/bun base, standalone output), docker-compose.yml with PostgreSQL 16 + app service, health checks, persistent volume.
 - **Environment Configuration**: `.env.example` documenting all required and optional environment variables.
 
-[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/d0zingcat/kairos/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/d0zingcat/kairos/compare/v0.2.0...v0.3.0
 [0.2.1]: https://github.com/d0zingcat/kairos/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/d0zingcat/kairos/compare/v0.1.0...v0.2.0

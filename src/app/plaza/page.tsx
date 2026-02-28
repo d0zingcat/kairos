@@ -4,11 +4,13 @@ import Link from "next/link"
 import { Globe2, UserCircle2 } from "lucide-react"
 import { getPublicPlazaFeed, getPublicUserSummaries } from "@/lib/actions/plaza"
 import { InfiniteFeed } from "@/components/plaza/infinite-feed"
+import { verifySession } from "@/lib/auth"
 
 export default async function PlazaPage() {
-  const [publicUsers, feedResult] = await Promise.all([
+  const [publicUsers, feedResult, hasSession] = await Promise.all([
     getPublicUserSummaries(),
     getPublicPlazaFeed({ limit: 20 }),
+    verifySession(),
   ])
 
   const initialItems = feedResult.items.map((item) => ({
@@ -32,7 +34,7 @@ export default async function PlazaPage() {
           </div>
 
           <Link
-            href="/dashboard"
+            href={hasSession ? "/dashboard" : "/login?next=%2Fdashboard"}
             className="rounded-lg border border-zinc-800 bg-zinc-900/70 px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-zinc-800"
           >
             返回我的仪表盘

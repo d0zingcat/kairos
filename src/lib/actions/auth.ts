@@ -21,6 +21,11 @@ export async function loginAction(
   const username = typeof rawUsername === "string" ? rawUsername.trim().toLowerCase() : ""
   const rawPassword = formData.get("password")
   const password = typeof rawPassword === "string" ? rawPassword.trim() : ""
+  const rawNext = formData.get("next")
+  const nextPath = typeof rawNext === "string" ? rawNext.trim() : ""
+  const redirectPath = nextPath.startsWith("/") && !nextPath.startsWith("//")
+    ? nextPath
+    : "/dashboard"
 
   if (!username || !password) {
     return { error: "请输入用户名和密码" }
@@ -45,7 +50,7 @@ export async function loginAction(
   }
 
   await createUserSession(user.id, user.role)
-  redirect("/dashboard")
+  redirect(redirectPath)
 }
 
 export async function registerAction(
