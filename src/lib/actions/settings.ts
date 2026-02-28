@@ -27,7 +27,7 @@ export async function updateVisibilityAction(
   try {
     await setStoredSiteVisibility(value)
   } catch {
-    return { error: "保存失败：请先执行 bun run db:push 同步数据库结构" }
+    return { error: "保存失败：数据库初始化中或连接异常，请稍后重试" }
   }
 
   revalidatePath("/dashboard")
