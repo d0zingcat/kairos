@@ -6,7 +6,7 @@
 
 详细更新记录请见 [CHANGELOG.md](CHANGELOG.md)。
 
-![Kairos](https://img.shields.io/badge/Next.js-15-black?style=flat-square)
+![Kairos](https://img.shields.io/badge/Next.js-16-black?style=flat-square)
 ![Tailwind](https://img.shields.io/badge/Tailwind-v4-blue?style=flat-square)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square)
 
@@ -119,7 +119,7 @@ bun run dev
 
 ## 技术栈
 
-- **框架**: Next.js 15 (App Router, RSC)
+- **框架**: Next.js 16 (App Router, RSC)
 - **UI**: Tailwind CSS v4 + shadcn/ui
 - **数据库**: PostgreSQL 16 + Drizzle ORM
 - **认证**: JWT (jose) + bcrypt
