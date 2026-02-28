@@ -45,7 +45,7 @@ cp .env.example .env
 docker compose up -d
 
 # 5. 运行数据库迁移
-docker compose exec app bun run db:push
+docker compose exec app bun run db:migrate:runtime
 
 # 6. （可选）填充示例数据
 docker compose exec app bun run db:seed
@@ -137,9 +137,9 @@ bun run build:migrate # 构建运行时迁移脚本
 bun run start       # 启动生产服务器
 bun run lint        # ESLint 检查
 bun run db:generate # 生成迁移文件
-bun run db:push     # 推送 schema 到数据库
+bun run db:push     # 推送 schema 到数据库（本地开发/含 devDependencies 环境）
 bun run db:migrate  # 运行迁移
-bun run db:migrate:runtime # 执行镜像内运行时迁移脚本
+bun run db:migrate:runtime # 执行镜像内运行时迁移脚本（远端/生产镜像推荐）
 bun run db:studio   # 打开 Drizzle Studio
 bun run db:seed     # 填充示例数据
 bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId>          # 导入 Goodreads 书单
