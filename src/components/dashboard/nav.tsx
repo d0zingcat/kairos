@@ -12,7 +12,7 @@ import { motion } from "framer-motion"
 
 const baseNavItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/plaza", label: "Plaza", icon: Globe2 },
+  { href: "/dashboard/plaza", label: "Plaza", icon: Globe2 },
   { href: MEDIA_TYPES.book.href, label: MEDIA_TYPES.book.labelPlural, icon: MEDIA_TYPES.book.icon },
   { href: MEDIA_TYPES.music.href, label: MEDIA_TYPES.music.labelPlural, icon: MEDIA_TYPES.music.icon },
   { href: MEDIA_TYPES.watch.href, label: MEDIA_TYPES.watch.labelPlural, icon: MEDIA_TYPES.watch.icon },
