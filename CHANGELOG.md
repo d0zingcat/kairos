@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Goodreads Activity Backfill**: Activity heatmap now counts imported books by `startDate` / `finishDate` (falls back to `createdAt` only when both are missing), so imported reading history appears on the correct days.
+- **Goodreads Start Date Mapping**: Import now maps `Date Added` to `startDate` for non-`want_to_read` books to preserve reading timeline context.
+
 ## [0.2.0] - 2026-02-28
 
 ### Added
