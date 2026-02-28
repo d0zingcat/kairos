@@ -396,14 +396,14 @@ export function EntryDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="border-zinc-800 bg-zinc-900 sm:max-w-lg"
+        className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-800 bg-zinc-900 sm:max-w-lg"
         onKeyDown={handleKeyDown}
       >
         <DialogHeader>
           <DialogTitle className="text-zinc-100">录入记录</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="min-h-0 space-y-5 overflow-y-auto pr-1">
           {/* Item preview */}
           <div className="flex gap-4">
             {item.coverUrl ? (
@@ -599,7 +599,7 @@ export function EntryDialog({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="写点什么..."
-              className="min-h-[80px] border-zinc-800 bg-zinc-900 text-zinc-300 placeholder:text-zinc-600"
+              className="min-h-[80px] max-h-56 resize-y overflow-y-auto border-zinc-800 bg-zinc-900 text-zinc-300 placeholder:text-zinc-600"
             />
           </div>
 

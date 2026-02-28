@@ -3,6 +3,8 @@ name: CI + Docker + GHCR
 on:
   pull_request:
   push:
+    branches:
+      - main
 
 jobs:
   lint:
