@@ -37,7 +37,7 @@ export async function loginAction(
       where: eq(users.username, username),
     })
   } catch {
-    return { error: "登录失败：请先执行 bun run db:push 同步数据库结构" }
+    return { error: "登录失败：数据库初始化中或连接异常，请稍后重试" }
   }
 
   if (!user || !user.isActive) {
@@ -81,7 +81,7 @@ export async function registerAction(
   try {
     existing = await db.query.users.findFirst({ where: eq(users.username, username) })
   } catch {
-    return { error: "注册失败：请先执行 bun run db:push 同步数据库结构" }
+    return { error: "注册失败：数据库初始化中或连接异常，请稍后重试" }
   }
   if (existing) {
     return { error: "用户名已存在" }
@@ -94,7 +94,7 @@ export async function registerAction(
       .from(users)
     existingUsers = countRow?.value ?? 0
   } catch {
-    return { error: "注册失败：请先执行 bun run db:push 同步数据库结构" }
+    return { error: "注册失败：数据库初始化中或连接异常，请稍后重试" }
   }
 
   const passwordHash = await hashPassword(password)
