@@ -14,6 +14,7 @@
 
 - 📊 **GitHub 风格活动热力图** — 一眼看到你的记录频率
 - 📆 **最近一年热力图** — 展示「过去 365 天到今天」，避免未来日期空白格
+- 🧩 **热力图日期键修正** — 统一活动日期键并按 `date(created_at)` 过滤，当天新增记录会正确着色显示
 - 📚 **书籍活动按阅读日期计入** — 书籍优先按 `startDate` / `finishDate` 计入热力图；仅在缺失时回退 `createdAt`
 - ⌘ **Cmd+K 快速录入** — 命令面板搜索并录入（自动从 Hardcover/Google Books/TMDB/RAWG/MusicBrainz 填充元数据）
 - 📚 **四大媒体类型** — 书 / 音乐 / 影视 / 游戏
@@ -142,6 +143,12 @@ bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId> --
 ```
 
 后台导入入口：`/dashboard/settings` → Goodreads 导入。
+
+## Agent 协作约定
+
+- 仓库根目录新增 `AGENTS.md`，用于统一 Codex / Claude Code 的默认收尾流程。
+- 可通过口令 `收尾` 或 `ship` 触发：更新文档、更新 `CHANGELOG`、bump version、commit、push、创建/更新 PR。
+- 禁止代理直接向 `main` 提交，所有变更必须通过 PR 合并。
 
 ## 许可
 
