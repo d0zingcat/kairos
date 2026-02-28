@@ -15,8 +15,8 @@ After any code change is completed, unless the user explicitly says to skip:
 
 If the user says any of the following, run the full workflow above immediately:
 
-- `执行收尾流程`
-- `/ship`
+- `收尾`
+- `ship`
 
 ## Branch Protection Rule
 
