@@ -42,7 +42,7 @@ export function SettingsForm({
   const [state, formAction, isPending] = useActionState(updateVisibilityAction, null)
 
   return (
-    <form action={formAction} className="space-y-5 rounded-2xl border border-zinc-800/60 bg-zinc-900/40 p-5">
+    <form action={formAction} className="space-y-5 rounded-2xl border border-border/60 bg-card/50 p-5">
       <input type="hidden" name="visibility" value={visibility} />
 
       <div className="space-y-3">
@@ -58,16 +58,16 @@ export function SettingsForm({
                 "w-full rounded-xl border px-4 py-3 text-left transition-colors",
                 selected
                   ? "border-amber-500/60 bg-amber-500/10"
-                  : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700"
+                  : "border-border bg-card/70 hover:bg-accent/70"
               )}
             >
               <div className="flex items-center gap-3">
-                <Icon className={cn("h-4 w-4", selected ? "text-amber-300" : "text-zinc-500")} />
+                <Icon className={cn("h-4 w-4", selected ? "text-amber-300" : "text-muted-foreground")} />
                 <div>
-                  <p className={cn("text-sm font-medium", selected ? "text-zinc-100" : "text-zinc-300")}>
+                  <p className={cn("text-sm font-medium", selected ? "text-foreground" : "text-foreground/85")}>
                     {option.title}
                   </p>
-                  <p className="mt-0.5 text-xs text-zinc-500">{option.description}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{option.description}</p>
                 </div>
               </div>
             </button>
@@ -79,7 +79,7 @@ export function SettingsForm({
       {state?.success ? <p className="text-sm text-emerald-400">{state.success}</p> : null}
 
       <div className="flex items-center justify-between">
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-muted-foreground">
           密码保护模式使用 `VIEWER_PASSWORD_HASH`（未配置时回退管理员密码）。
         </p>
         <Button

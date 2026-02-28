@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,17 +18,38 @@ export const metadata: Metadata = {
   description: "个人生活动态记录应用：书、音乐、影视、游戏",
 };
 
+const themeInitScript = `(() => {
+  try {
+    const key = "kairos-theme";
+    const saved = localStorage.getItem(key);
+    const mode = saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
+    const isDark = mode === "dark" || (mode === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+    document.documentElement.classList.toggle("dark", isDark);
+    document.documentElement.dataset.themeMode = mode;
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+  } catch {
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.classList.toggle("dark", isDark);
+    document.documentElement.dataset.themeMode = "system";
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+  }
+})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="dark">
+    <html lang="zh-CN" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

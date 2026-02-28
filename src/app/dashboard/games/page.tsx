@@ -21,7 +21,7 @@ export default async function GamesPage({ searchParams }: PageProps) {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Gamepad2 className="h-6 w-6 text-rose-400" />
-        <h1 className="font-mono text-2xl font-bold tracking-tight text-zinc-100">
+        <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
           Games
         </h1>
       </div>
