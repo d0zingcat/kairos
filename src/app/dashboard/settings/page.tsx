@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { verifyAdminSession } from "@/lib/auth"
 import { getStoredSiteVisibility } from "@/lib/site-settings"
 import { SettingsForm } from "@/components/dashboard/settings-form"
+import { GoodreadsImportCard } from "@/components/dashboard/goodreads-import-card"
 import { ShieldCheck } from "lucide-react"
 
 export default async function SettingsPage() {
@@ -29,6 +30,7 @@ export default async function SettingsPage() {
       </div>
 
       <SettingsForm initialVisibility={visibility} />
+      <GoodreadsImportCard />
     </div>
   )
 }
