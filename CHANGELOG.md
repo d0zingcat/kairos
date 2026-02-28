@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Admin Settings Page**: Added `/dashboard/settings` to switch visibility mode at runtime (stored in database with env fallback).
 - **Settings Persistence Table**: Added `app_settings` schema for site-level runtime configuration.
 - **Project TODO List**: Added `TODO.md` to track upcoming integration tasks.
+- **Runtime Migration in Latest Image**: Added image-bundled DB migration script (`dist/migrate.js`) and runtime command support for no-source deployments.
+- **Goodreads CSV Import**: Added admin-only Goodreads import flow (settings UI + `/api/import/goodreads` API + CSV parser/importer + CLI command `db:import:goodreads`) with duplicate skipping logic.
 
 ### Changed
 
@@ -26,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Hydration Stability**: Deferred command palette rendering until client mount to avoid Radix dialog SSR/CSR ID mismatch warnings.
 - **Book Default Status**: Changed default book status in entry dialog to `want_to_read`.
 - **Activity Heatmap Window**: Switched from calendar-year view to rolling last 365 days through today.
+- **Docker Build Migration Metadata**: Docker build now runs `db:generate` so `drizzle/meta/_journal.json` is always present in the runtime image.
+- **CI Trigger Scope**: Restricted workflow `push` trigger to `main` to avoid duplicate builds for PR branch pushes.
 
 ### Fixed
 
@@ -36,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Local Record Data Loss on Update**: Fixed update payloads to preserve existing fields when editing local items.
 - **Login Session UX**: Login page now redirects authenticated users to `/dashboard` to avoid conflicting states.
 - **Search Route Protection**: Added server-side admin session check to `/api/search/[type]` in addition to middleware guard.
+- **Entry Dialog Overflow**: Fixed long review content making the entry panel unscrollable by adding bounded dialog/content scrolling behavior.
 
 ## [0.1.0] - 2026-02-26
 
