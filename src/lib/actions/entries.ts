@@ -245,11 +245,25 @@ export async function getGames(options?: {
 // ── Aggregations ─────────────────────────────────────────
 export async function getActivityData(days = 365) {
   const user = await requireCurrentUser()
+
+  const normalizeDate = (value: string | Date | null | undefined) => {
+    if (!value) return null
+    if (value instanceof Date) return value.toISOString().slice(0, 10)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value
+    if (/^\d{4}-\d{2}-\d{2}T/.test(value)) return value.slice(0, 10)
+
+    const parsed = new Date(value)
+    if (Number.isNaN(parsed.getTime())) return null
+    return parsed.toISOString().slice(0, 10)
+  }
+
   const now = new Date()
-  const endDate = now.toISOString().slice(0, 10)
+  const endDate = normalizeDate(now)
+  if (!endDate) return []
   const start = new Date(now)
   start.setDate(start.getDate() - Math.max(1, days) + 1)
-  const startDate = start.toISOString().slice(0, 10)
+  const startDate = normalizeDate(start)
+  if (!startDate) return []
 
   const musicDateExpr = sql<string>`date(${music.createdAt})`
   const watchDateExpr = sql<string>`date(${watches.createdAt})`
@@ -262,7 +276,7 @@ export async function getActivityData(days = 365) {
       .where(
         and(
           eq(books.userId, user.id),
-          sql`${books.createdAt} <= ${endDate}::date`
+          sql`date(${books.createdAt}) <= ${endDate}::date`
         )
       ),
     db
@@ -271,8 +285,8 @@ export async function getActivityData(days = 365) {
       .where(
         and(
           eq(music.userId, user.id),
-          sql`${music.createdAt} >= ${startDate}::date`,
-          sql`${music.createdAt} <= ${endDate}::date`
+          sql`${musicDateExpr} >= ${startDate}::date`,
+          sql`${musicDateExpr} <= ${endDate}::date`
         )
       )
       .groupBy(musicDateExpr),
@@ -282,8 +296,8 @@ export async function getActivityData(days = 365) {
       .where(
         and(
           eq(watches.userId, user.id),
-          sql`${watches.createdAt} >= ${startDate}::date`,
-          sql`${watches.createdAt} <= ${endDate}::date`
+          sql`${watchDateExpr} >= ${startDate}::date`,
+          sql`${watchDateExpr} <= ${endDate}::date`
         )
       )
       .groupBy(watchDateExpr),
@@ -293,8 +307,8 @@ export async function getActivityData(days = 365) {
       .where(
         and(
           eq(games.userId, user.id),
-          sql`${games.createdAt} >= ${startDate}::date`,
-          sql`${games.createdAt} <= ${endDate}::date`
+          sql`${gameDateExpr} >= ${startDate}::date`,
+          sql`${gameDateExpr} <= ${endDate}::date`
         )
       )
       .groupBy(gameDateExpr),
@@ -306,16 +320,18 @@ export async function getActivityData(days = 365) {
   for (const row of bookRows) {
     const bookDates = new Set<string>()
 
-    if (row.startDate && isDateInRange(row.startDate)) {
-      bookDates.add(row.startDate)
+    const normalizedStartDate = normalizeDate(row.startDate)
+    if (normalizedStartDate && isDateInRange(normalizedStartDate)) {
+      bookDates.add(normalizedStartDate)
     }
-    if (row.finishDate && isDateInRange(row.finishDate)) {
-      bookDates.add(row.finishDate)
+    const normalizedFinishDate = normalizeDate(row.finishDate)
+    if (normalizedFinishDate && isDateInRange(normalizedFinishDate)) {
+      bookDates.add(normalizedFinishDate)
     }
 
     if (bookDates.size === 0) {
-      const createdDate = new Date(row.createdAt).toISOString().slice(0, 10)
-      if (isDateInRange(createdDate)) {
+      const createdDate = normalizeDate(row.createdAt)
+      if (createdDate && isDateInRange(createdDate)) {
         bookDates.add(createdDate)
       }
     }
@@ -328,9 +344,13 @@ export async function getActivityData(days = 365) {
     }
   }
 
-  const addToMap = (entries: { date: string; count: number }[], key: "books" | "music" | "watches" | "games") => {
+  const addToMap = (
+    entries: { date: string | Date; count: number }[],
+    key: "books" | "music" | "watches" | "games"
+  ) => {
     for (const entry of entries) {
-      const dateStr = entry.date
+      const dateStr = normalizeDate(entry.date)
+      if (!dateStr || !isDateInRange(dateStr)) continue
       const existing = dateMap.get(dateStr) ?? { total: 0, books: 0, music: 0, watches: 0, games: 0 }
       existing[key] += entry.count
       existing.total += entry.count
