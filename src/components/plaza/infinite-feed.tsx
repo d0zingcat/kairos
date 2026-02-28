@@ -145,7 +145,7 @@ export function InfiniteFeed({
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/40 p-6 text-sm text-zinc-500">
+      <div className="rounded-2xl border border-border/60 bg-card/50 p-6 text-sm text-muted-foreground">
         还没有公开动态，先去记录你的第一条时间线吧。
       </div>
     )
@@ -156,26 +156,26 @@ export function InfiniteFeed({
       {items.map((item) => (
         <div
           key={`${item.mediaType}-${item.id}-${item.createdAt}`}
-          className="rounded-2xl border border-zinc-800/60 bg-zinc-900/40 p-4"
+          className="rounded-2xl border border-border/60 bg-card/50 p-4"
         >
           <div className="flex items-center gap-3">
             <MediaIcon type={item.mediaType} />
-            <div className="text-sm text-zinc-200">
-              <Link href={`/u/${item.username}`} className="font-medium text-sky-300 hover:text-sky-200">
+            <div className="text-sm text-foreground/90">
+              <Link href={`/u/${item.username}`} className="font-medium text-sky-500 hover:text-sky-400">
                 @{item.username}
               </Link>
-              <span className="mx-1 text-zinc-500">{mediaLabel(item.mediaType)}</span>
+              <span className="mx-1 text-muted-foreground">{mediaLabel(item.mediaType)}</span>
               <span className="font-medium">{item.title}</span>
             </div>
           </div>
-          <p className="mt-2 text-xs text-zinc-500">{formatRelativeTime(item.createdAt)}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{formatRelativeTime(item.createdAt)}</p>
         </div>
       ))}
 
       <div ref={sentinelRef} className="h-8" />
 
       {isLoading ? (
-        <p className="flex items-center justify-center gap-2 text-xs text-zinc-500">
+        <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
           加载更多中...
         </p>
@@ -200,13 +200,13 @@ export function InfiniteFeed({
             type="button"
             onClick={() => void loadMore()}
             disabled={isLoading || !hasMore}
-            className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md border border-border bg-card px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
             点击重试
           </button>
         </div>
       ) : null}
-      {!hasMore && !isLoading ? <p className="text-center text-xs text-zinc-600">没有更多动态了</p> : null}
+      {!hasMore && !isLoading ? <p className="text-center text-xs text-muted-foreground">没有更多动态了</p> : null}
     </div>
   )
 }

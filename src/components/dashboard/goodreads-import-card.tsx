@@ -57,12 +57,12 @@ export function GoodreadsImportCard() {
   }
 
   return (
-    <div className="space-y-4 rounded-2xl border border-zinc-800/60 bg-zinc-900/40 p-5">
+    <div className="space-y-4 rounded-2xl border border-border/60 bg-card/50 p-5">
       <div className="flex items-start gap-3">
         <BookUp className="mt-0.5 h-4 w-4 text-amber-300" />
         <div>
-          <h2 className="text-sm font-semibold text-zinc-100">Goodreads 导入</h2>
-          <p className="mt-1 text-xs text-zinc-500">
+          <h2 className="text-sm font-semibold text-foreground">Goodreads 导入</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
             上传 Goodreads 导出的 CSV 文件，系统将追加导入并自动跳过重复书籍。
           </p>
         </div>
@@ -85,7 +85,7 @@ export function GoodreadsImportCard() {
         ) : null}
 
         <div className="flex items-center justify-between">
-          <p className="text-xs text-zinc-500">重复判定：Book Id 优先，缺失时使用 书名+作者。</p>
+          <p className="text-xs text-muted-foreground">重复判定：Book Id 优先，缺失时使用 书名+作者。</p>
           <Button
             type="submit"
             disabled={isPending || !file}

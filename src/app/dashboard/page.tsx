@@ -18,10 +18,10 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="font-mono text-2xl font-bold tracking-tight text-zinc-100">
+        <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
           Overview
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           你的生活记录一览
         </p>
       </div>
