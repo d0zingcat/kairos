@@ -1,39 +1,18 @@
-import { verifyAdminSession, verifyViewerSession } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 import { getStoredSiteVisibility } from "@/lib/site-settings"
 
 export async function getAccessState() {
   const visibility = await getStoredSiteVisibility()
-  const isAdmin = await verifyAdminSession()
-  const isViewer = isAdmin ? true : await verifyViewerSession()
-
-  if (visibility === "public") {
-    return {
-      visibility,
-      canView: true,
-      canEdit: isAdmin,
-      isAdmin,
-      isViewer,
-      hasSession: isAdmin || isViewer,
-    }
-  }
-
-  if (visibility === "private") {
-    return {
-      visibility,
-      canView: isAdmin,
-      canEdit: isAdmin,
-      isAdmin,
-      isViewer: false,
-      hasSession: isAdmin,
-    }
-  }
+  const user = await getCurrentUser()
+  const isAdmin = user?.role === "admin"
+  const hasSession = Boolean(user)
 
   return {
     visibility,
-    canView: isAdmin || isViewer,
-    canEdit: isAdmin,
+    canView: hasSession,
+    canEdit: hasSession,
     isAdmin,
-    isViewer,
-    hasSession: isAdmin || isViewer,
+    isViewer: false,
+    hasSession,
   }
 }

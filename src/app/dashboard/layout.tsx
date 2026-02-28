@@ -11,7 +11,7 @@ export default async function DashboardLayout({
 }) {
   const access = await getAccessState()
   if (!access.canView) {
-    redirect("/login")
+    redirect(access.visibility === "public" ? "/plaza" : "/login")
   }
 
   return (

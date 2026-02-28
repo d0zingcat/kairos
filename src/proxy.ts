@@ -6,10 +6,10 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret-change-me"
 )
 
-const ADMIN_COOKIE_NAME = "kairos-admin-session"
-const ADMIN_ONLY_PREFIXES = ["/api/search", "/api/import"]
+const SESSION_COOKIE_NAME = "kairos-session"
+const ADMIN_ONLY_PREFIXES: string[] = []
 
-async function hasRoleSession(token: string | undefined, role: "admin" | "viewer") {
+async function hasRoleSession(token: string | undefined, role: "admin" | "member") {
   if (!token) return false
 
   try {
@@ -41,7 +41,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const adminToken = request.cookies.get(ADMIN_COOKIE_NAME)?.value
+  const adminToken = request.cookies.get(SESSION_COOKIE_NAME)?.value
   const isAdmin = await hasRoleSession(adminToken, "admin")
 
   if (ADMIN_ONLY_PREFIXES.some((prefix) => pathname.startsWith(prefix)) && !isAdmin) {
