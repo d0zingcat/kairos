@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-02-28
+
 ### Added
 
 - **Hardcover Book Search Source**: Added backend Hardcover GraphQL search client and merged results into `/api/search/book` pipeline to improve Chinese book discovery.
@@ -67,5 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker Deployment**: Multi-stage Dockerfile (oven/bun base, standalone output), docker-compose.yml with PostgreSQL 16 + app service, health checks, persistent volume.
 - **Environment Configuration**: `.env.example` documenting all required and optional environment variables.
 
-[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/d0zingcat/kairos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/d0zingcat/kairos/releases/tag/v0.1.0
