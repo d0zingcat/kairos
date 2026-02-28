@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Database Error Copy**: Updated login/register/settings database failure messages to reflect auto-migration and connection readiness instead of instructing users to run `db:push`.
 - **Finalize Trigger Keywords**: Updated workflow trigger keywords to `收尾` and `ship` (removed `/ship` to avoid shell command confusion).
 
+## [0.3.2] - 2026-02-28
+
+### Fixed
+
+- **Heatmap Date Key Normalization**: Normalized activity date keys end-to-end so entries with ISO datetime values map to the correct calendar cells.
+- **Same-day Activity Filtering**: Fixed aggregation date filters to compare by calendar date (`date(created_at)`) and include records created on the current day.
+
 ## [0.3.1] - 2026-02-28
 
 ### Fixed
