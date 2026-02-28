@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, useTransition } from "react"
+import Image from "next/image"
 import {
   Dialog,
   DialogContent,
@@ -135,14 +136,6 @@ export function EntryDialog({
   const handleSave = () => {
     startTransition(async () => {
       try {
-        const baseData = {
-          externalId: item.externalId,
-          title: item.title,
-          rating: rating > 0 ? rating : null,
-          notes: notes || null,
-          favorite,
-        }
-
         const meta = item.meta as Record<string, unknown>
 
         switch (mediaType) {
@@ -367,7 +360,7 @@ export function EntryDialog({
         setBookStartDate("")
         setBookFinishDate("")
         onOpenChange(false)
-      } catch (error) {
+      } catch {
         // Error is handled silently; could add toast notification later
       }
     })
@@ -396,40 +389,43 @@ export function EntryDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-800 bg-zinc-900 sm:max-w-lg"
+        className="flex max-h-[90vh] flex-col overflow-hidden border-border bg-popover sm:max-w-lg"
         onKeyDown={handleKeyDown}
       >
         <DialogHeader>
-          <DialogTitle className="text-zinc-100">录入记录</DialogTitle>
+          <DialogTitle className="text-foreground">录入记录</DialogTitle>
         </DialogHeader>
 
         <div className="min-h-0 space-y-5 overflow-y-auto pr-1">
           {/* Item preview */}
           <div className="flex gap-4">
             {item.coverUrl ? (
-              <img
+              <Image
                 src={item.coverUrl}
                 alt={item.title}
+                width={64}
+                height={96}
+                unoptimized
                 className="h-24 w-16 rounded-lg object-cover shadow-lg"
               />
             ) : (
-              <div className="flex h-24 w-16 items-center justify-center rounded-lg bg-zinc-800 text-zinc-500">
+              <div className="flex h-24 w-16 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 ?
               </div>
             )}
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-zinc-100">
+              <h3 className="text-lg font-semibold text-foreground">
                 {item.title}
               </h3>
               {item.subtitle && (
-                <p className="mt-0.5 text-sm text-zinc-400">{item.subtitle}</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">{item.subtitle}</p>
               )}
             </div>
           </div>
 
           {/* Rating */}
           <div>
-            <label className="mb-2 block text-xs font-medium text-zinc-400">
+            <label className="mb-2 block text-xs font-medium text-muted-foreground">
               评分 (按 1-5 快速评分)
             </label>
             <div className="flex items-center gap-1">
@@ -445,13 +441,13 @@ export function EntryDialog({
                       "h-6 w-6 transition-colors",
                       star * 2 <= rating
                         ? "fill-amber-400 text-amber-400"
-                        : "text-zinc-700"
+                        : "text-muted-foreground"
                     )}
                   />
                 </button>
               ))}
               {rating > 0 && (
-                <span className="ml-2 text-sm text-zinc-400">
+                <span className="ml-2 text-sm text-muted-foreground">
                   {rating}/10
                 </span>
               )}
@@ -462,14 +458,14 @@ export function EntryDialog({
             <>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="mb-2 block text-xs font-medium text-zinc-400">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     开始阅读
                   </label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-full justify-start border-zinc-800 bg-zinc-900 text-left text-zinc-300 hover:bg-zinc-800"
+                        className="w-full justify-start border-border bg-card text-left text-foreground hover:bg-accent"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {bookStartDate
@@ -477,7 +473,7 @@ export function EntryDialog({
                           : "选择开始日期"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto border-zinc-800 bg-zinc-900 p-0">
+                    <PopoverContent className="w-auto border-border bg-popover p-0">
                       <Calendar
                         mode="single"
                         selected={bookStartDate ? new Date(bookStartDate) : undefined}
@@ -488,14 +484,14 @@ export function EntryDialog({
                   </Popover>
                 </div>
                 <div>
-                  <label className="mb-2 block text-xs font-medium text-zinc-400">
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
                     结束阅读
                   </label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-full justify-start border-zinc-800 bg-zinc-900 text-left text-zinc-300 hover:bg-zinc-800"
+                        className="w-full justify-start border-border bg-card text-left text-foreground hover:bg-accent"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {bookFinishDate
@@ -503,7 +499,7 @@ export function EntryDialog({
                           : "选择结束日期"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto border-zinc-800 bg-zinc-900 p-0">
+                    <PopoverContent className="w-auto border-border bg-popover p-0">
                       <Calendar
                         mode="single"
                         selected={bookFinishDate ? new Date(bookFinishDate) : undefined}
@@ -516,45 +512,45 @@ export function EntryDialog({
               </div>
 
               <div>
-                <label className="mb-2 block text-xs font-medium text-zinc-400">
+                <label className="mb-2 block text-xs font-medium text-muted-foreground">
                   作者（逗号分隔）
                 </label>
                 <Input
                   value={bookAuthors}
                   onChange={(e) => setBookAuthors(e.target.value)}
                   placeholder="例如：刘慈欣, 王小波"
-                  className="border-zinc-800 bg-zinc-900 text-zinc-300 placeholder:text-zinc-600"
+                  className="border-border bg-card text-foreground placeholder:text-muted-foreground"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-xs font-medium text-zinc-400">
+                <label className="mb-2 block text-xs font-medium text-muted-foreground">
                   类别（逗号分隔）
                 </label>
                 <Input
                   value={bookCategories}
                   onChange={(e) => setBookCategories(e.target.value)}
                   placeholder="例如：科幻, 小说"
-                  className="border-zinc-800 bg-zinc-900 text-zinc-300 placeholder:text-zinc-600"
+                  className="border-border bg-card text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             </>
           ) : (
             <div>
-              <label className="mb-2 block text-xs font-medium text-zinc-400">
+              <label className="mb-2 block text-xs font-medium text-muted-foreground">
                 日期
               </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start border-zinc-800 bg-zinc-900 text-left text-zinc-300 hover:bg-zinc-800"
+                    className="w-full justify-start border-border bg-card text-left text-foreground hover:bg-accent"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {format(date, "yyyy年MM月dd日", { locale: zhCN })}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto border-zinc-800 bg-zinc-900 p-0">
+                <PopoverContent className="w-auto border-border bg-popover p-0">
                   <Calendar
                     mode="single"
                     selected={date}
@@ -569,17 +565,17 @@ export function EntryDialog({
           {/* Status */}
           {statuses && (
             <div>
-              <label className="mb-2 block text-xs font-medium text-zinc-400">
+              <label className="mb-2 block text-xs font-medium text-muted-foreground">
                 状态
               </label>
               <Select
                 value={status || defaultStatus}
                 onValueChange={setStatus}
               >
-                <SelectTrigger className="border-zinc-800 bg-zinc-900 text-zinc-300">
+                <SelectTrigger className="border-border bg-card text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-800 bg-zinc-900">
+                <SelectContent className="border-border bg-popover">
                   {statuses.map((s) => (
                     <SelectItem key={s.value} value={s.value}>
                       {s.label}
@@ -592,14 +588,14 @@ export function EntryDialog({
 
           {/* Notes */}
           <div>
-            <label className="mb-2 block text-xs font-medium text-zinc-400">
+            <label className="mb-2 block text-xs font-medium text-muted-foreground">
               {mediaType === "book" ? "我的评价" : "笔记"}
             </label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="写点什么..."
-              className="min-h-[80px] max-h-56 resize-y overflow-y-auto border-zinc-800 bg-zinc-900 text-zinc-300 placeholder:text-zinc-600"
+              className="min-h-[80px] max-h-56 resize-y overflow-y-auto border-border bg-card text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
@@ -613,7 +609,7 @@ export function EntryDialog({
                 "transition-colors",
                 favorite
                   ? "text-rose-400 hover:text-rose-300"
-                  : "text-zinc-600 hover:text-zinc-400"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               <Heart
@@ -624,7 +620,7 @@ export function EntryDialog({
               <Button
                 variant="ghost"
                 onClick={() => onOpenChange(false)}
-                className="text-zinc-400 hover:text-zinc-200"
+                className="text-muted-foreground hover:text-foreground"
               >
                 取消
               </Button>

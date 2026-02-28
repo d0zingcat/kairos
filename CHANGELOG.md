@@ -10,14 +10,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Startup Auto Migration**: Added Next.js startup hook (`src/instrumentation.ts`) that auto-runs Drizzle migrations before serving requests, with process-level single-run guard and PostgreSQL advisory lock to prevent concurrent multi-instance migration conflicts.
+- **Migration Baseline Reset Docs**: Added destructive reset guidance in `README.md` for environments that still contain old schema but no data retention requirement.
 - **Agent Finalization Workflow**: Added repository-level `AGENTS.md` instructions to standardize post-change tasks for coding agents (`docs/changelog/version bump/commit/push/PR`).
 - **Main Branch Protection Rule**: Added explicit agent rule to never commit directly to `main`; all changes must go through PR.
+- **Theme Mode System**: Added full `light` / `dark` / `system` theme modes with persistence and system preference auto-follow behavior.
+- **Global Theme Toggle**: Added user-facing theme switcher in core navigation and home page entry points for quick mode switching.
+- **Ship PR Template**: Added a standard PR body template (`Summary` / `Verification` / `Notes`) in `AGENTS.md` for consistent agent-authored PR descriptions.
 
 ### Changed
 
 - **Deployment Initialization Flow**: Updated setup documentation to default to startup auto-migration, making manual `db:migrate` steps optional for normal app boot.
 - **Database Error Copy**: Updated login/register/settings database failure messages to reflect auto-migration and connection readiness instead of instructing users to run `db:push`.
 - **Finalize Trigger Keywords**: Updated workflow trigger keywords to `收尾` and `ship` (removed `/ship` to avoid shell command confusion).
+- **Theme Token Coverage**: Replaced remaining hardcoded dark color classes with semantic theme tokens across dashboard, plaza, auth, command palette, and entry dialog surfaces.
+- **Ship Safety Constraints**: Added mandatory `ship` guardrails requiring `gh pr create/edit --body-file`, post-update rendering verification, and immediate PR body repair when formatting is broken.
+- **Drizzle Migration Baseline**: Reinitialized migration history to a single baseline file `drizzle/0000_init.sql` generated from current schema.
+- **Startup Migrator Behavior**: Simplified startup migration flow to use Drizzle official migrator directly (no manual schema probing/reset and no manual metadata writes).
+
+### Fixed
+
+- **Theme Readability Parity**: Fixed inconsistent day-mode readability on plaza/profile and dashboard subviews by unifying card, border, and text token usage.
+- **Stats Card Gradient Class**: Fixed stats cards to correctly interpolate gradient classes at runtime.
+- **Lint Warning Cleanup**: Resolved all outstanding lint warnings by migrating key media thumbnails to `next/image` and removing unused variables.
 
 ## [0.3.2] - 2026-02-28
 
