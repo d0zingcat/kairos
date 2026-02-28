@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
-import { books, music, watches, games, appSettings } from "./schema"
+import { hash } from "bcryptjs"
+import { books, music, watches, games, appSettings, users } from "./schema"
 
 const connectionString = process.env.DATABASE_URL!
 const client = postgres(connectionString)
@@ -14,7 +15,16 @@ async function seed() {
   await db.delete(music)
   await db.delete(watches)
   await db.delete(games)
+  await db.delete(users)
   await db.delete(appSettings)
+
+  const [adminUser] = await db.insert(users).values({
+    username: "admin",
+    passwordHash: await hash("admin12345", 10),
+    role: "admin",
+    isPublicProfile: true,
+    isActive: true,
+  }).returning()
 
   await db.insert(appSettings).values({
     key: "site",
@@ -24,6 +34,7 @@ async function seed() {
   // ── Books ──────────────────────────────────────────
   await db.insert(books).values([
     {
+      userId: adminUser.id,
       title: "三体",
       authors: ["刘慈欣"],
       coverUrl: "https://books.google.com/books/content?id=ZrNzEAAAQBAJ&printsec=frontcover&img=1&zoom=1",
@@ -36,6 +47,7 @@ async function seed() {
       tags: ["科幻", "中国文学"],
     },
     {
+      userId: adminUser.id,
       title: "Atomic Habits",
       subtitle: "An Easy & Proven Way to Build Good Habits & Break Bad Ones",
       authors: ["James Clear"],
@@ -46,6 +58,7 @@ async function seed() {
       tags: ["自助", "习惯"],
     },
     {
+      userId: adminUser.id,
       title: "Designing Data-Intensive Applications",
       authors: ["Martin Kleppmann"],
       status: "reading",
@@ -57,6 +70,7 @@ async function seed() {
   // ── Music ──────────────────────────────────────────
   await db.insert(music).values([
     {
+      userId: adminUser.id,
       title: "OK Computer",
       artist: "Radiohead",
       type: "album",
@@ -67,6 +81,7 @@ async function seed() {
       tags: ["Alternative Rock"],
     },
     {
+      userId: adminUser.id,
       title: "Random Access Memories",
       artist: "Daft Punk",
       type: "album",
@@ -76,6 +91,7 @@ async function seed() {
       tags: ["Electronic", "Disco"],
     },
     {
+      userId: adminUser.id,
       title: "运动员",
       artist: "陈绮贞",
       type: "track",
@@ -88,6 +104,7 @@ async function seed() {
   // ── Watches ────────────────────────────────────────
   await db.insert(watches).values([
     {
+      userId: adminUser.id,
       title: "Inception",
       type: "movie",
       director: "Christopher Nolan",
@@ -101,6 +118,7 @@ async function seed() {
       tags: ["Nolan"],
     },
     {
+      userId: adminUser.id,
       title: "Breaking Bad",
       type: "tv",
       director: "Vince Gilligan",
@@ -115,6 +133,7 @@ async function seed() {
       tags: ["经典美剧"],
     },
     {
+      userId: adminUser.id,
       title: "Dune: Part Two",
       type: "movie",
       director: "Denis Villeneuve",
@@ -130,6 +149,7 @@ async function seed() {
   // ── Games ──────────────────────────────────────────
   await db.insert(games).values([
     {
+      userId: adminUser.id,
       title: "Elden Ring",
       platforms: ["PC", "PlayStation 5"],
       genre: ["Action RPG", "Open World"],
@@ -144,6 +164,7 @@ async function seed() {
       tags: ["Souls-like"],
     },
     {
+      userId: adminUser.id,
       title: "Celeste",
       platforms: ["Nintendo Switch"],
       genre: ["Platformer", "Indie"],
@@ -157,6 +178,7 @@ async function seed() {
       tags: ["Indie", "精品"],
     },
     {
+      userId: adminUser.id,
       title: "Baldur's Gate 3",
       platforms: ["PC"],
       genre: ["RPG", "Turn-Based"],

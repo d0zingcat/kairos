@@ -8,7 +8,7 @@ import { db } from "@/db"
 import { books, games, music, watches } from "@/db/schema"
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm"
 import { createLogger } from "@/lib/logger"
-import { verifyAdminSession } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 
 const logger = createLogger("api/search")
 
@@ -37,8 +37,8 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ type: string }> }
 ) {
-  const isAdmin = await verifyAdminSession()
-  if (!isAdmin) {
+  const currentUser = await getCurrentUser()
+  if (!currentUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -71,6 +71,7 @@ export async function GET(
       case "book": {
         const localBooks = await db.query.books.findMany({
           where: and(
+            eq(books.userId, currentUser.id),
             or(
               ilike(books.title, `%${query}%`),
               ilike(books.subtitle, `%${query}%`),
@@ -174,7 +175,7 @@ export async function GET(
 
       case "movie": {
         const localMovies = await db.query.watches.findMany({
-          where: and(eq(watches.type, "movie"), ilike(watches.title, `%${query}%`)),
+          where: and(eq(watches.userId, currentUser.id), eq(watches.type, "movie"), ilike(watches.title, `%${query}%`)),
           orderBy: [desc(watches.updatedAt)],
           limit: 10,
         })
@@ -228,7 +229,7 @@ export async function GET(
 
       case "tv": {
         const localShows = await db.query.watches.findMany({
-          where: and(eq(watches.type, "tv"), ilike(watches.title, `%${query}%`)),
+          where: and(eq(watches.userId, currentUser.id), eq(watches.type, "tv"), ilike(watches.title, `%${query}%`)),
           orderBy: [desc(watches.updatedAt)],
           limit: 10,
         })
@@ -282,12 +283,15 @@ export async function GET(
 
       case "game": {
         const localGames = await db.query.games.findMany({
-          where: or(
-            ilike(games.title, `%${query}%`),
-            ilike(games.developer, `%${query}%`),
-            sql`array_to_string(${games.platforms}, ',') ilike ${`%${query}%`}`,
-            sql`array_to_string(${games.genre}, ',') ilike ${`%${query}%`}`,
-            sql`array_to_string(${games.tags}, ',') ilike ${`%${query}%`}`
+          where: and(
+            eq(games.userId, currentUser.id),
+            or(
+              ilike(games.title, `%${query}%`),
+              ilike(games.developer, `%${query}%`),
+              sql`array_to_string(${games.platforms}, ',') ilike ${`%${query}%`}`,
+              sql`array_to_string(${games.genre}, ',') ilike ${`%${query}%`}`,
+              sql`array_to_string(${games.tags}, ',') ilike ${`%${query}%`}`
+            )
           ),
           orderBy: [desc(games.updatedAt)],
           limit: 10,
@@ -344,12 +348,15 @@ export async function GET(
 
       case "music": {
         const localMusic = await db.query.music.findMany({
-          where: or(
-            ilike(music.title, `%${query}%`),
-            ilike(music.artist, `%${query}%`),
-            ilike(music.albumTitle, `%${query}%`),
-            sql`array_to_string(${music.genre}, ',') ilike ${`%${query}%`}`,
-            sql`array_to_string(${music.tags}, ',') ilike ${`%${query}%`}`
+          where: and(
+            eq(music.userId, currentUser.id),
+            or(
+              ilike(music.title, `%${query}%`),
+              ilike(music.artist, `%${query}%`),
+              ilike(music.albumTitle, `%${query}%`),
+              sql`array_to_string(${music.genre}, ',') ilike ${`%${query}%`}`,
+              sql`array_to_string(${music.tags}, ',') ilike ${`%${query}%`}`
+            )
           ),
           orderBy: [desc(music.updatedAt)],
           limit: 10,
