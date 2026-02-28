@@ -1,4 +1,5 @@
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js"
+import { eq } from "drizzle-orm"
 import { books, type NewBook } from "./schema"
 
 type GoodreadsRow = Record<string, string>
@@ -213,7 +214,7 @@ function csvRowsToObjects(rows: string[][]): GoodreadsRow[] {
     .filter((row) => cleanCell(row["Title"]).length > 0)
 }
 
-function mapRowToBook(row: GoodreadsRow): NewBook {
+function mapRowToBook(row: GoodreadsRow, userId: string): NewBook {
   const finishDate = parseDate(row["Date Read"])
   const addedDate = parseDate(row["Date Added"])
   const status = mapStatus(row["Exclusive Shelf"])
@@ -223,6 +224,7 @@ function mapRowToBook(row: GoodreadsRow): NewBook {
   const isbn10 = cleanCell(row["ISBN"])
 
   return {
+    userId,
     externalId: externalId || null,
     title: cleanCell(row["Title"]),
     authors: parseAuthors(row["Author"], row["Additional Authors"]),
@@ -264,23 +266,24 @@ function chunk<T>(items: T[], size: number): T[][] {
 export async function importGoodreadsCsv(
   database: PostgresJsDatabase<Record<string, unknown>>,
   csvContent: string,
-  options?: { clear?: boolean }
+  options: { userId: string; clear?: boolean }
 ): Promise<GoodreadsImportSummary> {
   const rows = parseCsv(csvContent)
   const objects = csvRowsToObjects(rows)
-  const mapped = objects.map(mapRowToBook)
+  const mapped = objects.map((row) => mapRowToBook(row, options.userId))
 
   if (mapped.length === 0) {
     return { total: 0, inserted: 0, skipped: 0, failed: 0 }
   }
 
   if (options?.clear) {
-    await database.delete(books)
+    await database.delete(books).where(eq(books.userId, options.userId))
   }
 
   const existingRows = await database
     .select({ externalId: books.externalId, title: books.title, authors: books.authors })
     .from(books)
+    .where(eq(books.userId, options.userId))
 
   const existingExternalIds = new Set(
     existingRows

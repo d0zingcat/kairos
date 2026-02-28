@@ -21,6 +21,8 @@
 - 🧭 **可观测性增强** — 搜索链路分级日志 + `x-trace-id` 端到端追踪
 - 🌙 **深色主题优先** — Linear/Raycast 风格极简 UI
 - 🔒 **三种访问模式** — 支持 `public` / `private` / `password`，可在「管理设置」页实时切换（`/dashboard/settings`）
+- 👥 **多用户账号体系** — 支持注册账号，每位用户默认仅查看自己的时间线
+- 🌐 **公开广场（Plaza）** — 用户可切换“是否公开摘要动态”，广场展示公开用户的最近活动
 - 📥 **Goodreads 一键导入** — 在「管理设置」页上传 CSV，自动追加导入并跳过重复
 - 🐳 **Docker 一键部署** — PostgreSQL + App 容器化
 - 🗄️ **镜像内可执行迁移** — `latest` 镜像内置 `dist/migrate.js`，支持无源码环境初始化数据库
@@ -36,11 +38,7 @@ cd kairos
 
 # 2. 配置环境变量
 cp .env.example .env
-# 编辑 .env，填入你的 API Keys 和管理密码 hash
-
-# 3. 生成密码 hash
-bun -e "import { hash } from 'bcryptjs'; console.log(await hash('your-password', 10))"
-# 将输出填入 .env 的 ADMIN_PASSWORD_HASH（注意把 `$` 写成 `\$`）
+# 编辑 .env，填入 DATABASE_URL / JWT_SECRET / 各搜索 API Keys
 
 # 4. 启动
 docker compose up -d
@@ -97,8 +95,6 @@ bun run dev
 | 变量 | 说明 | 必须 |
 |------|------|:----:|
 | `DATABASE_URL` | PostgreSQL 连接字符串 | ✅ |
-| `ADMIN_PASSWORD_HASH` | bcrypt 密码哈希 | ✅ |
-| `VIEWER_PASSWORD_HASH` | 访客密码 hash（`password` 模式可选，默认回退 ADMIN） | 可选 |
 | `JWT_SECRET` | JWT 签名密钥（≥32字符） | ✅ |
 | `SITE_VISIBILITY` | 默认访问模式（数据库未初始化时兜底） | 可选 |
 | `LOG_LEVEL` | 服务端日志级别（debug/info/warn/error） | 可选 |
@@ -110,7 +106,15 @@ bun run dev
 
 > 搜索 API 会在响应头返回 `x-trace-id`，可用该值串联后端日志排查问题。
 > 访问模式优先读取数据库中的管理设置；若无设置则回退到 `SITE_VISIBILITY`。
-> bcrypt hash 写入 `.env` 时需要转义 `$`（示例：`\$2b\$10\$...`），否则会被环境变量展开导致登录失败。
+> 首次启动后请访问 `/register` 注册账号；首个账号自动成为管理员。
+
+## 多用户与广场说明
+
+- 默认情况下，用户只能查看和管理自己的记录（书/音乐/影视/游戏）。
+- 在 `Dashboard -> Settings` 可切换“公开个人摘要”开关，控制是否出现在广场。
+- 广场页面位于 `/plaza`，展示已公开用户的摘要与最近动态。
+- 公开用户主页位于 `/u/<username>`，未公开用户不会暴露主页内容。
+- 广场动态采用无限滚动加载，网络失败时支持“点击重试”，恢复后会显示短暂提示。
 
 ## 技术栈
 
@@ -137,8 +141,8 @@ bun run db:migrate  # 运行迁移
 bun run db:migrate:runtime # 执行镜像内运行时迁移脚本
 bun run db:studio   # 打开 Drizzle Studio
 bun run db:seed     # 填充示例数据
-bun run db:import:goodreads -- /path/to/goodreads_library_export.csv          # 导入 Goodreads 书单
-bun run db:import:goodreads -- /path/to/goodreads_library_export.csv --clear  # 导入前清空 books 表
+bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId>          # 导入 Goodreads 书单
+bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId> --clear  # 导入前清空该用户 books
 ```
 
 后台导入入口：`/dashboard/settings` → Goodreads 导入。
