@@ -5,10 +5,11 @@ import { importGoodreadsCsv } from "./goodreads-importer"
 
 async function main() {
   const csvPath = process.argv[2]
+  const userId = process.argv[3]
   const shouldClear = process.argv.includes("--clear")
 
-  if (!csvPath) {
-    console.error("用法: bun run db:import:goodreads -- <csv文件路径> [--clear]")
+  if (!csvPath || !userId) {
+    console.error("用法: bun run db:import:goodreads -- <csv文件路径> <userId> [--clear]")
     process.exit(1)
   }
 
@@ -23,7 +24,7 @@ async function main() {
 
   try {
     const raw = await readFile(csvPath, "utf-8")
-    const summary = await importGoodreadsCsv(db, raw, { clear: shouldClear })
+    const summary = await importGoodreadsCsv(db, raw, { userId, clear: shouldClear })
     console.log(`导入完成: 新增 ${summary.inserted} 条，跳过 ${summary.skipped} 条，源数据 ${summary.total} 条`)
   } finally {
     await client.end({ timeout: 5 })

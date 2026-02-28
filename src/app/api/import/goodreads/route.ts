@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { db } from "@/db"
-import { verifyAdminSession } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 import { importGoodreadsCsv } from "@/db/goodreads-importer"
 
 const MAX_CSV_SIZE_BYTES = 5 * 1024 * 1024
 
 export async function POST(request: Request) {
-  const isAdmin = await verifyAdminSession()
-  if (!isAdmin) {
+  const currentUser = await getCurrentUser()
+  if (!currentUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     const csvContent = await file.text()
-    const summary = await importGoodreadsCsv(db, csvContent)
+    const summary = await importGoodreadsCsv(db, csvContent, { userId: currentUser.id })
 
     revalidatePath("/dashboard")
     revalidatePath("/dashboard/books")

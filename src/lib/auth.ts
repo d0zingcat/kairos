@@ -1,109 +1,26 @@
-import { compare } from "bcryptjs"
+import { compare, hash } from "bcryptjs"
 import { SignJWT, jwtVerify } from "jose"
 import { cookies } from "next/headers"
-import { readFileSync } from "node:fs"
-import { join } from "node:path"
+import { db } from "@/db"
+import { users } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret-change-me"
 )
 
-const ADMIN_COOKIE_NAME = "kairos-admin-session"
-const VIEWER_COOKIE_NAME = "kairos-viewer-session"
+const SESSION_COOKIE_NAME = "kairos-session"
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days
 
-function normalizeHash(value: string): string {
-  const trimmed = value.trim()
-  const unquoted = trimmed.replace(/^['"]|['"]$/g, "")
-  return unquoted.replace(/\\\$/g, "$")
+type SessionRole = "admin" | "member"
+
+type SessionPayload = {
+  userId: string
+  role: SessionRole
 }
 
-function isBcryptHash(value: string): boolean {
-  return /^\$2[aby]\$\d{2}\$/.test(value)
-}
-
-function extractHashFromDotEnv(key: string): string | null {
-  try {
-    const content = readFileSync(join(process.cwd(), ".env"), "utf8")
-    const line = content
-      .split("\n")
-      .find((entry) => entry.trim().startsWith(`${key}=`))
-
-    if (!line) {
-      return null
-    }
-
-    const rawValue = line.slice(line.indexOf("=") + 1)
-    const normalized = normalizeHash(rawValue)
-    return isBcryptHash(normalized) ? normalized : null
-  } catch {
-    return null
-  }
-}
-
-function getAdminPasswordHash(): string {
-  // In development, prefer reading the latest .env content to avoid
-  // stale process.env values when runtime was not fully restarted.
-  if (process.env.NODE_ENV !== "production") {
-    const fromDotEnv = extractHashFromDotEnv("ADMIN_PASSWORD_HASH")
-    if (fromDotEnv) {
-      return fromDotEnv
-    }
-  }
-
-  const fromEnv = process.env.ADMIN_PASSWORD_HASH
-  if (fromEnv) {
-    const normalized = normalizeHash(fromEnv)
-    if (isBcryptHash(normalized)) {
-      return normalized
-    }
-  }
-
-  const fromDotEnv = extractHashFromDotEnv("ADMIN_PASSWORD_HASH")
-  if (fromDotEnv) {
-    return fromDotEnv
-  }
-
-  throw new Error("ADMIN_PASSWORD_HASH not configured")
-}
-
-function getViewerPasswordHash(): string {
-  if (process.env.NODE_ENV !== "production") {
-    const fromDotEnv = extractHashFromDotEnv("VIEWER_PASSWORD_HASH")
-    if (fromDotEnv) {
-      return fromDotEnv
-    }
-  }
-
-  const fromEnv = process.env.VIEWER_PASSWORD_HASH
-  if (fromEnv) {
-    const normalized = normalizeHash(fromEnv)
-    if (isBcryptHash(normalized)) {
-      return normalized
-    }
-  }
-
-  const fromDotEnv = extractHashFromDotEnv("VIEWER_PASSWORD_HASH")
-  if (fromDotEnv) {
-    return fromDotEnv
-  }
-
-  // Fallback to admin password when viewer password is not configured.
-  return getAdminPasswordHash()
-}
-
-export async function verifyAdminPassword(password: string): Promise<boolean> {
-  const hash = getAdminPasswordHash()
-  return compare(password, hash)
-}
-
-export async function verifyViewerPassword(password: string): Promise<boolean> {
-  const hash = getViewerPasswordHash()
-  return compare(password, hash)
-}
-
-async function createSessionToken(role: "admin" | "viewer"): Promise<string> {
-  const token = await new SignJWT({ role })
+async function createSessionToken(payload: SessionPayload): Promise<string> {
+  const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("30d")
@@ -112,61 +29,83 @@ async function createSessionToken(role: "admin" | "viewer"): Promise<string> {
   return token
 }
 
-export async function createAdminSession(): Promise<string> {
-  const token = await createSessionToken("admin")
+export async function createUserSession(userId: string, role: SessionRole): Promise<string> {
+  const token = await createSessionToken({ userId, role })
   const cookieStore = await cookies()
-  cookieStore.set(ADMIN_COOKIE_NAME, token, {
+  cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: COOKIE_MAX_AGE,
     path: "/",
   })
-  cookieStore.delete(VIEWER_COOKIE_NAME)
   return token
 }
 
-export async function createViewerSession(): Promise<string> {
-  const token = await createSessionToken("viewer")
-  const cookieStore = await cookies()
-  cookieStore.set(VIEWER_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: COOKIE_MAX_AGE,
-    path: "/",
-  })
-
-  return token
-}
-
-async function verifyRoleSession(cookieName: string, role: "admin" | "viewer"): Promise<boolean> {
+async function getSessionPayload(): Promise<SessionPayload | null> {
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get(cookieName)?.value
-    if (!token) return false
+    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value
+    if (!token) return null
 
     const { payload } = await jwtVerify(token, JWT_SECRET)
-    return payload.role === role
+    const userId = typeof payload.userId === "string" ? payload.userId : null
+    const role = payload.role === "admin" || payload.role === "member" ? payload.role : null
+
+    if (!userId || !role) {
+      return null
+    }
+
+    return { userId, role }
   } catch {
-    return false
+    return null
   }
 }
 
 export async function verifyAdminSession(): Promise<boolean> {
-  return verifyRoleSession(ADMIN_COOKIE_NAME, "admin")
+  const session = await getSessionPayload()
+  return session?.role === "admin"
 }
 
-export async function verifyViewerSession(): Promise<boolean> {
-  return verifyRoleSession(VIEWER_COOKIE_NAME, "viewer")
+export async function verifyUserPassword(password: string, passwordHash: string): Promise<boolean> {
+  return compare(password, passwordHash)
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  return hash(password, 10)
+}
+
+export async function getCurrentUser() {
+  const session = await getSessionPayload()
+  if (!session) {
+    return null
+  }
+
+  let user
+  try {
+    user = await db.query.users.findFirst({
+      where: and(
+        eq(users.id, session.userId),
+        eq(users.isActive, true)
+      ),
+    })
+  } catch {
+    return null
+  }
+
+  if (!user) {
+    return null
+  }
+
+  return user
 }
 
 export async function verifySession(): Promise<boolean> {
-  return verifyAdminSession()
+  const user = await getCurrentUser()
+  return Boolean(user)
 }
 
 export async function destroySession(): Promise<void> {
   const cookieStore = await cookies()
-  cookieStore.delete(ADMIN_COOKIE_NAME)
-  cookieStore.delete(VIEWER_COOKIE_NAME)
+  cookieStore.delete(SESSION_COOKIE_NAME)
 }

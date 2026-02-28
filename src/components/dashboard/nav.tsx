@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { MEDIA_TYPES } from "@/lib/constants"
-import { LayoutDashboard, LogOut, Command, SlidersHorizontal } from "lucide-react"
+import { LayoutDashboard, LogOut, Command, SlidersHorizontal, Globe2 } from "lucide-react"
 import { logoutAction } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { useCommandPalette } from "@/components/command-palette/provider"
@@ -12,6 +12,7 @@ import { motion } from "framer-motion"
 
 const baseNavItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/dashboard/plaza", label: "Plaza", icon: Globe2 },
   { href: MEDIA_TYPES.book.href, label: MEDIA_TYPES.book.labelPlural, icon: MEDIA_TYPES.book.icon },
   { href: MEDIA_TYPES.music.href, label: MEDIA_TYPES.music.labelPlural, icon: MEDIA_TYPES.music.icon },
   { href: MEDIA_TYPES.watch.href, label: MEDIA_TYPES.watch.labelPlural, icon: MEDIA_TYPES.watch.icon },
@@ -115,7 +116,7 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
                   className="w-full justify-start gap-2 text-sm text-zinc-500 hover:text-zinc-300"
                   type="button"
                 >
-                  管理员登录
+                  登录 / 注册
                 </Button>
               </Link>
             )}

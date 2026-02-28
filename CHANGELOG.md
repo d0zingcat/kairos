@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-02-28
+
+### Added
+
+- **Multi-user Accounts**: Added user registration/login with per-user sessions, first-user admin bootstrap, and account-scoped data ownership for all timeline entries.
+- **Public Plaza**: Added `/plaza` public feed with user summaries and recent public activities, plus public profile pages at `/u/[username]`.
+- **Profile Visibility Control**: Added user-level public visibility toggle to control whether personal summary/activity appears in Plaza.
+- **Plaza Feed Pagination API**: Added cursor-based feed endpoint at `/api/plaza/feed` for incremental client loading.
+- **Infinite Scrolling Feed UX**: Added intersection-observer based infinite loading in Plaza feed with error retry and recovery feedback.
+
+### Changed
+
+- **Authentication Model**: Migrated from legacy admin/viewer mode to user-account sessions (`userId` + `role`) with stronger database readiness error handling.
+- **Data Isolation**: Updated entry CRUD, dashboard stats, local search, and Goodreads import flow to enforce user-scoped reads/writes.
+
+### Fixed
+
+- **Login Failure Hard Crash**: Fixed login action crash path when user table queries fail by returning user-facing error messages.
+
 ## [0.2.1] - 2026-02-28
 
 ### Fixed
@@ -76,7 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker Deployment**: Multi-stage Dockerfile (oven/bun base, standalone output), docker-compose.yml with PostgreSQL 16 + app service, health checks, persistent volume.
 - **Environment Configuration**: `.env.example` documenting all required and optional environment variables.
 
-[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/d0zingcat/kairos/compare/v0.2.0...v0.3.0
 [0.2.1]: https://github.com/d0zingcat/kairos/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/d0zingcat/kairos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/d0zingcat/kairos/releases/tag/v0.1.0

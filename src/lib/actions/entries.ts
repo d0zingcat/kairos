@@ -5,35 +5,41 @@ import { books, music, watches, games } from "@/db/schema"
 import type { NewBook, NewMusic, NewWatch, NewGame } from "@/db/schema"
 import { eq, desc, sql, and, ilike, count } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { verifyAdminSession } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 
-async function assertCanEdit() {
-  const isAdmin = await verifyAdminSession()
-  if (!isAdmin) {
+type BookInput = Omit<NewBook, "userId">
+type MusicInput = Omit<NewMusic, "userId">
+type WatchInput = Omit<NewWatch, "userId">
+type GameInput = Omit<NewGame, "userId">
+
+async function requireCurrentUser() {
+  const user = await getCurrentUser()
+  if (!user) {
     throw new Error("UNAUTHORIZED")
   }
+  return user
 }
 
 // ── Books ────────────────────────────────────────────────
-export async function createBook(data: NewBook) {
-  await assertCanEdit()
-  const [book] = await db.insert(books).values(data).returning()
+export async function createBook(data: BookInput) {
+  const user = await requireCurrentUser()
+  const [book] = await db.insert(books).values({ ...data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
   return book
 }
 
-export async function updateBook(id: string, data: Partial<NewBook>) {
-  await assertCanEdit()
-  const [book] = await db.update(books).set(data).where(eq(books.id, id)).returning()
+export async function updateBook(id: string, data: Partial<BookInput>) {
+  const user = await requireCurrentUser()
+  const [book] = await db.update(books).set(data).where(and(eq(books.id, id), eq(books.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
   return book
 }
 
 export async function deleteBook(id: string) {
-  await assertCanEdit()
-  await db.delete(books).where(eq(books.id, id))
+  const user = await requireCurrentUser()
+  await db.delete(books).where(and(eq(books.id, id), eq(books.userId, user.id)))
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
 }
@@ -45,7 +51,8 @@ export async function getBooks(options?: {
   limit?: number
   offset?: number
 }) {
-  const conditions = []
+  const user = await requireCurrentUser()
+  const conditions = [eq(books.userId, user.id)]
   if (options?.status) {
     conditions.push(eq(books.status, options.status as typeof books.status.enumValues[number]))
   }
@@ -60,7 +67,7 @@ export async function getBooks(options?: {
       : desc(books.createdAt)
 
   return db.query.books.findMany({
-    where: conditions.length > 0 ? and(...conditions) : undefined,
+    where: and(...conditions),
     orderBy: [orderBy],
     limit: options?.limit ?? 50,
     offset: options?.offset ?? 0,
@@ -68,29 +75,30 @@ export async function getBooks(options?: {
 }
 
 export async function getBook(id: string) {
-  return db.query.books.findFirst({ where: eq(books.id, id) })
+  const user = await requireCurrentUser()
+  return db.query.books.findFirst({ where: and(eq(books.id, id), eq(books.userId, user.id)) })
 }
 
 // ── Music ────────────────────────────────────────────────
-export async function createMusic(data: NewMusic) {
-  await assertCanEdit()
-  const [item] = await db.insert(music).values(data).returning()
+export async function createMusic(data: MusicInput) {
+  const user = await requireCurrentUser()
+  const [item] = await db.insert(music).values({ ...data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
   return item
 }
 
-export async function updateMusic(id: string, data: Partial<NewMusic>) {
-  await assertCanEdit()
-  const [item] = await db.update(music).set(data).where(eq(music.id, id)).returning()
+export async function updateMusic(id: string, data: Partial<MusicInput>) {
+  const user = await requireCurrentUser()
+  const [item] = await db.update(music).set(data).where(and(eq(music.id, id), eq(music.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
   return item
 }
 
 export async function deleteMusic(id: string) {
-  await assertCanEdit()
-  await db.delete(music).where(eq(music.id, id))
+  const user = await requireCurrentUser()
+  await db.delete(music).where(and(eq(music.id, id), eq(music.userId, user.id)))
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
 }
@@ -101,7 +109,8 @@ export async function getMusicList(options?: {
   limit?: number
   offset?: number
 }) {
-  const conditions = []
+  const user = await requireCurrentUser()
+  const conditions = [eq(music.userId, user.id)]
   if (options?.search) {
     conditions.push(ilike(music.title, `%${options.search}%`))
   }
@@ -113,7 +122,7 @@ export async function getMusicList(options?: {
       : desc(music.createdAt)
 
   return db.query.music.findMany({
-    where: conditions.length > 0 ? and(...conditions) : undefined,
+    where: and(...conditions),
     orderBy: [orderBy],
     limit: options?.limit ?? 50,
     offset: options?.offset ?? 0,
@@ -121,25 +130,25 @@ export async function getMusicList(options?: {
 }
 
 // ── Watches ──────────────────────────────────────────────
-export async function createWatch(data: NewWatch) {
-  await assertCanEdit()
-  const [item] = await db.insert(watches).values(data).returning()
+export async function createWatch(data: WatchInput) {
+  const user = await requireCurrentUser()
+  const [item] = await db.insert(watches).values({ ...data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
   return item
 }
 
-export async function updateWatch(id: string, data: Partial<NewWatch>) {
-  await assertCanEdit()
-  const [item] = await db.update(watches).set(data).where(eq(watches.id, id)).returning()
+export async function updateWatch(id: string, data: Partial<WatchInput>) {
+  const user = await requireCurrentUser()
+  const [item] = await db.update(watches).set(data).where(and(eq(watches.id, id), eq(watches.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
   return item
 }
 
 export async function deleteWatch(id: string) {
-  await assertCanEdit()
-  await db.delete(watches).where(eq(watches.id, id))
+  const user = await requireCurrentUser()
+  await db.delete(watches).where(and(eq(watches.id, id), eq(watches.userId, user.id)))
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
 }
@@ -152,7 +161,8 @@ export async function getWatches(options?: {
   limit?: number
   offset?: number
 }) {
-  const conditions = []
+  const user = await requireCurrentUser()
+  const conditions = [eq(watches.userId, user.id)]
   if (options?.status) {
     conditions.push(eq(watches.status, options.status as typeof watches.status.enumValues[number]))
   }
@@ -170,7 +180,7 @@ export async function getWatches(options?: {
       : desc(watches.createdAt)
 
   return db.query.watches.findMany({
-    where: conditions.length > 0 ? and(...conditions) : undefined,
+    where: and(...conditions),
     orderBy: [orderBy],
     limit: options?.limit ?? 50,
     offset: options?.offset ?? 0,
@@ -178,25 +188,25 @@ export async function getWatches(options?: {
 }
 
 // ── Games ────────────────────────────────────────────────
-export async function createGame(data: NewGame) {
-  await assertCanEdit()
-  const [item] = await db.insert(games).values(data).returning()
+export async function createGame(data: GameInput) {
+  const user = await requireCurrentUser()
+  const [item] = await db.insert(games).values({ ...data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
   return item
 }
 
-export async function updateGame(id: string, data: Partial<NewGame>) {
-  await assertCanEdit()
-  const [item] = await db.update(games).set(data).where(eq(games.id, id)).returning()
+export async function updateGame(id: string, data: Partial<GameInput>) {
+  const user = await requireCurrentUser()
+  const [item] = await db.update(games).set(data).where(and(eq(games.id, id), eq(games.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
   return item
 }
 
 export async function deleteGame(id: string) {
-  await assertCanEdit()
-  await db.delete(games).where(eq(games.id, id))
+  const user = await requireCurrentUser()
+  await db.delete(games).where(and(eq(games.id, id), eq(games.userId, user.id)))
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
 }
@@ -208,7 +218,8 @@ export async function getGames(options?: {
   limit?: number
   offset?: number
 }) {
-  const conditions = []
+  const user = await requireCurrentUser()
+  const conditions = [eq(games.userId, user.id)]
   if (options?.status) {
     conditions.push(eq(games.status, options.status as typeof games.status.enumValues[number]))
   }
@@ -223,7 +234,7 @@ export async function getGames(options?: {
       : desc(games.createdAt)
 
   return db.query.games.findMany({
-    where: conditions.length > 0 ? and(...conditions) : undefined,
+    where: and(...conditions),
     orderBy: [orderBy],
     limit: options?.limit ?? 50,
     offset: options?.offset ?? 0,
@@ -232,6 +243,7 @@ export async function getGames(options?: {
 
 // ── Aggregations ─────────────────────────────────────────
 export async function getActivityData(days = 365) {
+  const user = await requireCurrentUser()
   const now = new Date()
   const endDate = now.toISOString().slice(0, 10)
   const start = new Date(now)
@@ -246,12 +258,18 @@ export async function getActivityData(days = 365) {
     db
       .select({ createdAt: books.createdAt, startDate: books.startDate, finishDate: books.finishDate })
       .from(books)
-      .where(sql`${books.createdAt} <= ${endDate}::date`),
+      .where(
+        and(
+          eq(books.userId, user.id),
+          sql`${books.createdAt} <= ${endDate}::date`
+        )
+      ),
     db
       .select({ date: musicDateExpr, count: count() })
       .from(music)
       .where(
         and(
+          eq(music.userId, user.id),
           sql`${music.createdAt} >= ${startDate}::date`,
           sql`${music.createdAt} <= ${endDate}::date`
         )
@@ -262,6 +280,7 @@ export async function getActivityData(days = 365) {
       .from(watches)
       .where(
         and(
+          eq(watches.userId, user.id),
           sql`${watches.createdAt} >= ${startDate}::date`,
           sql`${watches.createdAt} <= ${endDate}::date`
         )
@@ -272,6 +291,7 @@ export async function getActivityData(days = 365) {
       .from(games)
       .where(
         and(
+          eq(games.userId, user.id),
           sql`${games.createdAt} >= ${startDate}::date`,
           sql`${games.createdAt} <= ${endDate}::date`
         )
@@ -330,6 +350,7 @@ export async function getActivityData(days = 365) {
 }
 
 export async function getStats() {
+  const user = await requireCurrentUser()
   const now = new Date()
   const thisYear = now.getFullYear()
   const thisMonth = now.getMonth() + 1
@@ -337,24 +358,24 @@ export async function getStats() {
   const yearStart = `${thisYear}-01-01`
 
   const [bookCount, musicCount, watchCount, gameCount] = await Promise.all([
-    db.select({ count: count() }).from(books),
-    db.select({ count: count() }).from(music),
-    db.select({ count: count() }).from(watches),
-    db.select({ count: count() }).from(games),
+    db.select({ count: count() }).from(books).where(eq(books.userId, user.id)),
+    db.select({ count: count() }).from(music).where(eq(music.userId, user.id)),
+    db.select({ count: count() }).from(watches).where(eq(watches.userId, user.id)),
+    db.select({ count: count() }).from(games).where(eq(games.userId, user.id)),
   ])
 
   const [bookMonthly, musicMonthly, watchMonthly, gameMonthly] = await Promise.all([
-    db.select({ count: count() }).from(books).where(sql`${books.createdAt} >= ${monthStart}::date`),
-    db.select({ count: count() }).from(music).where(sql`${music.createdAt} >= ${monthStart}::date`),
-    db.select({ count: count() }).from(watches).where(sql`${watches.createdAt} >= ${monthStart}::date`),
-    db.select({ count: count() }).from(games).where(sql`${games.createdAt} >= ${monthStart}::date`),
+    db.select({ count: count() }).from(books).where(and(eq(books.userId, user.id), sql`${books.createdAt} >= ${monthStart}::date`)),
+    db.select({ count: count() }).from(music).where(and(eq(music.userId, user.id), sql`${music.createdAt} >= ${monthStart}::date`)),
+    db.select({ count: count() }).from(watches).where(and(eq(watches.userId, user.id), sql`${watches.createdAt} >= ${monthStart}::date`)),
+    db.select({ count: count() }).from(games).where(and(eq(games.userId, user.id), sql`${games.createdAt} >= ${monthStart}::date`)),
   ])
 
   const [bookYearly, musicYearly, watchYearly, gameYearly] = await Promise.all([
-    db.select({ count: count() }).from(books).where(sql`${books.createdAt} >= ${yearStart}::date`),
-    db.select({ count: count() }).from(music).where(sql`${music.createdAt} >= ${yearStart}::date`),
-    db.select({ count: count() }).from(watches).where(sql`${watches.createdAt} >= ${yearStart}::date`),
-    db.select({ count: count() }).from(games).where(sql`${games.createdAt} >= ${yearStart}::date`),
+    db.select({ count: count() }).from(books).where(and(eq(books.userId, user.id), sql`${books.createdAt} >= ${yearStart}::date`)),
+    db.select({ count: count() }).from(music).where(and(eq(music.userId, user.id), sql`${music.createdAt} >= ${yearStart}::date`)),
+    db.select({ count: count() }).from(watches).where(and(eq(watches.userId, user.id), sql`${watches.createdAt} >= ${yearStart}::date`)),
+    db.select({ count: count() }).from(games).where(and(eq(games.userId, user.id), sql`${games.createdAt} >= ${yearStart}::date`)),
   ])
 
   return {
@@ -383,11 +404,12 @@ export async function getStats() {
 }
 
 export async function getRecentActivity(limit = 20) {
+  const user = await requireCurrentUser()
   const [recentBooks, recentMusic, recentWatches, recentGames] = await Promise.all([
-    db.query.books.findMany({ orderBy: [desc(books.createdAt)], limit }),
-    db.query.music.findMany({ orderBy: [desc(music.createdAt)], limit }),
-    db.query.watches.findMany({ orderBy: [desc(watches.createdAt)], limit }),
-    db.query.games.findMany({ orderBy: [desc(games.createdAt)], limit }),
+    db.query.books.findMany({ where: eq(books.userId, user.id), orderBy: [desc(books.createdAt)], limit }),
+    db.query.music.findMany({ where: eq(music.userId, user.id), orderBy: [desc(music.createdAt)], limit }),
+    db.query.watches.findMany({ where: eq(watches.userId, user.id), orderBy: [desc(watches.createdAt)], limit }),
+    db.query.games.findMany({ where: eq(games.userId, user.id), orderBy: [desc(games.createdAt)], limit }),
   ])
 
   const timeline = [
@@ -403,11 +425,12 @@ export async function getRecentActivity(limit = 20) {
 }
 
 export async function getFavorites() {
+  const user = await requireCurrentUser()
   const [favBooks, favMusic, favWatches, favGames] = await Promise.all([
-    db.query.books.findMany({ where: eq(books.favorite, true), limit: 20 }),
-    db.query.music.findMany({ where: eq(music.favorite, true), limit: 20 }),
-    db.query.watches.findMany({ where: eq(watches.favorite, true), limit: 20 }),
-    db.query.games.findMany({ where: eq(games.favorite, true), limit: 20 }),
+    db.query.books.findMany({ where: and(eq(books.userId, user.id), eq(books.favorite, true)), limit: 20 }),
+    db.query.music.findMany({ where: and(eq(music.userId, user.id), eq(music.favorite, true)), limit: 20 }),
+    db.query.watches.findMany({ where: and(eq(watches.userId, user.id), eq(watches.favorite, true)), limit: 20 }),
+    db.query.games.findMany({ where: and(eq(games.userId, user.id), eq(games.favorite, true)), limit: 20 }),
   ])
 
   return [
