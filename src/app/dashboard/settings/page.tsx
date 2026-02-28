@@ -23,10 +23,10 @@ export default async function SettingsPage() {
       <div className="flex items-center gap-3">
         <ShieldCheck className="h-6 w-6 text-amber-400" />
         <div>
-          <h1 className="font-mono text-2xl font-bold tracking-tight text-zinc-100">
+          <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
             设置
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             你的公开可见性与系统配置
           </p>
         </div>

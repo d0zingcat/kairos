@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState, useRef } from "react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import {
   CommandDialog,
@@ -158,9 +159,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           onValueChange={handleInputChange}
         />
         {searchType && (
-          <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-2 text-xs text-zinc-400">
+          <div className="flex items-center justify-between border-b border-border px-3 py-2 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
-              <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-zinc-200">
+              <span className="rounded-md bg-muted px-2 py-0.5 text-foreground">
                 当前模式：{SEARCH_TYPE_LABEL[searchType]}
               </span>
               <span>输入关键词后开始搜索</span>
@@ -168,7 +169,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <button
               type="button"
               onClick={handleClearSearchType}
-              className="text-zinc-500 transition-colors hover:text-zinc-200"
+              className="text-muted-foreground transition-colors hover:text-foreground"
             >
               清除模式
             </button>
@@ -180,27 +181,27 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               <CommandItem onSelect={() => setSearchType("book")}>
                 <MEDIA_TYPES.book.icon className="mr-2 h-4 w-4" />
                 <span>搜索书籍</span>
-                <kbd className="ml-auto text-xs text-zinc-500">/book</kbd>
+                <kbd className="ml-auto text-xs text-muted-foreground">/book</kbd>
               </CommandItem>
               <CommandItem onSelect={() => setSearchType("music")}>
                 <MEDIA_TYPES.music.icon className="mr-2 h-4 w-4" />
                 <span>搜索音乐</span>
-                <kbd className="ml-auto text-xs text-zinc-500">/music</kbd>
+                <kbd className="ml-auto text-xs text-muted-foreground">/music</kbd>
               </CommandItem>
               <CommandItem onSelect={() => setSearchType("movie")}>
                 <MEDIA_TYPES.watch.icon className="mr-2 h-4 w-4" />
                 <span>搜索电影</span>
-                <kbd className="ml-auto text-xs text-zinc-500">/movie</kbd>
+                <kbd className="ml-auto text-xs text-muted-foreground">/movie</kbd>
               </CommandItem>
               <CommandItem onSelect={() => setSearchType("tv")}>
                 <MEDIA_TYPES.watch.icon className="mr-2 h-4 w-4" />
                 <span>搜索电视剧</span>
-                <kbd className="ml-auto text-xs text-zinc-500">/tv</kbd>
+                <kbd className="ml-auto text-xs text-muted-foreground">/tv</kbd>
               </CommandItem>
               <CommandItem onSelect={() => setSearchType("game")}>
                 <MEDIA_TYPES.game.icon className="mr-2 h-4 w-4" />
                 <span>搜索游戏</span>
-                <kbd className="ml-auto text-xs text-zinc-500">/game</kbd>
+                <kbd className="ml-auto text-xs text-muted-foreground">/game</kbd>
               </CommandItem>
             </CommandGroup>
           )}
@@ -209,7 +210,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <>
               {loading && (
                 <div className="flex items-center justify-center py-6">
-                  <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
               )}
               {!loading && results.length === 0 && (
@@ -225,22 +226,25 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       className="flex items-center gap-3 py-2"
                     >
                       {item.coverUrl ? (
-                        <img
+                        <Image
                           src={item.coverUrl}
                           alt={item.title}
+                          width={32}
+                          height={40}
+                          unoptimized
                           className="h-10 w-8 rounded object-cover"
                         />
                       ) : (
-                        <div className="flex h-10 w-8 items-center justify-center rounded bg-zinc-800 text-xs text-zinc-500">
+                        <div className="flex h-10 w-8 items-center justify-center rounded bg-muted text-xs text-muted-foreground">
                           ?
                         </div>
                       )}
                       <div className="flex-1 overflow-hidden">
-                        <p className="truncate text-sm font-medium text-zinc-200">
+                        <p className="truncate text-sm font-medium text-foreground">
                           {item.title}
                         </p>
                         {item.subtitle && (
-                          <p className="truncate text-xs text-zinc-500">
+                          <p className="truncate text-xs text-muted-foreground">
                             {item.subtitle}
                           </p>
                         )}

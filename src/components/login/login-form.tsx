@@ -16,7 +16,7 @@ export function LoginForm({ next }: LoginFormProps) {
   const [state, formAction, isPending] = useActionState(loginAction, null)
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -32,10 +32,10 @@ export function LoginForm({ next }: LoginFormProps) {
           >
             <span className="text-2xl font-bold text-white">K</span>
           </motion.div>
-          <h1 className="font-mono text-2xl font-semibold tracking-tight text-zinc-100">
+          <h1 className="font-mono text-2xl font-semibold tracking-tight text-foreground">
             Kairos
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             输入你的账号密码
           </p>
         </div>
@@ -44,25 +44,25 @@ export function LoginForm({ next }: LoginFormProps) {
           <input name="next" type="hidden" value={next ?? ""} />
 
           <div className="relative">
-            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               name="username"
               type="text"
               placeholder="用户名"
               autoFocus
               autoComplete="username"
-              className="border-zinc-800 bg-zinc-900 pl-10 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-amber-500/50"
+              className="border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus-visible:ring-amber-500/50"
             />
           </div>
 
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+            <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               name="password"
               type="password"
               placeholder="密码"
               autoComplete="current-password"
-              className="border-zinc-800 bg-zinc-900 pl-10 text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-amber-500/50"
+              className="border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus-visible:ring-amber-500/50"
             />
           </div>
 
@@ -84,7 +84,7 @@ export function LoginForm({ next }: LoginFormProps) {
             {isPending ? "登录中..." : "登录"}
           </Button>
 
-          <p className="text-center text-xs text-zinc-500">
+          <p className="text-center text-xs text-muted-foreground">
             没有账号？
             <Link href="/register" className="ml-1 text-amber-400 hover:text-amber-300">
               注册一个

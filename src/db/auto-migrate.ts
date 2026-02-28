@@ -33,6 +33,7 @@ async function runMigrations() {
   try {
     await client`select pg_advisory_lock(${LOCK_NAMESPACE}, ${LOCK_KEY})`
     const migrationsFolder = path.join(process.cwd(), "drizzle")
+
     logger.info("running startup migrations", { migrationsFolder })
     await migrate(db, { migrationsFolder })
     logger.info("startup migrations completed")
