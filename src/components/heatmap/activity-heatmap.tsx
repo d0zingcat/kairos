@@ -3,7 +3,6 @@
 import { ActivityCalendar } from "react-activity-calendar"
 import type { ThemeInput } from "react-activity-calendar"
 import { Tooltip as ReactTooltip } from "react-tooltip"
-import { useThemeMode } from "@/components/theme/theme-provider"
 import "react-tooltip/dist/react-tooltip.css"
 
 interface ActivityDay {
@@ -90,8 +89,7 @@ function generateRollingYearData(data: ActivityDay[]): ActivityDay[] {
 
 export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
   const fullData = generateRollingYearData(data)
-  const { resolvedTheme } = useThemeMode()
-  const legendColors = resolvedTheme === "dark" ? kairosTheme.dark : kairosTheme.light
+  const legendColors = kairosTheme.light
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border/60 bg-card/60 p-4 sm:p-6">
@@ -118,7 +116,7 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
       <ActivityCalendar
         data={fullData}
         theme={kairosTheme}
-        colorScheme={resolvedTheme}
+        colorScheme="light"
         blockSize={12}
         blockMargin={3}
         blockRadius={3}
@@ -130,13 +128,13 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
           const day = activity as ActivityDay
           const tooltipContent = day.details
             ? [
-                day.details.books > 0 && `${day.details.books} 书`,
-                day.details.music > 0 && `${day.details.music} 音乐`,
-                day.details.watches > 0 && `${day.details.watches} 影视`,
-                day.details.games > 0 && `${day.details.games} 游戏`,
-              ]
-                .filter(Boolean)
-                .join(", ")
+              day.details.books > 0 && `${day.details.books} 书`,
+              day.details.music > 0 && `${day.details.music} 音乐`,
+              day.details.watches > 0 && `${day.details.watches} 影视`,
+              day.details.games > 0 && `${day.details.games} 游戏`,
+            ]
+              .filter(Boolean)
+              .join(", ")
             : `${day.count} 条记录`
 
           return (
