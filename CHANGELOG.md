@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Customizable Footer**: Added `NEXT_PUBLIC_SITE_AUTHOR` and `NEXT_PUBLIC_GITHUB_URL` environment variables to customize the footer author name and GitHub link, with safe fallbacks.
+
 - **Startup Auto Migration**: Added Next.js startup hook (`src/instrumentation.ts`) that auto-runs Drizzle migrations before serving requests, with process-level single-run guard and PostgreSQL advisory lock to prevent concurrent multi-instance migration conflicts.
 - **Migration Baseline Reset Docs**: Added destructive reset guidance in `README.md` for environments that still contain old schema but no data retention requirement.
 - **Agent Finalization Workflow**: Added repository-level `AGENTS.md` instructions to standardize post-change tasks for coding agents (`docs/changelog/version bump/commit/push/PR`).

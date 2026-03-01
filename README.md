@@ -100,6 +100,8 @@ bun run db:seed
 | `HARDCOVER_API_TOKEN` | Hardcover API Token（中文书搜索增强） | 推荐 |
 | `RAWG_API_KEY` | RAWG API Key（游戏搜索） | 搜索时需要 |
 | `LASTFM_API_KEY` | Last.fm API Key（音乐封面） | 搜索时需要 |
+| `NEXT_PUBLIC_SITE_AUTHOR` | 网站底部显示的作者名称，默认 d0zingcat | 可选 |
+| `NEXT_PUBLIC_GITHUB_URL` | 网站底部 GitHub 图标跳转链接，默认跳转作者仓库 | 可选 |
 
 > 搜索 API 会在响应头返回 `x-trace-id`，可用该值串联后端日志排查问题。
 > 访问模式优先读取数据库中的管理设置；若无设置则回退到 `SITE_VISIBILITY`。
