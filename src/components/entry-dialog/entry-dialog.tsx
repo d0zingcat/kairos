@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { TagInput } from "@/components/ui/tag-input"
 import {
   Select,
   SelectContent,
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Heart, CalendarIcon, Star, Loader2 } from "lucide-react"
+import { Heart, CalendarIcon, Star, Loader2, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { zhCN } from "date-fns/locale"
@@ -39,6 +40,10 @@ import {
   updateWatch,
   createGame,
   updateGame,
+  deleteBook,
+  deleteMusic,
+  deleteWatch,
+  deleteGame,
 } from "@/lib/actions/entries"
 import type { SearchResultItem } from "@/app/api/search/[type]/route"
 
@@ -68,8 +73,8 @@ export function EntryDialog({
   const [status, setStatus] = useState("")
   const [notes, setNotes] = useState("")
   const [favorite, setFavorite] = useState(false)
-  const [bookAuthors, setBookAuthors] = useState("")
-  const [bookCategories, setBookCategories] = useState("")
+  const [bookAuthors, setBookAuthors] = useState<string[]>([])
+  const [bookCategories, setBookCategories] = useState<string[]>([])
   const [bookStartDate, setBookStartDate] = useState("")
   const [bookFinishDate, setBookFinishDate] = useState("")
   const [isPending, startTransition] = useTransition()
@@ -120,8 +125,8 @@ export function EntryDialog({
       parseDateInput(meta.finishDate)
 
     setDate(activityDate ?? new Date())
-    setBookAuthors(authors.join(", "))
-    setBookCategories(categories.join(", "))
+    setBookAuthors(authors)
+    setBookCategories(categories)
     setBookStartDate(localId ? existingStartDate : existingStartDate || today)
     setBookFinishDate(localId ? existingFinishDate : existingFinishDate)
     setNotes(existingNotes)
@@ -142,12 +147,10 @@ export function EntryDialog({
           case "book":
             {
               const parsedAuthors = bookAuthors
-                .split(",")
                 .map((entry) => entry.trim())
                 .filter(Boolean)
 
               const parsedCategories = bookCategories
-                .split(",")
                 .map((entry) => entry.trim())
                 .filter(Boolean)
 
@@ -355,13 +358,46 @@ export function EntryDialog({
         setStatus("")
         setNotes("")
         setFavorite(false)
-        setBookAuthors("")
-        setBookCategories("")
+        setBookAuthors([])
+        setBookCategories([])
         setBookStartDate("")
         setBookFinishDate("")
         onOpenChange(false)
       } catch {
         // Error is handled silently; could add toast notification later
+      }
+    })
+  }
+
+  const handleDelete = () => {
+    if (!item) return
+    const meta = item.meta as Record<string, unknown>
+    const localId = typeof meta.localId === "string" ? meta.localId : null
+    if (!localId) return
+
+    if (!confirm("确定要删除这条记录吗？此操作不可撤销。")) {
+      return
+    }
+
+    startTransition(async () => {
+      try {
+        switch (mediaType) {
+          case "book":
+            await deleteBook(localId)
+            break
+          case "music":
+            await deleteMusic(localId)
+            break
+          case "watch":
+            await deleteWatch(localId)
+            break
+          case "game":
+            await deleteGame(localId)
+            break
+        }
+        onOpenChange(false)
+      } catch {
+        // Handle error
       }
     })
   }
@@ -513,25 +549,24 @@ export function EntryDialog({
 
               <div>
                 <label className="mb-2 block text-xs font-medium text-muted-foreground">
-                  作者（逗号分隔）
+                  作者
                 </label>
-                <Input
+                <TagInput
                   value={bookAuthors}
-                  onChange={(e) => setBookAuthors(e.target.value)}
-                  placeholder="例如：刘慈欣, 王小波"
-                  className="border-border bg-card text-foreground placeholder:text-muted-foreground"
+                  onChange={setBookAuthors}
+                  placeholder="输入作者后按回车，支持多个"
+                  colored={false}
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-xs font-medium text-muted-foreground">
-                  类别（逗号分隔）
+                  类别
                 </label>
-                <Input
+                <TagInput
                   value={bookCategories}
-                  onChange={(e) => setBookCategories(e.target.value)}
-                  placeholder="例如：科幻, 小说"
-                  className="border-border bg-card text-foreground placeholder:text-muted-foreground"
+                  onChange={setBookCategories}
+                  placeholder="输入类别后按回车，支持多个"
                 />
               </div>
             </>
@@ -601,21 +636,35 @@ export function EntryDialog({
 
           {/* Actions */}
           <div className="flex items-center justify-between pt-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setFavorite(!favorite)}
-              className={cn(
-                "transition-colors",
-                favorite
-                  ? "text-rose-400 hover:text-rose-300"
-                  : "text-muted-foreground hover:text-foreground"
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setFavorite(!favorite)}
+                className={cn(
+                  "transition-colors",
+                  favorite
+                    ? "text-rose-400 hover:text-rose-300"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Heart
+                  className={cn("h-5 w-5", favorite && "fill-current")}
+                />
+              </Button>
+
+              {(item.meta as Record<string, any>).localId && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDelete}
+                  disabled={isPending}
+                  className="text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
               )}
-            >
-              <Heart
-                className={cn("h-5 w-5", favorite && "fill-current")}
-              />
-            </Button>
+            </div>
             <div className="flex gap-2">
               <Button
                 variant="ghost"
