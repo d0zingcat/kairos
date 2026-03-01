@@ -652,7 +652,7 @@ export function EntryDialog({
                 />
               </Button>
 
-              {(item.meta as Record<string, unknown>).localId && (
+              {((item.meta as Record<string, unknown>).localId as string) && (
                 <Button
                   variant="ghost"
                   size="icon"
