@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Tag Input Component**: New reusable `TagInput` UI component with color-coded badges, deterministic hashing for consistent colors, and a `colored` prop to toggle colorization.
+- **Record Multi-tag Support**: Books now support multiple authors and categories via the new tag input interface; authors are rendered without color while categories retain colorful badges.
+- **Media Entry Deletion**: Added a delete (trash) action to the entry dialog for existing records; deleting an entry also automatically removes it from the Plaza and user timeline.
 - **Customizable Footer**: Added `NEXT_PUBLIC_SITE_AUTHOR` and `NEXT_PUBLIC_GITHUB_URL` environment variables to customize the footer author name and GitHub link, with safe fallbacks.
 
 - **Startup Auto Migration**: Added Next.js startup hook (`src/instrumentation.ts`) that auto-runs Drizzle migrations before serving requests, with process-level single-run guard and PostgreSQL advisory lock to prevent concurrent multi-instance migration conflicts.
