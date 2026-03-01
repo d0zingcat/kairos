@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { TagInput } from "@/components/ui/tag-input"
 import {
@@ -653,7 +652,7 @@ export function EntryDialog({
                 />
               </Button>
 
-              {(item.meta as Record<string, any>).localId && (
+              {(item.meta as Record<string, unknown>).localId && (
                 <Button
                   variant="ghost"
                   size="icon"
