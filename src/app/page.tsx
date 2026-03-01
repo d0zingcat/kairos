@@ -69,7 +69,8 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="py-6 text-center text-xs text-muted-foreground">
-        Built with Next.js, Tailwind CSS &amp; shadcn/ui
+        <p>Built with Next.js, Tailwind CSS &amp; shadcn/ui</p>
+        <p className="mt-1">&copy; {new Date().getFullYear()} {process.env.NEXT_PUBLIC_SITE_AUTHOR || "d0zingcat"}. All rights reserved.</p>
       </footer>
     </div>
   )
