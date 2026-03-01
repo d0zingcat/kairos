@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { Github } from "lucide-react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -49,7 +50,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <a
+            href={process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/d0zingcat/kairos"}
+            target="_blank"
+            rel="noreferrer"
+            className="fixed bottom-4 right-4 z-50 p-3 bg-background border rounded-full shadow-sm hover:shadow-md transition-all text-muted-foreground hover:text-foreground"
+            aria-label="GitHub Repository"
+          >
+            <Github className="w-5 h-5" />
+          </a>
+        </ThemeProvider>
       </body>
     </html>
   );
