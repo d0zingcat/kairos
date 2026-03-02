@@ -1,0 +1,8 @@
+{
+  "rules": [
+    {
+      "path": ".claude/rules/agents.md",
+      "description": "Agent workflow instructions"
+    }
+  ]
+}
