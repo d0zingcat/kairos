@@ -52,12 +52,19 @@ export async function searchMovies(query: string, context?: SearchLogContext): P
   const key = getApiKey()
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${TMDB_BASE}/search/movie?api_key=${key}&query=${encodeURIComponent(query)}&language=zh-CN&include_adult=false`
+
+  logger.debugApi("request", url, undefined, traceMeta)
+
   const res = await fetch(url)
+
   if (!res.ok) {
     logger.warn("movie search returned non-200", { query, status: res.status, ...traceMeta })
     throw new Error(`TMDB search failed: ${res.status}`)
   }
+
   const data = await res.json()
+  logger.debugApi("response", url, data, traceMeta)
+
   const results = (data.results ?? []).slice(0, 10)
   logger.debug("movie search completed", { query, count: results.length, ...traceMeta })
   return results
@@ -67,12 +74,19 @@ export async function searchTV(query: string, context?: SearchLogContext): Promi
   const key = getApiKey()
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${TMDB_BASE}/search/tv?api_key=${key}&query=${encodeURIComponent(query)}&language=zh-CN`
+
+  logger.debugApi("request", url, undefined, traceMeta)
+
   const res = await fetch(url)
+
   if (!res.ok) {
     logger.warn("tv search returned non-200", { query, status: res.status, ...traceMeta })
     throw new Error(`TMDB TV search failed: ${res.status}`)
   }
+
   const data = await res.json()
+  logger.debugApi("response", url, data, traceMeta)
+
   const results = (data.results ?? []).slice(0, 10)
   logger.debug("tv search completed", { query, count: results.length, ...traceMeta })
   return results
