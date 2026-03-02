@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Spotify API Integration**: Added Spotify API client for music search with OAuth client credentials flow; music search now prioritizes Spotify, falling back to MusicBrainz when Spotify returns no results.
+- **API Debug Logging**: Added `logger.debugApi()` method for detailed API request/response logging; all search API clients (Google Books, Hardcover, TMDB, RAWG, MusicBrainz, Spotify) now print request URLs and response bodies in debug mode.
+
+### Changed
+
+- **Default Sort Order**: Changed default sorting from `createdAt` to `updatedAt` (descending) across all media types (books, music, watches, games), so recently updated entries appear first.
+
+## [0.3.13] - 2026-03-02
+
+### Added
+
 - **Tag Input Component**: New reusable `TagInput` UI component with color-coded badges, deterministic hashing for consistent colors, and a `colored` prop to toggle colorization.
 - **Record Multi-tag Support**: Books now support multiple authors and categories via the new tag input interface; authors are rendered without color while categories retain colorful badges.
 - **Media Entry Deletion**: Added a delete (trash) action to the entry dialog for existing records; deleting an entry also automatically removes it from the Plaza and user timeline.
@@ -144,7 +155,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docker Deployment**: Multi-stage Dockerfile (oven/bun base, standalone output), docker-compose.yml with PostgreSQL 16 + app service, health checks, persistent volume.
 - **Environment Configuration**: `.env.example` documenting all required and optional environment variables.
 
-[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.3.2...HEAD
+[Unreleased]: https://github.com/d0zingcat/kairos/compare/v0.3.13...HEAD
+[0.3.13]: https://github.com/d0zingcat/kairos/compare/v0.3.2...v0.3.13
 [0.3.2]: https://github.com/d0zingcat/kairos/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/d0zingcat/kairos/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/d0zingcat/kairos/compare/v0.2.0...v0.3.0
