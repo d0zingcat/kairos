@@ -53,12 +53,18 @@ async function fetchWithUA(url: string): Promise<Response> {
 export async function searchAlbums(query: string, context?: SearchLogContext): Promise<MusicSearchResult[]> {
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${MUSICBRAINZ_BASE}/release-group/?query=${encodeURIComponent(query)}&type=album&limit=10&fmt=json`
+
+  logger.debugApi("request", url, undefined, traceMeta)
+
   const res = await fetchWithUA(url)
+
   if (!res.ok) {
     logger.warn("album search returned non-200", { query, status: res.status, ...traceMeta })
     throw new Error(`MusicBrainz search failed: ${res.status}`)
   }
+
   const data = await res.json()
+  logger.debugApi("response", url, data, traceMeta)
 
   const groups: MBReleaseGroup[] = data["release-groups"] ?? []
   const results = await Promise.all(
@@ -79,12 +85,18 @@ export async function searchAlbums(query: string, context?: SearchLogContext): P
 export async function searchTracks(query: string, context?: SearchLogContext): Promise<MusicSearchResult[]> {
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${MUSICBRAINZ_BASE}/recording/?query=${encodeURIComponent(query)}&limit=10&fmt=json`
+
+  logger.debugApi("request", url, undefined, traceMeta)
+
   const res = await fetchWithUA(url)
+
   if (!res.ok) {
     logger.warn("track search returned non-200", { query, status: res.status, ...traceMeta })
     throw new Error(`MusicBrainz recording search failed: ${res.status}`)
   }
+
   const data = await res.json()
+  logger.debugApi("response", url, data, traceMeta)
 
   const recordings: MBRecording[] = data.recordings ?? []
   const results = await Promise.all(

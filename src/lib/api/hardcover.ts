@@ -104,6 +104,18 @@ export async function searchHardcoverBooks(query: string, context?: SearchLogCon
     }
   }`
 
+  const requestBody = {
+    query: graphqlQuery,
+    variables: {
+      query,
+      queryType: "Book",
+      perPage: 10,
+      page: 1,
+    },
+  }
+
+  logger.debugApi("request", HARDCOVER_API_BASE, requestBody, traceMeta)
+
   try {
     const res = await fetch(HARDCOVER_API_BASE, {
       method: "POST",
@@ -112,15 +124,7 @@ export async function searchHardcoverBooks(query: string, context?: SearchLogCon
         authorization: token,
         "user-agent": "kairos/0.1.0 (book-search)",
       },
-      body: JSON.stringify({
-        query: graphqlQuery,
-        variables: {
-          query,
-          queryType: "Book",
-          perPage: 10,
-          page: 1,
-        },
-      }),
+      body: JSON.stringify(requestBody),
     })
 
     if (!res.ok) {
@@ -129,6 +133,8 @@ export async function searchHardcoverBooks(query: string, context?: SearchLogCon
     }
 
     const data = (await res.json()) as HardcoverSearchResponse
+    logger.debugApi("response", HARDCOVER_API_BASE, data, traceMeta)
+
     const rawResults = data.data?.search?.results
 
     const documents = Array.isArray(rawResults)
@@ -151,8 +157,8 @@ export async function searchHardcoverBooks(query: string, context?: SearchLogCon
     })
 
     return normalized
-  } catch {
-    logger.error("hardcover search failed unexpectedly", { query, ...traceMeta })
+  } catch (error) {
+    logger.error("hardcover search failed unexpectedly", { query, error: error instanceof Error ? error.message : "unknown", ...traceMeta })
     return []
   }
 }

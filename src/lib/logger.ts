@@ -72,5 +72,34 @@ export function createLogger(scope: string) {
     error: (message: string, meta?: Record<string, unknown>) => {
       writeLog("error", scope, message, meta)
     },
+    debugApi: (
+      direction: "request" | "response",
+      url: string,
+      data?: unknown,
+      extra?: Record<string, unknown>
+    ) => {
+      if (!shouldLog("debug")) return
+
+      const arrow = direction === "request" ? "→" : "←"
+      const prefix = `[DEBUG][${scope}] API ${arrow} ${url}`
+
+      if (data) {
+        try {
+          const dataStr = typeof data === "string" ? data : JSON.stringify(data, null, 2)
+          if (direction === "request") {
+            console.debug(`${prefix}\nRequest Body: ${dataStr}`)
+          } else {
+            console.debug(`${prefix}\nResponse: ${dataStr}`)
+          }
+          if (extra && Object.keys(extra).length > 0) {
+            console.debug(`  Meta: ${JSON.stringify(extra, null, 2)}`)
+          }
+        } catch {
+          console.debug(`${prefix} [data not serializable]`)
+        }
+      } else {
+        console.debug(prefix)
+      }
+    },
   }
 }
