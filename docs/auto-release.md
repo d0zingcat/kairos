@@ -50,6 +50,14 @@ feat: remove deprecated API endpoint
 BREAKING CHANGE: /api/v1/endpoint is no longer available
 ```
 
+## Important Rules
+
+**NEVER commit directly to `main`:**
+- All changes must go through a Pull Request workflow
+- Create a branch for every change (e.g., `feat/feature-name`, `fix/bug-fix`)
+- Merge to `main` only via PR
+- semantic-release automatically handles versioning on merge
+
 ## Configuration Files
 
 - `.releaserc.json` - semantic-release configuration
