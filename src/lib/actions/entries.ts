@@ -65,7 +65,7 @@ export async function getBooks(options?: {
     ? desc(books.rating)
     : options?.sort === "title"
       ? books.title
-      : desc(books.createdAt)
+      : desc(books.updatedAt)
 
   return db.query.books.findMany({
     where: and(...conditions),
@@ -120,7 +120,7 @@ export async function getMusicList(options?: {
     ? desc(music.rating)
     : options?.sort === "title"
       ? music.title
-      : desc(music.createdAt)
+      : desc(music.updatedAt)
 
   return db.query.music.findMany({
     where: and(...conditions),
@@ -178,7 +178,7 @@ export async function getWatches(options?: {
     ? desc(watches.rating)
     : options?.sort === "title"
       ? watches.title
-      : desc(watches.createdAt)
+      : desc(watches.updatedAt)
 
   return db.query.watches.findMany({
     where: and(...conditions),
@@ -232,7 +232,7 @@ export async function getGames(options?: {
     ? desc(games.rating)
     : options?.sort === "title"
       ? games.title
-      : desc(games.createdAt)
+      : desc(games.updatedAt)
 
   return db.query.games.findMany({
     where: and(...conditions),
