@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
+import { useState, useCallback, useRef, useTransition } from "react"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -27,16 +28,64 @@ export function FilterBar({
 }: FilterBarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  function updateParam(key: string, value: string) {
-    const params = new URLSearchParams(searchParams.toString())
-    if (value && value !== "all") {
-      params.set(key, value)
-    } else {
-      params.delete(key)
+  // Initialize with currentSearch from URL
+  const [searchValue, setSearchValue] = useState(currentSearch || "")
+
+  // Memoize updateParam to avoid recreating on every render
+  const updateParam = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (value && value !== "all") {
+        params.set(key, value)
+      } else {
+        params.delete(key)
+      }
+      startTransition(() => {
+        router.push(`?${params.toString()}`)
+      })
+    },
+    [searchParams, router]
+  )
+
+  // Debounced search update
+  const triggerSearch = useCallback((value: string) => {
+    // Clear existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
     }
-    router.push(`?${params.toString()}`)
-  }
+
+    // Set new timer
+    debounceTimerRef.current = setTimeout(() => {
+      if (value) {
+        updateParam("search", value)
+      }
+      debounceTimerRef.current = null
+    }, 300)
+  }, [updateParam])
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchValue(value)
+    triggerSearch(value)
+  }, [triggerSearch])
+
+  const handleSearchKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault()
+        // Clear debounce timer to prevent duplicate search
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current)
+          debounceTimerRef.current = null
+        }
+        updateParam("search", searchValue)
+      }
+    },
+    [searchValue, updateParam]
+  )
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -44,15 +93,12 @@ export function FilterBar({
       <div className="relative flex-1 sm:max-w-xs">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          defaultValue={currentSearch}
+          value={searchValue}
+          onChange={handleSearchChange}
+          onKeyDown={handleSearchKeyDown}
           placeholder="搜索..."
           className="border-border bg-card/60 pl-9 text-foreground placeholder:text-muted-foreground"
-          onChange={(e) => {
-            const value = e.target.value
-            // Debounce: only update after 300ms of no typing
-            const timer = setTimeout(() => updateParam("search", value), 300)
-            return () => clearTimeout(timer)
-          }}
+          disabled={isPending}
         />
       </div>
 
