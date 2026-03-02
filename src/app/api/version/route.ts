@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import pkg from "@/../package.json"
 
 const CACHE_DURATION_SECONDS = 3600 // 1 hour
 
@@ -11,7 +12,8 @@ const getGithubRepo = () => {
   return repo
 }
 
-const PACKAGE_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || "0.0.0"
+// Use version from package.json
+const PACKAGE_VERSION = pkg.version || "0.0.0"
 
 // GitHub release response schema
 interface GitHubRelease {
