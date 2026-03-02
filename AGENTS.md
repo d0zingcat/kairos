@@ -5,11 +5,17 @@
 After any code change is completed, unless the user explicitly says to skip:
 
 1. Update relevant documentation (`README.md` and/or feature docs).
-2. Update `CHANGELOG.md` under `## [Unreleased]`.
-3. Bump version in `package.json` using SemVer (`patch` by default).
-4. Commit with a clear conventional commit message.
-5. Push the current branch to `origin`.
-6. Create or update the GitHub PR with a concise summary and test notes.
+2. Commit with a clear [Conventional Commits](https://www.conventionalcommits.org/) message:
+   - `feat:` for new features
+   - `fix:` for bug fixes
+   - `docs:` for documentation changes
+   - `chore:` for maintenance tasks
+   - `refactor:` for code refactoring
+   - `test:` for test-related changes
+3. Create a branch with a descriptive name and push to `origin`.
+4. Create a GitHub PR with a concise summary and test notes.
+
+> **Note:** Version bumping and CHANGELOG updates are handled automatically by semantic-release when code is merged to `main`. No manual version management needed.
 
 ## Shortcut Trigger
 
@@ -58,7 +64,11 @@ Template rules:
 - Prefer plain text in bullets; avoid shell-sensitive inline composition.
 - If there are no notes, still keep the `Notes` section and write `- None`.
 
-## Branch Protection Rule
+## Branch Protection Rule (CRITICAL)
 
-- Never commit directly to `main`.
-- All changes must go through a Pull Request workflow.
+**NEVER commit or push directly to `main`.** This rule is absolute.
+
+- Create a new branch for EVERY change (e.g., `feat/feature-name`, `fix/bug-fix`, `chore/task`)
+- All changes must go through a Pull Request workflow
+- Merge to `main` only via PR (squash merge preferred)
+- semantic-release handles versioning automatically on main merge - do NOT bump versions manually
