@@ -53,6 +53,17 @@ export async function GET() {
       }
     )
 
+    // 404 means no releases yet - not an error, just return current version
+    if (response.status === 404) {
+      return NextResponse.json({
+        current: currentVersion,
+        latest: currentVersion,
+        hasUpdate: false,
+        releaseUrl: null,
+        publishedAt: null,
+      })
+    }
+
     if (!response.ok) {
       throw new Error(`GitHub API responded with ${response.status}`)
     }
