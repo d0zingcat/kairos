@@ -1,3 +1,47 @@
+# 1.0.0 (2026-03-02)
+
+
+### Bug Fixes
+
+* cast localId to string for TypeScript compatibility ([8549b1c](https://github.com/d0zingcat/kairos/commit/8549b1c08a8c6c02b2f5063eda7f16294dd18a73))
+* **changelog:** restore 0.3.2 heatmap fixes section ([d82a5f7](https://github.com/d0zingcat/kairos/commit/d82a5f760d42d5bae2730fbe114b35cfa2418003))
+* generate drizzle metadata during docker build ([b9b1255](https://github.com/d0zingcat/kairos/commit/b9b125563089f0f801bfdd90de8efdaf0c41e214))
+* **import:** backfill goodreads book activity to heatmap ([18f8fdb](https://github.com/d0zingcat/kairos/commit/18f8fdb3748658ba7add38dd946dde42d9bad212))
+* keep sidebar when opening plaza from dashboard ([c4276c8](https://github.com/d0zingcat/kairos/commit/c4276c847cb3b364f9607b9c14843c207ea374c2))
+* make entry dialog scroll with long reviews ([4aaa019](https://github.com/d0zingcat/kairos/commit/4aaa01959635f359752db3dd03ac5270b8d02ac3))
+* read version from package.json instead of env variable ([141557c](https://github.com/d0zingcat/kairos/commit/141557c4c5a056a966ad3580c465925ef9bd454d))
+* relax importer db type for typed drizzle instance ([b3930aa](https://github.com/d0zingcat/kairos/commit/b3930aa3e06a1d34416c1897e022b897324a6fbb))
+* resolve dashboard auth redirects and bump version to 0.3.1 ([8be03bd](https://github.com/d0zingcat/kairos/commit/8be03bd73d3f4215faec8d14795fb60bf4b090b5))
+* resolve linting errors in entry-dialog.tsx ([72072b5](https://github.com/d0zingcat/kairos/commit/72072b5c6694900b87b4f3cee79321a61e77e8a6))
+* restore dashboard heatmap activity rendering ([da5d295](https://github.com/d0zingcat/kairos/commit/da5d29546434b63a399f83a0fe693864e27a1982))
+* use typed generic db signature in importer ([21d297b](https://github.com/d0zingcat/kairos/commit/21d297b2d685818382ef16a075fdf77a00006c9e))
+* use yellow accent color for update indicator ([40c23f9](https://github.com/d0zingcat/kairos/commit/40c23f96a5ad9ed59b2bd5f7557ee88cf78bfe42))
+
+
+### Features
+
+* add API debug logging mode ([9921156](https://github.com/d0zingcat/kairos/commit/992115667123d22e82084c59f30483fe22a1da59))
+* add Goodreads CSV import flow ([1357a4f](https://github.com/d0zingcat/kairos/commit/1357a4f5656223332d264221595d934a19ca564a))
+* add light/dark/system theme mode and unify UI tokens ([7b12c7c](https://github.com/d0zingcat/kairos/commit/7b12c7c6cca38fb7e7d438ee06a34ceb33aa0b04))
+* add multi-user timeline and public plaza ([3033879](https://github.com/d0zingcat/kairos/commit/3033879860d85339320c5bb91b825ff132715190))
+* add Node.js 22 to release workflow for semantic-release v25 ([d3ce2cc](https://github.com/d0zingcat/kairos/commit/d3ce2ccc34f4740825ac27bd34e95830b2138559))
+* add Spotify API for music search with fallback to MusicBrainz ([579d002](https://github.com/d0zingcat/kairos/commit/579d002eb3358a1e936de7dcd4b1ad31684d74ff))
+* add TagInput component and implement entry deletion ([1514c0b](https://github.com/d0zingcat/kairos/commit/1514c0b275a2897a16c1a5e317545ac2153a68e6))
+* add user ownership migration and runtime migrate docs ([4259da5](https://github.com/d0zingcat/kairos/commit/4259da51d6f9ade1b267d5600822101a1855848f))
+* add version display and update check ([26e3a10](https://github.com/d0zingcat/kairos/commit/26e3a1045a68cdefa3cb7ac79139ccd76572a7b3))
+* **db:** auto-run migrations on app startup ([d0a0e3d](https://github.com/d0zingcat/kairos/commit/d0a0e3d532fcf784a943a6e7816a6860c30fc5c4))
+* enable runtime DB migration in latest image ([85eff9c](https://github.com/d0zingcat/kairos/commit/85eff9c439123fb21a97aa0bb3342c0b6b70f2a0))
+* improve search resilience, editing UX, and observability ([f4e0cf6](https://github.com/d0zingcat/kairos/commit/f4e0cf66d4de76e18a6735fc1bb1738f56339760))
+* initial Kairos personal life tracker ([c9ebe48](https://github.com/d0zingcat/kairos/commit/c9ebe4895ad71bbbb15f5371c43811597f61b547))
+* setup auto-release on main merge ([68d17ec](https://github.com/d0zingcat/kairos/commit/68d17eceee6071ab154948b19e0b3c77124680c4))
+* setup NEXT_PUBLIC_SITE_AUTHOR and github link fallback ([8ab0ecb](https://github.com/d0zingcat/kairos/commit/8ab0ecbf4fac74c0d3132c5c3a124ca222d743cd))
+
+
+### Performance Improvements
+
+* change default sort order to updatedAt desc ([067cde9](https://github.com/d0zingcat/kairos/commit/067cde9e1817da4137e9f1be822ae0501a68e28a))
+* change default sort order to updatedAt desc ([4dd0368](https://github.com/d0zingcat/kairos/commit/4dd03683e10c03fd9eb0a73f6e50f4b5a4320cde))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
