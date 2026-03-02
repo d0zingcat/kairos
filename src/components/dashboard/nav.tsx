@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { useCommandPalette } from "@/components/command-palette/provider"
 import { motion } from "framer-motion"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
+import { VersionDisplay } from "@/components/version-display"
 
 const baseNavItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -100,8 +101,14 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
             })}
           </nav>
 
-          {/* Logout */}
-          <div className="border-t border-border/70 p-4">
+          {/* Logout / Version */}
+          <div className="border-t border-border/70 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
+                {hasSession ? "已登录" : "访客模式"}
+              </span>
+              <VersionDisplay />
+            </div>
             {hasSession ? (
               <form action={logoutAction}>
                 <Button
