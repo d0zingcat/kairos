@@ -36,12 +36,19 @@ export async function searchGames(query: string, context?: SearchLogContext): Pr
   const key = getApiKey()
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${RAWG_BASE}/games?key=${key}&search=${encodeURIComponent(query)}&page_size=10`
+
+  logger.debugApi("request", url, undefined, traceMeta)
+
   const res = await fetch(url)
+
   if (!res.ok) {
     logger.warn("game search returned non-200", { query, status: res.status, ...traceMeta })
     throw new Error(`RAWG search failed: ${res.status}`)
   }
+
   const data = await res.json()
+  logger.debugApi("response", url, data, traceMeta)
+
   const results = data.results ?? []
   logger.debug("game search completed", { query, count: results.length, ...traceMeta })
   return results

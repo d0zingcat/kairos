@@ -56,16 +56,22 @@ export async function searchBooks(query: string, context?: SearchLogContext): Pr
       url.searchParams.set("key", key)
     }
 
+    logger.debugApi("request", url.toString(), undefined, traceMeta)
+
     try {
       const res = await fetch(url.toString())
+
       if (!res.ok) {
         logger.warn("google books returned non-200", { status: res.status, query: q, ...traceMeta })
         return []
       }
+
       const data = await res.json()
+      logger.debugApi("response", url.toString(), data, traceMeta)
+
       return data.items ?? []
-    } catch {
-      logger.warn("google books request failed", { query: q, ...traceMeta })
+    } catch (error) {
+      logger.warn("google books request failed", { query: q, error: error instanceof Error ? error.message : "unknown", ...traceMeta })
       return []
     }
   }

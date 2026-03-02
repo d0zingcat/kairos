@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Drizzle Migration Baseline**: Reinitialized migration history to a single baseline file `drizzle/0000_init.sql` generated from current schema.
 - **Startup Migrator Behavior**: Simplified startup migration flow to use Drizzle official migrator directly (no manual schema probing/reset and no manual metadata writes).
 - **Default Sort Order**: Changed default sorting from `createdAt` to `updatedAt` (descending) across all media types (books, music, watches, games), so recently updated entries appear first.
+- **API Debug Logging**: Added `logger.debugApi()` method for detailed API request/response logging; all search API clients (Google Books, Hardcover, TMDB, RAWG, MusicBrainz) now print request URLs and response bodies in debug mode.
 
 ### Fixed
 
