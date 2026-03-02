@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/d0zingcat/kairos/compare/v1.0.0...v1.0.1) (2026-03-02)
+
+
+### Bug Fixes
+
+* add pull-requests permission and fetch-depth for semantic-release ([1179619](https://github.com/d0zingcat/kairos/commit/1179619bed57e2f565045d803ae975caaf11333e))
+
 # 1.0.0 (2026-03-02)
 
 
