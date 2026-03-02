@@ -64,7 +64,11 @@ Template rules:
 - Prefer plain text in bullets; avoid shell-sensitive inline composition.
 - If there are no notes, still keep the `Notes` section and write `- None`.
 
-## Branch Protection Rule
+## Branch Protection Rule (CRITICAL)
 
-- Never commit directly to `main`.
-- All changes must go through a Pull Request workflow.
+**NEVER commit or push directly to `main`.** This rule is absolute.
+
+- Create a new branch for EVERY change (e.g., `feat/feature-name`, `fix/bug-fix`, `chore/task`)
+- All changes must go through a Pull Request workflow
+- Merge to `main` only via PR (squash merge preferred)
+- semantic-release handles versioning automatically on main merge - do NOT bump versions manually

@@ -28,7 +28,7 @@ If the user says any of the following, run the full workflow immediately:
 
 ## Critical Rules
 
-1. **Never commit directly to `main`** - All changes must go through a Pull Request workflow
+1. **NEVER commit or push directly to `main`** - This is absolute. Always create a branch first.
 2. **Use `--body-file` for PR creation** - Never pass multi-line Markdown via inline `gh pr create --body "..."`
 3. **Verify PR rendering** - After creating/updating PR, verify title/body rendering is correct
 
