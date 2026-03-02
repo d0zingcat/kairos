@@ -101,7 +101,9 @@ bun run db:seed
 | `GOOGLE_BOOKS_API_KEY` | Google Books API Key | 搜索时需要 |
 | `HARDCOVER_API_TOKEN` | Hardcover API Token（中文书搜索增强） | 推荐 |
 | `RAWG_API_KEY` | RAWG API Key（游戏搜索） | 搜索时需要 |
-| `LASTFM_API_KEY` | Last.fm API Key（音乐封面） | 搜索时需要 |
+| `SPOTIFY_CLIENT_ID` | Spotify Client ID（音乐搜索优先源） | 推荐 |
+| `SPOTIFY_CLIENT_SECRET` | Spotify Client Secret | 推荐 |
+| `LASTFM_API_KEY` | Last.fm API Key（音乐封面兜底） | 搜索时需要 |
 | `NEXT_PUBLIC_SITE_AUTHOR` | 网站底部显示的作者名称，默认 d0zingcat | 可选 |
 | `NEXT_PUBLIC_GITHUB_URL` | 网站底部 GitHub 图标跳转链接，默认跳转作者仓库 | 可选 |
 

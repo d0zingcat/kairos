@@ -3,6 +3,7 @@ import { searchMovies, searchTV, posterUrl } from "@/lib/api/tmdb"
 import { searchBooks, normalizeBookResult } from "@/lib/api/google-books"
 import { searchHardcoverBooks } from "@/lib/api/hardcover"
 import { searchGames, normalizeGameResult } from "@/lib/api/rawg"
+import { searchSpotify, normalizeSpotifyResult } from "@/lib/api/spotify"
 import { searchAlbums, searchTracks } from "@/lib/api/musicbrainz"
 import { db } from "@/db"
 import { books, games, music, watches } from "@/db/schema"
@@ -386,35 +387,68 @@ export async function GET(
           },
         }))
 
-        const [albums, tracks] = await Promise.all([
-          searchAlbums(query, { traceId }).catch((error) => {
-            logger.warn("music album search failed", {
-              query,
-              error: error instanceof Error ? error.message : "unknown",
-              traceId,
-            })
-            return []
-          }),
-          searchTracks(query, { traceId }).catch((error) => {
-            logger.warn("music track search failed", {
-              query,
-              error: error instanceof Error ? error.message : "unknown",
-              traceId,
-            })
-            return []
-          }),
-        ])
-        const combined = [...albums, ...tracks].slice(0, 10)
-        const remoteResults = combined.map((m) => ({
-          externalId: m.id,
-          title: m.title,
-          subtitle: m.artist,
-          coverUrl: m.coverUrl,
-          type: "music",
-          meta: { musicType: m.type, releaseDate: m.releaseDate },
-        }))
+        // Try Spotify first
+        let spotifyResults: SearchResultItem[] = []
+        try {
+          const spotifyItems = await searchSpotify(query, { traceId })
+          spotifyResults = spotifyItems.map((m) => {
+            const normalized = normalizeSpotifyResult(m)
+            return {
+              externalId: normalized.externalId,
+              title: normalized.title,
+              subtitle: normalized.artist,
+              coverUrl: normalized.coverUrl,
+              type: "music",
+              meta: {
+                musicType: normalized.type,
+                releaseDate: normalized.releaseDate,
+                source: "spotify",
+              },
+            }
+          })
+          logger.debug("spotify search completed", { query, count: spotifyResults.length, traceId })
+        } catch (error) {
+          logger.warn("spotify search failed", {
+            query,
+            error: error instanceof Error ? error.message : "unknown",
+            traceId,
+          })
+        }
 
-        results = mergeUniqueResults([...localResults, ...remoteResults])
+        // Fallback to MusicBrainz if Spotify returns no results
+        let musicbrainzResults: SearchResultItem[] = []
+        if (spotifyResults.length === 0) {
+          logger.debug("spotify returned no results, falling back to musicbrainz", { query, traceId })
+          const [albums, tracks] = await Promise.all([
+            searchAlbums(query, { traceId }).catch((error) => {
+              logger.warn("music album search failed", {
+                query,
+                error: error instanceof Error ? error.message : "unknown",
+                traceId,
+              })
+              return []
+            }),
+            searchTracks(query, { traceId }).catch((error) => {
+              logger.warn("music track search failed", {
+                query,
+                error: error instanceof Error ? error.message : "unknown",
+                traceId,
+              })
+              return []
+            }),
+          ])
+          const combined = [...albums, ...tracks].slice(0, 10)
+          musicbrainzResults = combined.map((m) => ({
+            externalId: m.id,
+            title: m.title,
+            subtitle: m.artist,
+            coverUrl: m.coverUrl,
+            type: "music",
+            meta: { musicType: m.type, releaseDate: m.releaseDate, source: "musicbrainz" },
+          }))
+        }
+
+        results = mergeUniqueResults([...localResults, ...spotifyResults, ...musicbrainzResults])
         break
       }
 
