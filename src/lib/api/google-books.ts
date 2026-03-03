@@ -1,5 +1,6 @@
 const GOOGLE_BOOKS_BASE = "https://www.googleapis.com/books/v1"
 import { createLogger } from "@/lib/logger"
+import { getCache, setCache } from "@/lib/redis"
 
 const logger = createLogger("api/google-books")
 
@@ -45,6 +46,13 @@ function extractIsbn(identifiers?: { type: string; identifier: string }[]): stri
 }
 
 export async function searchBooks(query: string, context?: SearchLogContext): Promise<GoogleBookResult[]> {
+  const cacheKey = `google-books:search:${query}`
+  const cached = await getCache<GoogleBookResult[]>(cacheKey)
+  if (cached) {
+    logger.debug("google books search cache hit", { query })
+    return cached
+  }
+
   const key = getApiKey()
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
 
@@ -77,16 +85,20 @@ export async function searchBooks(query: string, context?: SearchLogContext): Pr
   }
 
   const primary = await searchWithQuery(query)
-  if (primary.length > 0) {
-    logger.debug("google books primary search hit", { query, count: primary.length, ...traceMeta })
-    return primary
+  const results = primary.length > 0 ? primary : await searchWithQuery(`intitle:${query}`)
+
+  if (results.length > 0) {
+    await setCache(cacheKey, results, 86400) // Cache for 1 day
   }
 
-  logger.info("google books primary empty, using intitle fallback", { query, ...traceMeta })
-  return searchWithQuery(`intitle:${query}`)
+  return results
 }
 
 export async function getBookDetail(id: string): Promise<GoogleBookResult> {
+  const cacheKey = `google-books:detail:${id}`
+  const cached = await getCache<GoogleBookResult>(cacheKey)
+  if (cached) return cached
+
   const key = getApiKey()
   const url = new URL(`${GOOGLE_BOOKS_BASE}/volumes/${id}`)
   if (key) {
@@ -95,7 +107,9 @@ export async function getBookDetail(id: string): Promise<GoogleBookResult> {
 
   const res = await fetch(url.toString())
   if (!res.ok) throw new Error(`Google Books detail failed: ${res.status}`)
-  return res.json()
+  const data = await res.json()
+  await setCache(cacheKey, data, 86400 * 7) // Cache for 7 days
+  return data
 }
 
 export function normalizeBookResult(item: GoogleBookResult) {

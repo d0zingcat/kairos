@@ -93,6 +93,12 @@ export const books = pgTable("books", {
   ...timestamps,
 }, (table) => ({
   userIdx: index("books_user_idx").on(table.userId),
+  booksStatusIdx: index("books_status_idx").on(table.status),
+  booksRatingIdx: index("books_rating_idx").on(table.rating),
+  booksFavoriteIdx: index("books_favorite_idx").on(table.favorite),
+  booksFinishDateIdx: index("books_finish_date_idx").on(table.finishDate),
+  booksCreatedAtIdx: index("books_created_at_idx").on(table.createdAt),
+  booksUpdatedAtIdx: index("books_updated_at_idx").on(table.updatedAt),
 }))
 
 // ── Music ────────────────────────────────────────────────
@@ -114,6 +120,12 @@ export const music = pgTable("music", {
   ...timestamps,
 }, (table) => ({
   userIdx: index("music_user_idx").on(table.userId),
+  musicTypeIdx: index("music_type_idx").on(table.type),
+  musicRatingIdx: index("music_rating_idx").on(table.rating),
+  musicFavoriteIdx: index("music_favorite_idx").on(table.favorite),
+  musicListenDateIdx: index("music_listen_date_idx").on(table.listenDate),
+  musicCreatedAtIdx: index("music_created_at_idx").on(table.createdAt),
+  musicUpdatedAtIdx: index("music_updated_at_idx").on(table.updatedAt),
 }))
 
 // ── Watches (Movies / TV) ────────────────────────────────
@@ -138,6 +150,13 @@ export const watches = pgTable("watches", {
   ...timestamps,
 }, (table) => ({
   userIdx: index("watches_user_idx").on(table.userId),
+  watchesTypeIdx: index("watches_type_idx").on(table.type),
+  watchesStatusIdx: index("watches_status_idx").on(table.status),
+  watchesRatingIdx: index("watches_rating_idx").on(table.rating),
+  watchesFavoriteIdx: index("watches_favorite_idx").on(table.favorite),
+  watchesWatchDateIdx: index("watches_watch_date_idx").on(table.watchDate),
+  watchesCreatedAtIdx: index("watches_created_at_idx").on(table.createdAt),
+  watchesUpdatedAtIdx: index("watches_updated_at_idx").on(table.updatedAt),
 }))
 
 // ── Games ────────────────────────────────────────────────
@@ -161,6 +180,12 @@ export const games = pgTable("games", {
   ...timestamps,
 }, (table) => ({
   userIdx: index("games_user_idx").on(table.userId),
+  gamesStatusIdx: index("games_status_idx").on(table.status),
+  gamesRatingIdx: index("games_rating_idx").on(table.rating),
+  gamesFavoriteIdx: index("games_favorite_idx").on(table.favorite),
+  gamesFinishDateIdx: index("games_finish_date_idx").on(table.finishDate),
+  gamesCreatedAtIdx: index("games_created_at_idx").on(table.createdAt),
+  gamesUpdatedAtIdx: index("games_updated_at_idx").on(table.updatedAt),
 }))
 
 // ── App settings ───────────────────────────────────────
