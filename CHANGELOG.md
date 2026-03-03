@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/d0zingcat/kairos/compare/v1.2.0...v1.3.0) (2026-03-03)
+
+
+### Features
+
+* add i18n support with Chinese and English ([#26](https://github.com/d0zingcat/kairos/issues/26)) ([ee0e323](https://github.com/d0zingcat/kairos/commit/ee0e323a4b8c665a547000a7b24a611ff89d0602))
+* implement PWA support, data export, and batch operations ([#28](https://github.com/d0zingcat/kairos/issues/28)) ([c9b0a17](https://github.com/d0zingcat/kairos/commit/c9b0a17a3538eba986b2b7a21bffbeb771c9e1fc))
+
 # [1.2.0](https://github.com/d0zingcat/kairos/compare/v1.1.1...v1.2.0) (2026-03-03)
 
 
