@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/d0zingcat/kairos/compare/v1.1.1...v1.2.0) (2026-03-03)
+
+
+### Bug Fixes
+
+* resolve middleware conflict by merging logic into proxy.ts ([5f8c33c](https://github.com/d0zingcat/kairos/commit/5f8c33cbf2be8689a3ae7ef9a6e6ec98bafefec6))
+
+
+### Features
+
+* implement rate limiting, jwt revocation, and input validation ([2aa1926](https://github.com/d0zingcat/kairos/commit/2aa1926af7737a59298d46557765ac74e211efe2))
+
 ## [1.1.1](https://github.com/d0zingcat/kairos/compare/v1.1.0...v1.1.1) (2026-03-03)
 
 
