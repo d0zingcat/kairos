@@ -10,29 +10,10 @@ import { books, games, music, watches } from "@/db/schema"
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm"
 import { createLogger } from "@/lib/logger"
 import { getCurrentUser } from "@/lib/auth"
+import { mergeUniqueResults, type SearchResultItem } from "@/lib/search-utils"
 
 const logger = createLogger("api/search")
 
-export interface SearchResultItem {
-  externalId: string
-  title: string
-  subtitle: string | null
-  coverUrl: string | null
-  type: string
-  meta: Record<string, unknown>
-}
-
-function mergeUniqueResults(items: SearchResultItem[]): SearchResultItem[] {
-  const seen = new Set<string>()
-  return items.filter((item) => {
-    const key = `${item.type}::${item.title.toLowerCase()}::${(item.subtitle ?? "").toLowerCase()}`
-    if (seen.has(key)) {
-      return false
-    }
-    seen.add(key)
-    return true
-  })
-}
 
 export async function GET(
   request: NextRequest,
