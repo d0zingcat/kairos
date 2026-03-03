@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "media.rawg.io" },
       { protocol: "https", hostname: "coverartarchive.org" },
       { protocol: "https", hostname: "lastfm.freetls.fastly.net" },
+      { protocol: "https", hostname: "images.hardcover.app" },
+      { protocol: "https", hostname: "i.scdn.co" },
     ],
   },
 };

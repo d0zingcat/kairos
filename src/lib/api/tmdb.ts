@@ -1,4 +1,5 @@
 import { createLogger } from "@/lib/logger"
+import { getCache, setCache } from "@/lib/redis"
 
 const TMDB_BASE = "https://api.themoviedb.org/3"
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p"
@@ -49,6 +50,13 @@ export function posterUrl(path: string | null, size = "w500"): string | null {
 }
 
 export async function searchMovies(query: string, context?: SearchLogContext): Promise<TMDBSearchResult[]> {
+  const cacheKey = `tmdb:search:movie:${query}`
+  const cached = await getCache<TMDBSearchResult[]>(cacheKey)
+  if (cached) {
+    logger.debug("movie search cache hit", { query })
+    return cached
+  }
+
   const key = getApiKey()
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${TMDB_BASE}/search/movie?api_key=${key}&query=${encodeURIComponent(query)}&language=zh-CN&include_adult=false`
@@ -67,10 +75,19 @@ export async function searchMovies(query: string, context?: SearchLogContext): P
 
   const results = (data.results ?? []).slice(0, 10)
   logger.debug("movie search completed", { query, count: results.length, ...traceMeta })
+
+  await setCache(cacheKey, results, 86400) // Cache for 1 day
   return results
 }
 
 export async function searchTV(query: string, context?: SearchLogContext): Promise<TMDBSearchResult[]> {
+  const cacheKey = `tmdb:search:tv:${query}`
+  const cached = await getCache<TMDBSearchResult[]>(cacheKey)
+  if (cached) {
+    logger.debug("tv search cache hit", { query })
+    return cached
+  }
+
   const key = getApiKey()
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
   const url = `${TMDB_BASE}/search/tv?api_key=${key}&query=${encodeURIComponent(query)}&language=zh-CN`
@@ -89,21 +106,35 @@ export async function searchTV(query: string, context?: SearchLogContext): Promi
 
   const results = (data.results ?? []).slice(0, 10)
   logger.debug("tv search completed", { query, count: results.length, ...traceMeta })
+
+  await setCache(cacheKey, results, 86400) // Cache for 1 day
   return results
 }
 
 export async function getMovieDetail(id: number): Promise<TMDBDetail> {
+  const cacheKey = `tmdb:detail:movie:${id}`
+  const cached = await getCache<TMDBDetail>(cacheKey)
+  if (cached) return cached
+
   const key = getApiKey()
   const url = `${TMDB_BASE}/movie/${id}?api_key=${key}&language=zh-CN&append_to_response=credits`
   const res = await fetch(url)
   if (!res.ok) throw new Error(`TMDB movie detail failed: ${res.status}`)
-  return res.json()
+  const data = await res.json()
+  await setCache(cacheKey, data, 86400 * 7) // Cache for 7 days
+  return data
 }
 
 export async function getTVDetail(id: number): Promise<TMDBDetail> {
+  const cacheKey = `tmdb:detail:tv:${id}`
+  const cached = await getCache<TMDBDetail>(cacheKey)
+  if (cached) return cached
+
   const key = getApiKey()
   const url = `${TMDB_BASE}/tv/${id}?api_key=${key}&language=zh-CN&append_to_response=credits`
   const res = await fetch(url)
   if (!res.ok) throw new Error(`TMDB TV detail failed: ${res.status}`)
-  return res.json()
+  const data = await res.json()
+  await setCache(cacheKey, data, 86400 * 7) // Cache for 7 days
+  return data
 }
