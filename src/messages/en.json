@@ -1,0 +1,172 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "retry": "Click to retry",
+    "noMore": "No more"
+  },
+  "nav": {
+    "quickEntry": "Quick Entry",
+    "readOnly": "Read Only",
+    "loggedIn": "Logged In",
+    "guestMode": "Guest Mode",
+    "logout": "Logout",
+    "login": "Login / Register"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Auto",
+    "switch": "Switch Theme"
+  },
+  "search": {
+    "placeholder": "Search...",
+    "all": "All",
+    "searchType": "Current mode: {type}",
+    "enterKeyword": "Enter keywords to start searching",
+    "clearMode": "Clear Mode",
+    "noResults": "No results found",
+    "shortcuts": "Shortcuts",
+    "book": "Books",
+    "music": "Music",
+    "movie": "Movies",
+    "tv": "TV Shows",
+    "game": "Games",
+    "searchBook": "Search Books",
+    "searchMusic": "Search Music",
+    "searchMovie": "Search Movies",
+    "searchTv": "Search TV Shows",
+    "searchGame": "Search Games",
+    "searchWithType": "Search {type}...",
+    "searchTip": "Type /book, /music, /movie, /tv, /game to search..."
+  },
+  "entry": {
+    "title": "Add Entry",
+    "rating": "Rating (Press 1-5 to rate quickly)",
+    "startDate": "Start Date",
+    "finishDate": "Finish Date",
+    "selectStartDate": "Select start date",
+    "selectFinishDate": "Select finish date",
+    "author": "Author",
+    "authorPlaceholder": "Enter author and press enter, supports multiple",
+    "category": "Category",
+    "categoryPlaceholder": "Enter category and press enter, supports multiple",
+    "date": "Date",
+    "status": "Status",
+    "myRating": "My Rating",
+    "note": "Note",
+    "notePlaceholder": "Write something...",
+    "confirmDelete": "Are you sure you want to delete this entry? This cannot be undone."
+  },
+  "status": {
+    "reading": "Reading",
+    "completed": "Completed",
+    "paused": "Paused",
+    "abandoned": "Abandoned"
+  },
+  "activity": {
+    "recentYear": "Activity in the Past Year",
+    "less": "Less",
+    "more": "More",
+    "books": "books",
+    "music": "music",
+    "watches": "shows",
+    "games": "games",
+    "records": "records"
+  },
+  "feed": {
+    "read": "read",
+    "listened": "listened to",
+    "watched": "watched",
+    "played": "played",
+    "loadFailed": "Failed to load, please try again later",
+    "noPublicFeed": "No public posts yet. Start recording your timeline!",
+    "loadingMore": "Loading more...",
+    "resumed": "Loading resumed",
+    "noMoreFeed": "No more posts"
+  },
+  "dashboard": {
+    "favorites": "Favorites",
+    "noFavorites": "No favorites yet",
+    "author": "Author: {authors}",
+    "readingTime": "Reading time: {start} → {finish}",
+    "monthly": "This Month",
+    "yearly": "This Year",
+    "total": "Total",
+    "recentActivity": "Recent Activity",
+    "noRecords": "No records yet",
+    "startEntry": "Press ⌘K to start adding"
+  },
+  "media": {
+    "noRecords": "No {type} records yet",
+    "quickAdd": "Press {key} to quickly add"
+  },
+  "version": {
+    "checking": "Checking version...",
+    "foundNew": "New version found",
+    "current": "Current",
+    "latest": "Latest",
+    "goToGithub": "Click to visit GitHub for updates",
+    "currentVersion": "Current Version",
+    "upToDate": "Up to date"
+  },
+  "settings": {
+    "public": "Public",
+    "publicDesc": "Anyone can view, only admins can edit.",
+    "private": "Private",
+    "privateDesc": "Only admins can access and edit.",
+    "passwordProtected": "Password Protected",
+    "passwordProtectedDesc": "Enter password to view, admin password can edit.",
+    "passwordNote": "Password protection uses `VIEWER_PASSWORD_HASH` (falls back to admin password when not configured).",
+    "saving": "Saving...",
+    "saveSettings": "Save Settings"
+  },
+  "visibility": {
+    "title": "Public Feed Visibility",
+    "description": "When enabled, your summary stats and recent activity will appear on the feed page.",
+    "public": "Public Feed",
+    "publicDesc": "Others can see your summary on the feed",
+    "private": "Private",
+    "privateDesc": "Your summary won't appear on the feed",
+    "saving": "Saving...",
+    "savePublicSettings": "Save Visibility Settings"
+  },
+  "goodreads": {
+    "title": "Goodreads Import",
+    "description": "Upload your exported Goodreads CSV file. The system will import and automatically skip duplicate entries.",
+    "summary": "Import complete: {inserted} new, {skipped} skipped, {total} total source.",
+    "duplicateNote": "Duplicate check: Book Id first, fallback to Title + Author.",
+    "importing": "Importing...",
+    "import": "Import from Goodreads",
+    "noFile": "Please select a Goodreads exported CSV file first",
+    "importFailed": "Import failed",
+    "retryImport": "Import failed, please try again later"
+  },
+  "login": {
+    "title": "Enter your credentials",
+    "username": "Username",
+    "password": "Password",
+    "submitting": "Logging in...",
+    "login": "Login",
+    "noAccount": "Don't have an account?",
+    "register": "Register one",
+    "createAccount": "Create Account",
+    "firstUserNote": "The first registered user will become admin automatically",
+    "usernamePlaceholder": "Username (lowercase letters/numbers/_-.)",
+    "passwordPlaceholder": "Password (at least 8 characters)",
+    "confirmPassword": "Confirm Password",
+    "submittingRegister": "Creating...",
+    "registerAndEnter": "Register and Enter",
+    "hasAccount": "Already have an account?",
+    "goLogin": "Go to Login"
+  },
+  "metadata": {
+    "title": "Kairos — Record Every Moment of Life",
+    "description": "Personal life tracking: Books, Music, Movies, Games"
+  }
+}
