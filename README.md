@@ -124,7 +124,9 @@ bun run db:seed
 - **框架**: Next.js 16 (App Router, RSC)
 - **UI**: Tailwind CSS v4 + shadcn/ui
 - **数据库**: PostgreSQL 16 + Drizzle ORM
+- **缓存**: Redis (ioredis) — 用于加速第三方 API 搜索与详情查询
 - **认证**: JWT (jose) + bcrypt
+- **自动化测试**: Vitest + Playwright
 - **动画**: Framer Motion
 - **热力图**: react-activity-calendar
 - **包管理**: Bun
