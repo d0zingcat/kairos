@@ -26,15 +26,6 @@ export default async function GamesPage({ searchParams }: PageProps) {
         </h1>
       </div>
 
-      <Suspense fallback={<FilterBarSkeleton />}>
-        <FilterBar
-          statuses={GAME_STATUSES}
-          currentStatus={params.status}
-          currentSort={params.sort}
-          currentSearch={params.search}
-        />
-      </Suspense>
-
       <Suspense fallback={<GridSkeleton />}>
         <GameGrid
           status={params.status}
@@ -62,7 +53,15 @@ async function GameGrid({
     return <EmptyState type="游戏" />
   }
 
-  return <GamesGrid gameList={gameList} canEdit={canEdit} />
+  return (
+    <GamesGrid
+      gameList={gameList}
+      canEdit={canEdit}
+      status={status}
+      sort={sort}
+      search={search}
+    />
+  )
 }
 
 function FilterBarSkeleton() {

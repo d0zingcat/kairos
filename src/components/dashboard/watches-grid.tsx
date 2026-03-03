@@ -4,7 +4,11 @@ import { useMemo, useState } from "react"
 import { WATCH_STATUSES } from "@/lib/constants"
 import { MediaCard } from "@/components/dashboard/media-card"
 import { EntryDialog } from "@/components/entry-dialog/entry-dialog"
+import { SelectionToolbar } from "@/components/dashboard/selection-toolbar"
+import { FilterBar } from "@/components/dashboard/filter-bar"
+import { deleteEntries } from "@/lib/actions/entries"
 import type { SearchResultItem } from "@/app/api/search/[type]/route"
+import { useRouter } from "next/navigation"
 
 interface WatchGridItem {
   id: string
@@ -28,11 +32,20 @@ interface WatchGridItem {
 interface WatchesGridProps {
   watchList: WatchGridItem[]
   canEdit: boolean
+  status?: string
+  sort?: string
+  search?: string
 }
 
-export function WatchesGrid({ watchList, canEdit }: WatchesGridProps) {
+export function WatchesGrid({ watchList, canEdit, status, sort, search }: WatchesGridProps) {
+  const router = useRouter()
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
+
+  // Selection State
+  const [isSelectionMode, setIsSelectionMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const statusMap = useMemo(
     () => new Map(WATCH_STATUSES.map((item) => [item.value, item.label])),
@@ -70,9 +83,46 @@ export function WatchesGrid({ watchList, canEdit }: WatchesGridProps) {
     setEntryDialogOpen(true)
   }
 
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    )
+  }
+
+  const handleDelete = async () => {
+    if (!canEdit || selectedIds.length === 0) return
+    if (!confirm(`确定要彻底删除已选择的 ${selectedIds.length} 个项目吗？`)) return
+
+    setIsDeleting(true)
+    try {
+      await deleteEntries("watch", selectedIds)
+      setSelectedIds([])
+      setIsSelectionMode(false)
+      router.refresh()
+    } catch (error) {
+      console.error("Bulk delete failed:", error)
+      alert("批量删除失败")
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <FilterBar
+        statuses={WATCH_STATUSES}
+        currentStatus={status}
+        currentSort={sort}
+        currentSearch={search}
+        canEdit={canEdit}
+        isSelectionMode={isSelectionMode}
+        onToggleSelectionMode={() => {
+          setIsSelectionMode(!isSelectionMode)
+          if (isSelectionMode) setSelectedIds([])
+        }}
+      />
+
+      <div className="grid grid-cols-2 gap-4 mt-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {watchList.map((w, i) => (
           <MediaCard
             key={w.id}
@@ -87,9 +137,22 @@ export function WatchesGrid({ watchList, canEdit }: WatchesGridProps) {
             date={w.watchDate}
             index={i}
             onClick={canEdit ? () => openEditor(w) : undefined}
+            selectable={isSelectionMode}
+            selected={selectedIds.includes(w.id)}
+            onSelect={() => toggleSelection(w.id)}
           />
         ))}
       </div>
+
+      <SelectionToolbar
+        selectedCount={selectedIds.length}
+        onClear={() => {
+          setSelectedIds([])
+          setIsSelectionMode(false)
+        }}
+        onDelete={handleDelete}
+        isDeleting={isDeleting}
+      />
 
       <EntryDialog
         open={entryDialogOpen}
