@@ -40,6 +40,7 @@
     "react-day-picker": "^9.13.2",
     "react-dom": "19.2.3",
     "react-tooltip": "^5.30.0",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
   },
@@ -58,6 +59,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.4",
     "drizzle-kit": "^0.31.9",
+    "drizzle-zod": "^0.8.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "jsdom": "^28.1.0",
