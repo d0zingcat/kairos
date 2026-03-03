@@ -25,15 +25,11 @@ export default async function MusicPage({ searchParams }: PageProps) {
         </h1>
       </div>
 
-      <Suspense fallback={<FilterBarSkeleton />}>
-        <FilterBar
-          currentSort={params.sort}
-          currentSearch={params.search}
-        />
-      </Suspense>
-
       <Suspense fallback={<GridSkeleton />}>
-        <MusicGridContent sort={params.sort} search={params.search} />
+        <MusicGridContent
+          sort={params.sort}
+          search={params.search}
+        />
       </Suspense>
     </div>
   )
@@ -53,7 +49,14 @@ async function MusicGridContent({
     return <EmptyState type="音乐" />
   }
 
-  return <MusicGrid musicList={musicList} canEdit={canEdit} />
+  return (
+    <MusicGrid
+      musicList={musicList}
+      canEdit={canEdit}
+      sort={sort}
+      search={search}
+    />
+  )
 }
 
 function FilterBarSkeleton() {

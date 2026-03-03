@@ -26,15 +26,6 @@ export default async function BooksPage({ searchParams }: PageProps) {
         </h1>
       </div>
 
-      <Suspense fallback={<FilterBarSkeleton />}>
-        <FilterBar
-          statuses={BOOK_STATUSES}
-          currentStatus={params.status}
-          currentSort={params.sort}
-          currentSearch={params.search}
-        />
-      </Suspense>
-
       <Suspense fallback={<GridSkeleton />}>
         <BookGrid
           status={params.status}
@@ -62,7 +53,15 @@ async function BookGrid({
     return <EmptyState type="书籍" />
   }
 
-  return <BooksGrid books={books} canEdit={canEdit} />
+  return (
+    <BooksGrid
+      books={books}
+      canEdit={canEdit}
+      status={status}
+      sort={sort}
+      search={search}
+    />
+  )
 }
 
 function FilterBarSkeleton() {

@@ -26,15 +26,6 @@ export default async function WatchesPage({ searchParams }: PageProps) {
         </h1>
       </div>
 
-      <Suspense fallback={<FilterBarSkeleton />}>
-        <FilterBar
-          statuses={WATCH_STATUSES}
-          currentStatus={params.status}
-          currentSort={params.sort}
-          currentSearch={params.search}
-        />
-      </Suspense>
-
       <Suspense fallback={<GridSkeleton />}>
         <WatchGrid
           status={params.status}
@@ -62,7 +53,15 @@ async function WatchGrid({
     return <EmptyState type="影视" />
   }
 
-  return <WatchesGrid watchList={watchList} canEdit={canEdit} />
+  return (
+    <WatchesGrid
+      watchList={watchList}
+      canEdit={canEdit}
+      status={status}
+      sort={sort}
+      search={search}
+    />
+  )
 }
 
 function FilterBarSkeleton() {
