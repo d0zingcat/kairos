@@ -1,4 +1,5 @@
 import { createLogger } from "@/lib/logger"
+import { getCache, setCache } from "@/lib/redis"
 
 const SPOTIFY_BASE = "https://api.spotify.com/v1"
 const SPOTIFY_TOKEN_BASE = "https://accounts.spotify.com/api/token"
@@ -89,6 +90,13 @@ export async function searchSpotify(
   query: string,
   context?: SearchLogContext
 ): Promise<SpotifySearchResult[]> {
+  const cacheKey = `spotify:search:${query}`
+  const cached = await getCache<SpotifySearchResult[]>(cacheKey)
+  if (cached) {
+    logger.debug("spotify search cache hit", { query })
+    return cached
+  }
+
   const token = await getAccessToken()
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
 
@@ -144,6 +152,7 @@ export async function searchSpotify(
   }
 
   logger.debug("spotify search completed", { query, count: results.length, ...traceMeta })
+  await setCache(cacheKey, results, 86400) // Cache for 1 day
   return results
 }
 
