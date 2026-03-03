@@ -12,7 +12,7 @@ const JWT_SECRET = new TextEncoder().encode(
 )
 
 const SESSION_COOKIE_NAME = "kairos-session"
-const ADMIN_ONLY_PREFIXES: string[] = []
+const ADMIN_ONLY_PREFIXES: string[] = ["/dashboard", "/settings", "/api/export"]
 
 async function hasRoleSession(token: string | undefined, role: "admin" | "member") {
   if (!token) return false

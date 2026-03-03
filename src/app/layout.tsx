@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { Toaster } from "sonner";
 import { Github } from "lucide-react";
 import "./globals.css";
 
@@ -74,6 +75,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           {children}
+          <Toaster position="top-center" richColors />
           <a
             href={process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/d0zingcat/kairos"}
             target="_blank"
