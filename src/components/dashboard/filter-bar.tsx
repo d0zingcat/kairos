@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useCallback, useRef, useTransition } from "react"
 import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 import {
   Select,
   SelectContent,
@@ -10,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Search } from "lucide-react"
+import { Search, CheckSquare, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { SORT_OPTIONS } from "@/lib/constants"
 
 interface FilterBarProps {
@@ -18,6 +20,9 @@ interface FilterBarProps {
   currentStatus?: string
   currentSort?: string
   currentSearch?: string
+  isSelectionMode?: boolean
+  onToggleSelectionMode?: () => void
+  canEdit?: boolean
 }
 
 export function FilterBar({
@@ -25,6 +30,9 @@ export function FilterBar({
   currentStatus,
   currentSort,
   currentSearch,
+  isSelectionMode,
+  onToggleSelectionMode,
+  canEdit,
 }: FilterBarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -138,6 +146,30 @@ export function FilterBar({
           ))}
         </SelectContent>
       </Select>
+      {/* Batch Mode Toggle */}
+      {canEdit && onToggleSelectionMode && (
+        <Button
+          variant={isSelectionMode ? "secondary" : "outline"}
+          size="sm"
+          onClick={onToggleSelectionMode}
+          className={cn(
+            "ml-auto gap-2 border-border/60 bg-card/60",
+            isSelectionMode && "border-amber-500/50 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
+          )}
+        >
+          {isSelectionMode ? (
+            <>
+              <X className="h-4 w-4" />
+              <span>退出管理</span>
+            </>
+          ) : (
+            <>
+              <CheckSquare className="h-4 w-4" />
+              <span>批量管理</span>
+            </>
+          )}
+        </Button>
+      )}
     </div>
   )
 }

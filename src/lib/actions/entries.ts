@@ -3,7 +3,7 @@
 import { db } from "@/db"
 import { books, music, watches, games } from "@/db/schema"
 import type { NewBook, NewMusic, NewWatch, NewGame } from "@/db/schema"
-import { eq, desc, sql, and, ilike, count } from "drizzle-orm"
+import { eq, desc, sql, and, ilike, count, inArray } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
@@ -493,4 +493,15 @@ export async function getFavorites() {
     ...favWatches.map((w) => ({ ...w, mediaType: "watch" as const })),
     ...favGames.map((g) => ({ ...g, mediaType: "game" as const })),
   ]
+}
+
+export async function deleteEntries(type: "book" | "music" | "watch" | "game", ids: string[]) {
+  const user = await requireCurrentUser()
+  if (ids.length === 0) return
+
+  const table = type === "book" ? books : type === "music" ? music : type === "watch" ? watches : games
+  await db.delete(table).where(and(eq(table.userId, user.id), inArray(table.id, ids)))
+
+  revalidatePath("/dashboard")
+  revalidatePath(`/dashboard/${type === "watch" ? "watches" : type === "music" ? "music" : type + "s"}`)
 }
