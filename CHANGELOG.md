@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/d0zingcat/kairos/compare/v1.3.0...v1.4.0) (2026-03-03)
+
+
+### Features
+
+* implement Engineering & Reliability enhancements (Error boundaries, Tests, Drizzle-Zod) ([#29](https://github.com/d0zingcat/kairos/issues/29)) ([34f493f](https://github.com/d0zingcat/kairos/commit/34f493fc7a55d6873ed93ef5bed5daf5fb7c16f0))
+
 # [1.3.0](https://github.com/d0zingcat/kairos/compare/v1.2.0...v1.3.0) (2026-03-03)
 
 
