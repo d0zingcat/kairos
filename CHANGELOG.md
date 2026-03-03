@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/d0zingcat/kairos/compare/v1.1.0...v1.1.1) (2026-03-03)
+
+
+### Performance Improvements
+
+* add database indices and Redis caching logic ([4350f39](https://github.com/d0zingcat/kairos/commit/4350f393e1f850f5f1ea4abe080b5599f83d33da))
+
 # [1.1.0](https://github.com/d0zingcat/kairos/compare/v1.0.1...v1.1.0) (2026-03-03)
 
 
