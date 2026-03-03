@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { jwtVerify } from "jose"
+import { getRedisClient } from "@/lib/redis"
+
+// Rate limit configuration
+const RATELIMIT_WINDOW = 60 // 1 minute
+const MAX_REQUESTS = 30     // 30 requests per minute
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret-change-me"
@@ -39,6 +44,44 @@ export async function proxy(request: NextRequest) {
     pathname.includes(".")
   ) {
     return NextResponse.next()
+  }
+
+  // Rate limiting for search API
+  if (pathname.startsWith("/api/search")) {
+    try {
+      const redis = await getRedisClient()
+      if (redis) {
+        const ip =
+          request.headers.get("x-forwarded-for")?.split(",")[0] ||
+          request.headers.get("x-real-ip") ||
+          "127.0.0.1"
+
+        const key = `ratelimit:${ip}:${pathname}`
+        const current = await redis.get(key)
+
+        if (current && parseInt(current) >= MAX_REQUESTS) {
+          return new NextResponse(
+            JSON.stringify({ error: "Too many requests. Please try again later." }),
+            {
+              status: 429,
+              headers: {
+                "Content-Type": "application/json",
+                "Retry-After": String(RATELIMIT_WINDOW),
+              },
+            }
+          )
+        }
+
+        const multi = redis.multi()
+        multi.incr(key)
+        if (!current) {
+          multi.expire(key, RATELIMIT_WINDOW)
+        }
+        await multi.exec()
+      }
+    } catch (error) {
+      console.error("Rate limit error:", error)
+    }
   }
 
   const adminToken = request.cookies.get(SESSION_COOKIE_NAME)?.value
