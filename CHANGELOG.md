@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/d0zingcat/kairos/compare/v1.0.1...v1.1.0) (2026-03-03)
+
+
+### Features
+
+* setup Vitest and Playwright testing framework ([2ced94b](https://github.com/d0zingcat/kairos/commit/2ced94b0dc507bdc0775126031a3cea1e939b923))
+
 ## [1.0.1](https://github.com/d0zingcat/kairos/compare/v1.0.0...v1.0.1) (2026-03-02)
 
 
