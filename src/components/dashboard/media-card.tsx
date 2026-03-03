@@ -20,6 +20,9 @@ interface MediaCardProps {
   note?: string | null
   index?: number
   onClick?: () => void
+  selectable?: boolean
+  selected?: boolean
+  onSelect?: (selected: boolean) => void
 }
 
 export function MediaCard({
@@ -35,18 +38,61 @@ export function MediaCard({
   note,
   index = 0,
   onClick,
+  selectable,
+  selected,
+  onSelect,
 }: MediaCardProps) {
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (selectable && onSelect) {
+      e.stopPropagation()
+      onSelect(!selected)
+      return
+    }
+    if (onClick) onClick()
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.3 }}
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-border/50 bg-card/60 transition-all hover:bg-accent/70",
-        onClick ? "cursor-pointer" : undefined
+        "group relative overflow-hidden rounded-xl border transition-all",
+        selected
+          ? "border-amber-500/60 bg-amber-500/5 shadow-[0_0_15px_-5px_theme(colors.amber.500/30)]"
+          : "border-border/50 bg-card/60 hover:bg-accent/70",
+        (onClick || selectable) ? "cursor-pointer" : undefined
       )}
-      onClick={onClick}
+      onClick={handleCardClick}
     >
+      {/* Selection Checkbox */}
+      {selectable && (
+        <div className="absolute left-3 top-3 z-20">
+          <div
+            className={cn(
+              "flex h-5 w-5 items-center justify-center rounded border transition-colors",
+              selected
+                ? "border-amber-500 bg-amber-500 text-white"
+                : "border-white/30 bg-black/20 backdrop-blur-sm group-hover:border-white/60"
+            )}
+          >
+            {selected && (
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
+          </div>
+        </div>
+      )}
       {/* Cover */}
       <div className="relative aspect-[2/3] overflow-hidden">
         {coverUrl ? (
