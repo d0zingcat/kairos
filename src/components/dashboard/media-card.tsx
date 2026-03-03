@@ -54,8 +54,9 @@ export function MediaCard({
             src={coverUrl}
             alt={title}
             fill
-            unoptimized
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={index < 4}
+            sizes="(max-width: 768px) 33vw, (max-width: 1200px) 20vw, 15vw"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-card">

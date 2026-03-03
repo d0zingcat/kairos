@@ -1,0 +1,25 @@
+CREATE INDEX "books_status_idx" ON "books" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "books_rating_idx" ON "books" USING btree ("rating");--> statement-breakpoint
+CREATE INDEX "books_favorite_idx" ON "books" USING btree ("favorite");--> statement-breakpoint
+CREATE INDEX "books_finish_date_idx" ON "books" USING btree ("finish_date");--> statement-breakpoint
+CREATE INDEX "books_created_at_idx" ON "books" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "books_updated_at_idx" ON "books" USING btree ("updated_at");--> statement-breakpoint
+CREATE INDEX "games_status_idx" ON "games" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "games_rating_idx" ON "games" USING btree ("rating");--> statement-breakpoint
+CREATE INDEX "games_favorite_idx" ON "games" USING btree ("favorite");--> statement-breakpoint
+CREATE INDEX "games_finish_date_idx" ON "games" USING btree ("finish_date");--> statement-breakpoint
+CREATE INDEX "games_created_at_idx" ON "games" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "games_updated_at_idx" ON "games" USING btree ("updated_at");--> statement-breakpoint
+CREATE INDEX "music_type_idx" ON "music" USING btree ("type");--> statement-breakpoint
+CREATE INDEX "music_rating_idx" ON "music" USING btree ("rating");--> statement-breakpoint
+CREATE INDEX "music_favorite_idx" ON "music" USING btree ("favorite");--> statement-breakpoint
+CREATE INDEX "music_listen_date_idx" ON "music" USING btree ("listen_date");--> statement-breakpoint
+CREATE INDEX "music_created_at_idx" ON "music" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "music_updated_at_idx" ON "music" USING btree ("updated_at");--> statement-breakpoint
+CREATE INDEX "watches_type_idx" ON "watches" USING btree ("type");--> statement-breakpoint
+CREATE INDEX "watches_status_idx" ON "watches" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "watches_rating_idx" ON "watches" USING btree ("rating");--> statement-breakpoint
+CREATE INDEX "watches_favorite_idx" ON "watches" USING btree ("favorite");--> statement-breakpoint
+CREATE INDEX "watches_watch_date_idx" ON "watches" USING btree ("watch_date");--> statement-breakpoint
+CREATE INDEX "watches_created_at_idx" ON "watches" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "watches_updated_at_idx" ON "watches" USING btree ("updated_at");
