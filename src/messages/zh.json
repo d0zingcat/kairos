@@ -1,0 +1,172 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "search": "搜索",
+    "loading": "加载中...",
+    "retry": "点击重试",
+    "noMore": "没有更多了"
+  },
+  "nav": {
+    "quickEntry": "快速录入",
+    "readOnly": "只读模式",
+    "loggedIn": "已登录",
+    "guestMode": "访客模式",
+    "logout": "退出",
+    "login": "登录 / 注册"
+  },
+  "theme": {
+    "light": "白天",
+    "dark": "暗夜",
+    "system": "自动",
+    "switch": "切换主题"
+  },
+  "search": {
+    "placeholder": "搜索...",
+    "all": "全部",
+    "searchType": "当前模式：{type}",
+    "enterKeyword": "输入关键词后开始搜索",
+    "clearMode": "清除模式",
+    "noResults": "未找到结果",
+    "shortcuts": "快捷指令",
+    "book": "书籍",
+    "music": "音乐",
+    "movie": "电影",
+    "tv": "电视剧",
+    "game": "游戏",
+    "searchBook": "搜索书籍",
+    "searchMusic": "搜索音乐",
+    "searchMovie": "搜索电影",
+    "searchTv": "搜索电视剧",
+    "searchGame": "搜索游戏",
+    "searchWithType": "搜索{type}...",
+    "searchTip": "输入 /book, /music, /movie, /tv, /game 后搜索..."
+  },
+  "entry": {
+    "title": "录入记录",
+    "rating": "评分 (按 1-5 快速评分)",
+    "startDate": "开始阅读",
+    "finishDate": "结束阅读",
+    "selectStartDate": "选择开始日期",
+    "selectFinishDate": "选择结束日期",
+    "author": "作者",
+    "authorPlaceholder": "输入作者后按回车，支持多个",
+    "category": "类别",
+    "categoryPlaceholder": "输入类别后按回车，支持多个",
+    "date": "日期",
+    "status": "状态",
+    "myRating": "我的评价",
+    "note": "笔记",
+    "notePlaceholder": "写点什么...",
+    "confirmDelete": "确定要删除这条记录吗？此操作不可撤销。"
+  },
+  "status": {
+    "reading": "在读",
+    "completed": "已完成",
+    "paused": "暂停",
+    "abandoned": "放弃"
+  },
+  "activity": {
+    "recentYear": "最近一年活动记录",
+    "less": "少",
+    "more": "多",
+    "books": "书",
+    "music": "音乐",
+    "watches": "影视",
+    "games": "游戏",
+    "records": "条记录"
+  },
+  "feed": {
+    "read": "读了",
+    "listened": "听了",
+    "watched": "看了",
+    "played": "玩了",
+    "loadFailed": "加载失败，请稍后重试",
+    "noPublicFeed": "还没有公开动态，先去记录你的第一条时间线吧。",
+    "loadingMore": "加载更多中...",
+    "resumed": "已恢复加载",
+    "noMoreFeed": "没有更多动态了"
+  },
+  "dashboard": {
+    "favorites": "收藏",
+    "noFavorites": "还没有收藏",
+    "author": "作者：{authors}",
+    "readingTime": "阅读时间：{start} → {finish}",
+    "monthly": "本月",
+    "yearly": "本年",
+    "total": "总计",
+    "recentActivity": "最近活动",
+    "noRecords": "还没有记录",
+    "startEntry": "按 ⌘K 开始录入"
+  },
+  "media": {
+    "noRecords": "还没有{type}记录",
+    "quickAdd": "按 {key} 快速添加"
+  },
+  "version": {
+    "checking": "检查版本...",
+    "foundNew": "发现新版本",
+    "current": "当前",
+    "latest": "最新",
+    "goToGithub": "点击前往 GitHub 查看更新",
+    "currentVersion": "当前版本",
+    "upToDate": "已是最新版本"
+  },
+  "settings": {
+    "public": "公开",
+    "publicDesc": "任何人都可浏览，只有管理员可编辑。",
+    "private": "私有",
+    "privateDesc": "只有管理员可以访问与编辑。",
+    "passwordProtected": "密码保护",
+    "passwordProtectedDesc": "输入访问密码后可浏览，管理员密码可编辑。",
+    "passwordNote": "密码保护模式使用 `VIEWER_PASSWORD_HASH`（未配置时回退管理员密码）。",
+    "saving": "保存中...",
+    "saveSettings": "保存设置"
+  },
+  "visibility": {
+    "title": "公开广场可见性",
+    "description": "开启后，你的摘要统计与最近动态会出现在广场页面。",
+    "public": "公开到广场",
+    "publicDesc": "其他人可在广场看到你的摘要动态",
+    "private": "仅自己可见",
+    "privateDesc": "你的摘要不会出现在广场",
+    "saving": "保存中...",
+    "savePublicSettings": "保存公开设置"
+  },
+  "goodreads": {
+    "title": "Goodreads 导入",
+    "description": "上传 Goodreads 导出的 CSV 文件，系统将追加导入并自动跳过重复书籍。",
+    "summary": "导入完成：新增 {inserted} 条，跳过 {skipped} 条，源数据 {total} 条。",
+    "duplicateNote": "重复判定：Book Id 优先，缺失时使用 书名+作者。",
+    "importing": "导入中...",
+    "import": "导入 Goodreads",
+    "noFile": "请先选择 Goodreads 导出 CSV 文件",
+    "importFailed": "导入失败",
+    "retryImport": "导入失败，请稍后重试"
+  },
+  "login": {
+    "title": "输入你的账号密码",
+    "username": "用户名",
+    "password": "密码",
+    "submitting": "登录中...",
+    "login": "登录",
+    "noAccount": "没有账号？",
+    "register": "注册一个",
+    "createAccount": "创建账号",
+    "firstUserNote": "首个注册用户将自动成为管理员",
+    "usernamePlaceholder": "用户名（小写字母/数字/_-.）",
+    "passwordPlaceholder": "密码（至少 8 位）",
+    "confirmPassword": "确认密码",
+    "submittingRegister": "创建中...",
+    "registerAndEnter": "注册并进入",
+    "hasAccount": "已有账号？",
+    "goLogin": "去登录"
+  },
+  "metadata": {
+    "title": "Kairos — 记录生命中的每个瞬间",
+    "description": "个人生活动态记录应用：书、音乐、影视、游戏"
+  }
+}
