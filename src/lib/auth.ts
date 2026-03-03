@@ -4,6 +4,7 @@ import { cookies } from "next/headers"
 import { db } from "@/db"
 import { users } from "@/db/schema"
 import { and, eq } from "drizzle-orm"
+import { getRedisClient } from "@/lib/redis"
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret-change-me"
@@ -17,11 +18,13 @@ type SessionRole = "admin" | "member"
 type SessionPayload = {
   userId: string
   role: SessionRole
+  jti: string
 }
 
 async function createSessionToken(payload: SessionPayload): Promise<string> {
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
+    .setJti(payload.jti)
     .setIssuedAt()
     .setExpirationTime("30d")
     .sign(JWT_SECRET)
@@ -30,7 +33,8 @@ async function createSessionToken(payload: SessionPayload): Promise<string> {
 }
 
 export async function createUserSession(userId: string, role: SessionRole): Promise<string> {
-  const token = await createSessionToken({ userId, role })
+  const jti = crypto.randomUUID()
+  const token = await createSessionToken({ userId, role, jti })
   const cookieStore = await cookies()
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
@@ -51,12 +55,22 @@ async function getSessionPayload(): Promise<SessionPayload | null> {
     const { payload } = await jwtVerify(token, JWT_SECRET)
     const userId = typeof payload.userId === "string" ? payload.userId : null
     const role = payload.role === "admin" || payload.role === "member" ? payload.role : null
+    const jti = typeof payload.jti === "string" ? payload.jti : null
 
-    if (!userId || !role) {
+    if (!userId || !role || !jti) {
       return null
     }
 
-    return { userId, role }
+    // Check if token is revoked in Redis
+    const redis = await getRedisClient()
+    if (redis) {
+      const isRevoked = await redis.get(`revoked_token:${jti}`)
+      if (isRevoked) {
+        return null
+      }
+    }
+
+    return { userId, role, jti }
   } catch {
     return null
   }
@@ -106,6 +120,14 @@ export async function verifySession(): Promise<boolean> {
 }
 
 export async function destroySession(): Promise<void> {
+  const session = await getSessionPayload()
+  if (session?.jti) {
+    const redis = await getRedisClient()
+    if (redis) {
+      // Blacklist the token ID for the remainder of its theoretical life (30 days)
+      await redis.set(`revoked_token:${session.jti}`, "1", "EX", COOKIE_MAX_AGE)
+    }
+  }
   const cookieStore = await cookies()
   cookieStore.delete(SESSION_COOKIE_NAME)
 }
