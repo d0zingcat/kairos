@@ -7,6 +7,7 @@ import { eq, desc, sql, and, ilike, count } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
+import { bookSchema, musicSchema, watchSchema, gameSchema } from "@/lib/validations/entry"
 
 type BookInput = Omit<NewBook, "userId">
 type MusicInput = Omit<NewMusic, "userId">
@@ -24,18 +25,26 @@ async function requireCurrentUser() {
 // ── Books ────────────────────────────────────────────────
 export async function createBook(data: BookInput) {
   const user = await requireCurrentUser()
-  const [book] = await db.insert(books).values({ ...data, userId: user.id }).returning()
+  const result = bookSchema.safeParse(data)
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message }
+  }
+  const [book] = await db.insert(books).values({ ...result.data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
-  return book
+  return { success: true, data: book }
 }
 
 export async function updateBook(id: string, data: Partial<BookInput>) {
   const user = await requireCurrentUser()
-  const [book] = await db.update(books).set(data).where(and(eq(books.id, id), eq(books.userId, user.id))).returning()
+  const result = bookSchema.partial().safeParse(data)
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message }
+  }
+  const [book] = await db.update(books).set(result.data).where(and(eq(books.id, id), eq(books.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
-  return book
+  return { success: true, data: book }
 }
 
 export async function deleteBook(id: string) {
@@ -83,18 +92,26 @@ export async function getBook(id: string) {
 // ── Music ────────────────────────────────────────────────
 export async function createMusic(data: MusicInput) {
   const user = await requireCurrentUser()
-  const [item] = await db.insert(music).values({ ...data, userId: user.id }).returning()
+  const result = musicSchema.safeParse(data)
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message }
+  }
+  const [item] = await db.insert(music).values({ ...result.data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
-  return item
+  return { success: true, data: item }
 }
 
 export async function updateMusic(id: string, data: Partial<MusicInput>) {
   const user = await requireCurrentUser()
-  const [item] = await db.update(music).set(data).where(and(eq(music.id, id), eq(music.userId, user.id))).returning()
+  const result = musicSchema.partial().safeParse(data)
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message }
+  }
+  const [item] = await db.update(music).set(result.data).where(and(eq(music.id, id), eq(music.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
-  return item
+  return { success: true, data: item }
 }
 
 export async function deleteMusic(id: string) {
@@ -133,18 +150,26 @@ export async function getMusicList(options?: {
 // ── Watches ──────────────────────────────────────────────
 export async function createWatch(data: WatchInput) {
   const user = await requireCurrentUser()
-  const [item] = await db.insert(watches).values({ ...data, userId: user.id }).returning()
+  const result = watchSchema.safeParse(data)
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message }
+  }
+  const [item] = await db.insert(watches).values({ ...result.data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
-  return item
+  return { success: true, data: item }
 }
 
 export async function updateWatch(id: string, data: Partial<WatchInput>) {
   const user = await requireCurrentUser()
-  const [item] = await db.update(watches).set(data).where(and(eq(watches.id, id), eq(watches.userId, user.id))).returning()
+  const result = watchSchema.partial().safeParse(data)
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message }
+  }
+  const [item] = await db.update(watches).set(result.data).where(and(eq(watches.id, id), eq(watches.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
-  return item
+  return { success: true, data: item }
 }
 
 export async function deleteWatch(id: string) {
@@ -191,18 +216,26 @@ export async function getWatches(options?: {
 // ── Games ────────────────────────────────────────────────
 export async function createGame(data: GameInput) {
   const user = await requireCurrentUser()
-  const [item] = await db.insert(games).values({ ...data, userId: user.id }).returning()
+  const result = gameSchema.safeParse(data)
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message }
+  }
+  const [item] = await db.insert(games).values({ ...result.data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
-  return item
+  return { success: true, data: item }
 }
 
 export async function updateGame(id: string, data: Partial<GameInput>) {
   const user = await requireCurrentUser()
-  const [item] = await db.update(games).set(data).where(and(eq(games.id, id), eq(games.userId, user.id))).returning()
+  const result = gameSchema.partial().safeParse(data)
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message }
+  }
+  const [item] = await db.update(games).set(result.data).where(and(eq(games.id, id), eq(games.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
-  return item
+  return { success: true, data: item }
 }
 
 export async function deleteGame(id: string) {
