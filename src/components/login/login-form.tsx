@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Lock, User } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
 type LoginFormProps = {
   next?: string
 }
 
 export function LoginForm({ next }: LoginFormProps) {
+  const { t } = useI18n()
   const [state, formAction, isPending] = useActionState(loginAction, null)
 
   return (
@@ -36,7 +38,7 @@ export function LoginForm({ next }: LoginFormProps) {
             Kairos
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            输入你的账号密码
+            {t("login.title")}
           </p>
         </div>
 
@@ -48,7 +50,7 @@ export function LoginForm({ next }: LoginFormProps) {
             <Input
               name="username"
               type="text"
-              placeholder="用户名"
+              placeholder={t("login.username")}
               autoFocus
               autoComplete="username"
               className="border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus-visible:ring-amber-500/50"
@@ -60,7 +62,7 @@ export function LoginForm({ next }: LoginFormProps) {
             <Input
               name="password"
               type="password"
-              placeholder="密码"
+              placeholder={t("login.password")}
               autoComplete="current-password"
               className="border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus-visible:ring-amber-500/50"
             />
@@ -81,13 +83,13 @@ export function LoginForm({ next }: LoginFormProps) {
             disabled={isPending}
             className="w-full bg-gradient-to-r from-amber-500 to-orange-600 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-700 disabled:opacity-50"
           >
-            {isPending ? "登录中..." : "登录"}
+            {isPending ? t("login.submitting") : t("login.login")}
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">
-            没有账号？
+            {t("login.noAccount")}
             <Link href="/register" className="ml-1 text-amber-400 hover:text-amber-300">
-              注册一个
+              {t("login.register")}
             </Link>
           </p>
         </form>

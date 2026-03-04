@@ -5,6 +5,7 @@ import { StatsCards } from "@/components/dashboard/stats-cards"
 import { ActivityHeatmap } from "@/components/heatmap/activity-heatmap"
 import { RecentTimeline } from "@/components/dashboard/recent-timeline"
 import { FavoritesGrid } from "@/components/dashboard/favorites-grid"
+import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 
 export default async function DashboardPage() {
   const [stats, activity, recent, favorites] = await Promise.all([
@@ -17,14 +18,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Page header */}
-      <div>
-        <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
-          Overview
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          你的生活记录一览
-        </p>
-      </div>
+      <DashboardHeader />
 
       {/* Heatmap */}
       <ActivityHeatmap data={activity} />

@@ -7,8 +7,10 @@ import { Lock, User } from "lucide-react"
 import { registerAction } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
 export function RegisterForm() {
+  const { t } = useI18n()
   const [state, formAction, isPending] = useActionState(registerAction, null)
 
   return (
@@ -29,10 +31,10 @@ export function RegisterForm() {
             <span className="text-2xl font-bold text-white">K</span>
           </motion.div>
           <h1 className="font-mono text-2xl font-semibold tracking-tight text-foreground">
-            创建账号
+            {t("login.createAccount")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            首个注册用户将自动成为管理员
+            {t("login.firstUserNote")}
           </p>
         </div>
 
@@ -42,7 +44,7 @@ export function RegisterForm() {
             <Input
               name="username"
               type="text"
-              placeholder="用户名（小写字母/数字/_-.）"
+              placeholder={t("login.usernamePlaceholder")}
               autoFocus
               autoComplete="username"
               className="border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus-visible:ring-amber-500/50"
@@ -54,7 +56,7 @@ export function RegisterForm() {
             <Input
               name="password"
               type="password"
-              placeholder="密码（至少 8 位）"
+              placeholder={t("login.passwordPlaceholder")}
               autoComplete="new-password"
               className="border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus-visible:ring-amber-500/50"
             />
@@ -65,7 +67,7 @@ export function RegisterForm() {
             <Input
               name="confirmPassword"
               type="password"
-              placeholder="确认密码"
+              placeholder={t("login.confirmPassword")}
               autoComplete="new-password"
               className="border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus-visible:ring-amber-500/50"
             />
@@ -86,13 +88,13 @@ export function RegisterForm() {
             disabled={isPending}
             className="w-full bg-gradient-to-r from-amber-500 to-orange-600 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-700 disabled:opacity-50"
           >
-            {isPending ? "创建中..." : "注册并进入"}
+            {isPending ? t("login.submittingRegister") : t("login.registerAndEnter")}
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">
-            已有账号？
+            {t("login.hasAccount")}
             <Link href="/login" className="ml-1 text-amber-400 hover:text-amber-300">
-              去登录
+              {t("login.goLogin")}
             </Link>
           </p>
         </form>

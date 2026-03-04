@@ -11,12 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useThemeMode, type ThemeMode } from "@/components/theme/theme-provider"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
-const themeOptions: { mode: ThemeMode; label: string; icon: ComponentType<{ className?: string }> }[] = [
-  { mode: "light", label: "白天", icon: Sun },
-  { mode: "dark", label: "暗夜", icon: Moon },
-  { mode: "system", label: "自动", icon: Laptop },
-]
+
 
 interface ThemeToggleProps {
   compact?: boolean
@@ -32,6 +29,13 @@ function CurrentThemeIcon({ mode, resolvedTheme }: { mode: ThemeMode; resolvedTh
 
 export function ThemeToggle({ compact = false }: ThemeToggleProps) {
   const { mode, resolvedTheme, setMode } = useThemeMode()
+  const { t } = useI18n()
+
+  const themeOptions: { mode: ThemeMode; label: string; icon: ComponentType<{ className?: string }> }[] = [
+    { mode: "light", label: t("theme.light"), icon: Sun },
+    { mode: "dark", label: t("theme.dark"), icon: Moon },
+    { mode: "system", label: t("theme.system"), icon: Laptop },
+  ]
 
   return (
     <DropdownMenu>
@@ -41,11 +45,11 @@ export function ThemeToggle({ compact = false }: ThemeToggleProps) {
           variant="ghost"
           size={compact ? "icon" : "sm"}
           className={compact ? "text-muted-foreground" : "gap-2 text-muted-foreground hover:text-foreground"}
-          aria-label="切换主题"
-          title="切换主题"
+          aria-label={t("theme.switch")}
+          title={t("theme.switch")}
         >
           <CurrentThemeIcon mode={mode} resolvedTheme={resolvedTheme} />
-          {!compact ? <span>{mode === "system" ? "自动" : resolvedTheme === "dark" ? "暗夜" : "白天"}</span> : null}
+          {!compact ? <span>{mode === "system" ? t("theme.system") : resolvedTheme === "dark" ? t("theme.dark") : t("theme.light")}</span> : null}
         </Button>
       </DropdownMenuTrigger>
 

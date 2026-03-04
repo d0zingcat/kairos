@@ -4,33 +4,9 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { BookOpen, Film, Gamepad2, Music, UserCircle2 } from "lucide-react"
 import { getPublicUserProfile } from "@/lib/actions/plaza"
-
-function formatRelativeTime(input: Date) {
-  const now = Date.now()
-  const target = new Date(input).getTime()
-  const diffMs = target - now
-  const minutes = Math.round(diffMs / (1000 * 60))
-  const rtf = new Intl.RelativeTimeFormat("zh-CN", { numeric: "auto" })
-
-  if (Math.abs(minutes) < 60) {
-    return rtf.format(minutes, "minute")
-  }
-
-  const hours = Math.round(minutes / 60)
-  if (Math.abs(hours) < 24) {
-    return rtf.format(hours, "hour")
-  }
-
-  const days = Math.round(hours / 24)
-  return rtf.format(days, "day")
-}
-
-function mediaLabel(type: "book" | "music" | "watch" | "game") {
-  if (type === "book") return "读了"
-  if (type === "music") return "听了"
-  if (type === "watch") return "看了"
-  return "玩了"
-}
+import { getI18n } from "@/lib/i18n"
+import { formatDistanceToNow } from "date-fns"
+import { enUS, zhCN } from "date-fns/locale"
 
 function MediaIcon({ type }: { type: "book" | "music" | "watch" | "game" }) {
   if (type === "book") return <BookOpen className="h-4 w-4 text-emerald-400" />
@@ -45,10 +21,23 @@ export default async function PublicUserPage({
   params: Promise<{ username: string }>
 }) {
   const { username } = await params
+  const { t, locale } = await getI18n()
   const data = await getPublicUserProfile(username, 50)
 
   if (!data) {
     notFound()
+  }
+
+  const dateLocale = locale === "zh" ? zhCN : enUS
+
+  const getMediaAction = (type: string) => {
+    switch (type) {
+      case "book": return t("feed.read")
+      case "music": return t("feed.listened")
+      case "watch": return t("feed.watched")
+      case "game": return t("feed.played")
+      default: return ""
+    }
   }
 
   return (
@@ -57,23 +46,23 @@ export default async function PublicUserPage({
         <div className="mb-8 flex items-start justify-between gap-4">
           <div>
             <h1 className="font-mono text-3xl font-bold tracking-tight">@{data.summary.username}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">公开时间线摘要</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t("profile.timeline")}</p>
           </div>
 
           <Link
             href="/plaza"
             className="rounded-lg border border-border bg-card/70 px-3 py-2 text-xs text-foreground transition-colors hover:bg-accent"
           >
-            返回广场
+            {t("profile.returnToPlaza")}
           </Link>
         </div>
 
         <div className="mb-8 rounded-2xl border border-border/60 bg-card/50 p-4">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
             <UserCircle2 className="h-4 w-4 text-sky-300" />
-            摘要统计
+            {t("profile.summary")}
           </h2>
-          <p className="text-xs text-muted-foreground">总记录 {data.summary.total}</p>
+          <p className="text-xs text-muted-foreground">{t("profile.totalRecords", { count: data.summary.total })}</p>
           <p className="mt-1 text-sm text-foreground/90">
             📚 {data.summary.books} · 🎵 {data.summary.music} · 🎬 {data.summary.watches} · 🎮 {data.summary.games}
           </p>
@@ -82,7 +71,7 @@ export default async function PublicUserPage({
         <div className="space-y-3">
           {data.feed.length === 0 ? (
             <div className="rounded-2xl border border-border/60 bg-card/50 p-6 text-sm text-muted-foreground">
-              暂无公开动态。
+              {t("profile.noPublicFeed")}
             </div>
           ) : (
             data.feed.map((item) => (
@@ -93,11 +82,16 @@ export default async function PublicUserPage({
                 <div className="flex items-center gap-3">
                   <MediaIcon type={item.mediaType} />
                   <div className="text-sm text-foreground/90">
-                    <span className="mx-1 text-muted-foreground">{mediaLabel(item.mediaType)}</span>
+                    <span className="mx-1 text-muted-foreground">{getMediaAction(item.mediaType)}</span>
                     <span className="font-medium">{item.title}</span>
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">{formatRelativeTime(item.createdAt)}</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
+                    locale: dateLocale,
+                  })}
+                </p>
               </div>
             ))
           )}

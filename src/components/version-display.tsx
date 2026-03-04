@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
 interface VersionInfo {
   current: string
@@ -19,6 +20,7 @@ interface VersionInfo {
 }
 
 export function VersionDisplay() {
+  const { t } = useI18n()
   const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -46,7 +48,7 @@ export function VersionDisplay() {
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        <span>检查版本...</span>
+        <span>{t("version.checking")}</span>
       </div>
     )
   }
@@ -99,18 +101,18 @@ export function VersionDisplay() {
             <div className="space-y-1.5 text-xs">
               <div className="flex items-center gap-2 text-amber-600">
                 <ArrowUpCircle className="h-3.5 w-3.5" />
-                <span className="font-medium">发现新版本</span>
+                <span className="font-medium">{t("version.foundNew")}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span>当前</span>
+                <span>{t("version.current")}</span>
                 <span className="font-mono">v{current}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span>最新</span>
+                <span>{t("version.latest")}</span>
                 <span className="font-mono">v{latest}</span>
               </div>
               <div className="pt-1 text-muted-foreground">
-                点击前往 GitHub 查看更新
+                {t("version.goToGithub")}
               </div>
             </div>
           </TooltipContent>
@@ -136,12 +138,12 @@ export function VersionDisplay() {
         <TooltipContent side="top" className="max-w-xs" sideOffset={8}>
           <div className="space-y-1.5 text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-medium">当前版本</span>
+              <span className="font-medium">{t("version.currentVersion")}</span>
               <span className="font-mono">v{current}</span>
             </div>
             <div className="pt-1 text-green-600">
               <CheckCircle2 className="inline h-3 w-3 mr-1" />
-              已是最新版本
+              {t("version.upToDate")}
             </div>
           </div>
         </TooltipContent>

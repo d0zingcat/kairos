@@ -11,8 +11,8 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret-change-me"
 )
 
+import { ADMIN_ONLY_PREFIXES } from "@/lib/constants"
 const SESSION_COOKIE_NAME = "kairos-session"
-const ADMIN_ONLY_PREFIXES: string[] = ["/dashboard", "/settings", "/api/export"]
 
 async function hasRoleSession(token: string | undefined, role: "admin" | "member") {
   if (!token) return false
@@ -26,12 +26,18 @@ async function hasRoleSession(token: string | undefined, role: "admin" | "member
 }
 
 function deny(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/api/")) {
+  const { pathname } = request.nextUrl
+  if (pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
+  // If already on login page, don't redirect again
+  if (pathname === "/login" || pathname === "/login/") {
+    return NextResponse.next()
+  }
+
   const loginUrl = new URL("/login", request.url)
-  loginUrl.searchParams.set("next", request.nextUrl.pathname)
+  loginUrl.searchParams.set("next", pathname)
   return NextResponse.redirect(loginUrl)
 }
 
@@ -84,12 +90,21 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  const isLoginPath = pathname === "/login" || pathname === "/login/"
+  if (isLoginPath) {
+    return NextResponse.next()
+  }
+
   const adminToken = request.cookies.get(SESSION_COOKIE_NAME)?.value
   const isAdmin = await hasRoleSession(adminToken, "admin")
 
-  if (ADMIN_ONLY_PREFIXES.some((prefix) => pathname.startsWith(prefix)) && !isAdmin) {
+  if (
+    ADMIN_ONLY_PREFIXES.some((prefix) => pathname.startsWith(prefix)) &&
+    !isAdmin
+  ) {
     return deny(request)
   }
+
   return NextResponse.next()
 }
 

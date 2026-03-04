@@ -4,6 +4,7 @@ import Image from "next/image"
 import { type MediaType, MEDIA_TYPES } from "@/lib/constants"
 import { Heart } from "lucide-react"
 import { motion } from "framer-motion"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface FavoriteItem {
   id: string
@@ -18,15 +19,17 @@ interface FavoritesGridProps {
 }
 
 export function FavoritesGrid({ items }: FavoritesGridProps) {
+  const { t } = useTranslation()
+
   if (items.length === 0) {
     return (
       <div>
         <h2 className="mb-4 font-mono text-lg font-semibold text-foreground">
-          收藏
+          {t("dashboard.favorites")}
         </h2>
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-12">
           <Heart className="mb-2 h-6 w-6 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">还没有收藏</p>
+          <p className="text-sm text-muted-foreground">{t("dashboard.noFavorites")}</p>
         </div>
       </div>
     )
@@ -35,7 +38,7 @@ export function FavoritesGrid({ items }: FavoritesGridProps) {
   return (
     <div>
       <h2 className="mb-4 font-mono text-lg font-semibold text-foreground">
-        收藏
+        {t("dashboard.favorites")}
       </h2>
       <div className="grid grid-cols-3 gap-2">
         {items.map((item, i) => {

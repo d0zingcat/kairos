@@ -1,5 +1,10 @@
 {
+  "site": {
+    "title": "Kairos — 记录生活的每一刻",
+    "description": "个人生活记录：书籍、音乐、影视、游戏"
+  },
   "common": {
+    "github": "GitHub 仓库",
     "save": "保存",
     "cancel": "取消",
     "delete": "删除",
@@ -16,7 +21,8 @@
     "loggedIn": "已登录",
     "guestMode": "访客模式",
     "logout": "退出",
-    "login": "登录 / 注册"
+    "login": "登录 / 注册",
+    "settings": "设置"
   },
   "theme": {
     "light": "白天",
@@ -61,13 +67,38 @@
     "myRating": "我的评价",
     "note": "笔记",
     "notePlaceholder": "写点什么...",
-    "confirmDelete": "确定要删除这条记录吗？此操作不可撤销。"
+    "confirmDelete": "确定要删除这条记录吗？此操作不可撤销。",
+    "dateFormat": "yyyy年MM月dd日"
+  },
+  "sort": {
+    "date": "最新",
+    "rating": "评分",
+    "title": "标题"
   },
   "status": {
     "reading": "在读",
     "completed": "已完成",
     "paused": "暂停",
     "abandoned": "放弃"
+  },
+  "bookStatus": {
+    "want_to_read": "想读",
+    "reading": "在读",
+    "finished": "已读",
+    "abandoned": "弃读"
+  },
+  "watchStatus": {
+    "want_to_watch": "想看",
+    "watching": "在看",
+    "finished": "已看",
+    "abandoned": "弃看"
+  },
+  "gameStatus": {
+    "backlog": "待玩",
+    "playing": "在玩",
+    "completed": "通关",
+    "abandoned": "弃坑",
+    "platinum": "白金"
   },
   "activity": {
     "recentYear": "最近一年活动记录",
@@ -91,20 +122,78 @@
     "noMoreFeed": "没有更多动态了"
   },
   "dashboard": {
-    "favorites": "收藏",
-    "noFavorites": "还没有收藏",
     "author": "作者：{authors}",
     "readingTime": "阅读时间：{start} → {finish}",
     "monthly": "本月",
     "yearly": "本年",
     "total": "总计",
     "recentActivity": "最近活动",
-    "noRecords": "还没有记录",
-    "startEntry": "按 ⌘K 开始录入"
+    "favorites": "我的收藏",
+    "noActivity": "还没有记录",
+    "noFavorites": "还没有收藏",
+    "activityYear": "最近一年活动记录",
+    "less": "少",
+    "more": "多",
+    "items": "条记录",
+    "noRecords": "暂无记录",
+    "startEntry": "按 ⌘K 开始录入",
+    "errorTitle": "加载看板数据失败",
+    "errorMessage": "我们在加载该页面时遇到了问题。这通常是由于网络波动或临时服务器故障引起的。",
+    "retry": "重新尝试",
+    "title": "概览",
+    "subtitle": "你的生活记录一览"
   },
   "media": {
     "noRecords": "还没有{type}记录",
-    "quickAdd": "按 {key} 快速添加"
+    "quickAdd": "按 {key} 快速添加",
+    "book": "书籍",
+    "music": "音乐",
+    "movie": "电影",
+    "tv": "电视剧",
+    "game": "游戏",
+    "watch": "影视",
+    "all": "全部"
+  },
+  "filterBar": {
+    "searchPlaceholder": "搜索...",
+    "all": "全部",
+    "exitBatchMode": "退出管理",
+    "batchMode": "批量管理"
+  },
+  "grid": {
+    "confirmDelete": "确定要彻底删除已选择的 {count} 个项目吗？",
+    "deleteFailed": "批量删除失败",
+    "author": "作者",
+    "readingTime": "阅读时间",
+    "deleting": "删除中...",
+    "selectedCount": "已选择 {count} 项",
+    "batchDelete": "批量删除"
+  },
+  "plaza": {
+    "title": "公开广场",
+    "subtitle": "看看大家都在记录什么",
+    "summary": "公开用户 {users} 人，首屏动态 {items} 条",
+    "publicUsers": "公开用户",
+    "totalRecords": "总记录",
+    "firstScreen": "首屏动态",
+    "users": "人",
+    "items": "条",
+    "returnToDashboard": "返回我的仪表盘"
+  },
+  "profile": {
+    "timeline": "公开时间线摘要",
+    "summary": "摘要统计",
+    "totalRecords": "总记录 {count}",
+    "noPublicFeed": "暂无公开动态。",
+    "returnToPlaza": "返回广场"
+  },
+  "home": {
+    "enterDashboard": "进入仪表盘",
+    "viewPlaza": "查看广场",
+    "book": "书",
+    "music": "音乐",
+    "movie": "影视",
+    "game": "游戏"
   },
   "version": {
     "checking": "检查版本...",
@@ -124,7 +213,10 @@
     "passwordProtectedDesc": "输入访问密码后可浏览，管理员密码可编辑。",
     "passwordNote": "密码保护模式使用 `VIEWER_PASSWORD_HASH`（未配置时回退管理员密码）。",
     "saving": "保存中...",
-    "saveSettings": "保存设置"
+    "saveSettings": "保存设置",
+    "dataManagement": "数据管理",
+    "exportJson": "导出为 JSON 备份",
+    "exportDesc": "导出的文件包含您的所有书、影、音、游记录及评价，可用于本地备份或未来的数据迁移。"
   },
   "visibility": {
     "title": "公开广场可见性",
