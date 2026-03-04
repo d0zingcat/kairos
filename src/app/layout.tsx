@@ -85,7 +85,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <I18nProvider>
+        <I18nProvider initialLocale={locale as "zh" | "en"}>
           <ThemeProvider>
             {children}
             <Toaster position="top-center" richColors />

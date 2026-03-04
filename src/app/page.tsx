@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { BookOpen, Music, Film, Gamepad2, ArrowRight } from "lucide-react"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
+import { LocaleSwitcher } from "@/components/i18n/locale-switcher"
 import { useTranslation } from "@/components/i18n/i18n-provider"
 
 export default function Home() {
@@ -10,8 +11,9 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <div className="fixed right-4 top-4 z-40">
-        <ThemeToggle />
+      <div className="fixed right-4 top-4 z-40 flex items-center gap-2">
+        <ThemeToggle compact />
+        <LocaleSwitcher compact />
       </div>
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
@@ -23,8 +25,8 @@ export default function Home() {
           <h1 className="font-mono text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Kairos
           </h1>
-          <p className="mt-3 text-lg text-muted-foreground">{t("metadata.description")}</p>
-          <p className="mt-1 text-sm text-muted-foreground">καιρός — Greek for &quot;the right moment&quot;</p>
+          <p className="mt-3 text-lg text-muted-foreground">{t("site.description")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("home.titleSecondary")}</p>
 
           <div className="mt-10 flex items-center justify-center gap-6 text-muted-foreground">
             <div className="flex flex-col items-center gap-1.5">
@@ -65,8 +67,8 @@ export default function Home() {
       </main>
 
       <footer className="py-6 text-center text-xs text-muted-foreground">
-        <p>Built with Next.js, Tailwind CSS &amp; shadcn/ui</p>
-        <p className="mt-1">&copy; {new Date().getFullYear()} {process.env.NEXT_PUBLIC_SITE_AUTHOR || "d0zingcat"}. All rights reserved.</p>
+        <p>{t("home.builtWith")}</p>
+        <p className="mt-1">&copy; {new Date().getFullYear()} {process.env.NEXT_PUBLIC_SITE_AUTHOR || "d0zingcat"}. {t("home.allRightsReserved")}</p>
       </footer>
     </div>
   )

@@ -51,15 +51,23 @@ function getInitialLocale(): Locale {
   return "zh"; // Default to Chinese for SSR consistency
 }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("zh");
+export function I18nProvider({
+  children,
+  initialLocale = "zh"
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
   // Sync with localStorage and cookies after mount
   useEffect(() => {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
     if (stored === "en" || stored === "zh") {
-      setLocaleState(stored);
-      document.cookie = `${LOCALE_STORAGE_KEY}=${stored}; path=/; max-age=31536000`;
+      if (stored !== locale) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setLocaleState(stored);
+      }
       return;
     }
 

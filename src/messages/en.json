@@ -194,7 +194,10 @@
     "book": "Books",
     "music": "Music",
     "movie": "Movies",
-    "game": "Games"
+    "game": "Games",
+    "titleSecondary": "καιρός — Greek for \"the right moment\"",
+    "builtWith": "Built with Next.js, Tailwind CSS & shadcn/ui",
+    "allRightsReserved": "All rights reserved."
   },
   "version": {
     "checking": "Checking version...",
