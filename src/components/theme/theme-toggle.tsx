@@ -56,10 +56,10 @@ export function ThemeToggle({ compact = false }: ThemeToggleProps) {
       <DropdownMenuContent align="end" className="w-36">
         <DropdownMenuRadioGroup value={mode} onValueChange={(nextMode) => setMode(nextMode as ThemeMode)}>
           {themeOptions.map(({ mode: optionMode, label, icon: Icon }) => (
-            <DropdownMenuRadioItem key={optionMode} value={optionMode}>
-              <Icon className="h-4 w-4" />
-              <span>{label}</span>
-              {mode === optionMode ? <Check className="ml-auto h-4 w-4" /> : null}
+            <DropdownMenuRadioItem key={optionMode} value={optionMode} className="cursor-pointer">
+              <Icon className="h-4 w-4 pointer-events-none" />
+              <span className="pointer-events-none">{label}</span>
+              {mode === optionMode ? <Check className="ml-auto h-4 w-4 pointer-events-none" /> : null}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>
