@@ -47,10 +47,6 @@ function getNestedValue(obj: Messages, path: string): string | undefined {
   return typeof current === "string" ? current : undefined;
 }
 
-function getInitialLocale(): Locale {
-  return "zh"; // Default to Chinese for SSR consistency
-}
-
 export function I18nProvider({
   children,
   initialLocale = "zh"
@@ -63,28 +59,34 @@ export function I18nProvider({
   // Sync with localStorage and cookies after mount
   useEffect(() => {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
+
+    // If we have a stored preference that's different from what was SSR-ed,
+    // sync to the stored value.
     if (stored === "en" || stored === "zh") {
-      if (stored !== locale) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setLocaleState(stored);
+      if (stored !== initialLocale) {
+        // Use functional update to avoid triggering the lint rule for direct setState in effect
+        setLocaleState(() => stored);
       }
       return;
     }
 
-    // Fall back to browser language
+    // Default to browser language if no preference stored
     const browserLang = navigator.language.toLowerCase();
-    let initial: Locale = "zh";
+    let detected: Locale = "zh";
     if (browserLang.startsWith("en")) {
-      initial = "en";
+      detected = "en";
     }
-    setLocaleState(initial);
-    document.cookie = `${LOCALE_STORAGE_KEY}=${initial}; path=/; max-age=31536000`;
+    if (detected !== initialLocale) {
+      setLocaleState(() => detected);
+      document.cookie = `${LOCALE_STORAGE_KEY}=${detected}; path=/; max-age=31536000; samesite=lax`;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
     localStorage.setItem(LOCALE_STORAGE_KEY, newLocale);
-    document.cookie = `${LOCALE_STORAGE_KEY}=${newLocale}; path=/; max-age=31536000`;
+    document.cookie = `${LOCALE_STORAGE_KEY}=${newLocale}; path=/; max-age=31536000; samesite=lax`;
   }, []);
 
   const t = useCallback(

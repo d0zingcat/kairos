@@ -11,9 +11,10 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <div className="fixed right-4 top-4 z-40 flex items-center gap-2">
-        <ThemeToggle compact />
-        <LocaleSwitcher compact />
+      <div className="fixed right-6 top-6 z-[100] flex items-center gap-2 rounded-2xl border border-border/50 bg-background/60 p-1.5 backdrop-blur-xl shadow-2xl transition-all hover:bg-background/80">
+        <ThemeToggle compact={false} />
+        <div className="mx-1 h-5 w-[1px] bg-border/30" />
+        <LocaleSwitcher compact={false} />
       </div>
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">

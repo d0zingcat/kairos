@@ -44,12 +44,12 @@ export function ThemeToggle({ compact = false }: ThemeToggleProps) {
           type="button"
           variant="ghost"
           size={compact ? "icon" : "sm"}
-          className={compact ? "text-muted-foreground" : "gap-2 text-muted-foreground hover:text-foreground"}
+          className={compact ? "h-8 w-8 text-muted-foreground hover:text-foreground" : "h-9 gap-2 px-3 text-muted-foreground hover:bg-accent hover:text-foreground"}
           aria-label={t("theme.switch")}
           title={t("theme.switch")}
         >
           <CurrentThemeIcon mode={mode} resolvedTheme={resolvedTheme} />
-          {!compact ? <span>{mode === "system" ? t("theme.system") : resolvedTheme === "dark" ? t("theme.dark") : t("theme.light")}</span> : null}
+          {!compact ? <span className="text-xs font-medium uppercase tracking-wider">{mode === "system" ? t("theme.system") : resolvedTheme === "dark" ? t("theme.dark") : t("theme.light")}</span> : null}
         </Button>
       </DropdownMenuTrigger>
 

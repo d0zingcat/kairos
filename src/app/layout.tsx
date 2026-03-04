@@ -52,6 +52,7 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const locale = cookieStore.get("kairos-locale")?.value || "zh";
+  const theme = cookieStore.get("kairos-theme")?.value || "system";
 
   const { t } = await getI18n();
 
@@ -86,7 +87,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <I18nProvider initialLocale={locale as "zh" | "en"}>
-          <ThemeProvider>
+          <ThemeProvider initialMode={theme as "light" | "dark" | "system"}>
             {children}
             <Toaster position="top-center" richColors />
             <a

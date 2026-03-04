@@ -29,7 +29,9 @@ export function LocaleSwitcher({ compact }: LocaleSwitcherProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            className="flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-foreground"
+            aria-label={locale === "zh" ? "切换语言" : "Switch Language"}
+            title={locale === "zh" ? "切换语言" : "Switch Language"}
           >
             <Globe2 className="h-4 w-4" />
           </Button>
@@ -56,11 +58,14 @@ export function LocaleSwitcher({ compact }: LocaleSwitcherProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
-          className="gap-2 border-border bg-muted/40 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+          variant="ghost"
+          size="sm"
+          className="h-9 gap-2 px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
+          aria-label={locale === "zh" ? "切换语言" : "Switch Language"}
+          title={locale === "zh" ? "切换语言" : "Switch Language"}
         >
           <Globe2 className="h-4 w-4" />
-          <span>{localeLabels[locale]}</span>
+          <span className="text-xs font-medium uppercase tracking-wider">{localeLabels[locale]}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-32">
