@@ -46,3 +46,9 @@ next-env.d.ts
 
 # runtime build artifacts
 dist/
+
+# playwright
+/playwright-report/
+
+# agent workspace
+.sisyphus/
