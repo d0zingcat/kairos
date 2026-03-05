@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/d0zingcat/kairos/compare/v1.4.0...v1.5.0) (2026-03-05)
+
+
+### Features
+
+* add plaza and i18n support, merge security and ux enhancements ([#30](https://github.com/d0zingcat/kairos/issues/30)) ([20ecc5a](https://github.com/d0zingcat/kairos/commit/20ecc5a79d16cf8eeb2c42e60ea8fc2fef83fcba))
+
 # [1.4.0](https://github.com/d0zingcat/kairos/compare/v1.3.0...v1.4.0) (2026-03-03)
 
 
