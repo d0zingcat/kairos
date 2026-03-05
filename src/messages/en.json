@@ -22,7 +22,8 @@
     "guestMode": "Guest Mode",
     "logout": "Logout",
     "login": "Login / Register",
-    "settings": "Settings"
+    "settings": "Settings",
+    "changelog": "Changelog"
   },
   "theme": {
     "light": "Light",

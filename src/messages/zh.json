@@ -22,7 +22,8 @@
     "guestMode": "访客模式",
     "logout": "退出",
     "login": "登录 / 注册",
-    "settings": "设置"
+    "settings": "设置",
+    "changelog": "更新日志"
   },
   "theme": {
     "light": "白天",
