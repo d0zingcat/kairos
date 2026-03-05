@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/d0zingcat/kairos/compare/v1.5.0...v1.5.1) (2026-03-05)
+
+
+### Bug Fixes
+
+* add issues and pull-requests write permissions for release workflow ([#32](https://github.com/d0zingcat/kairos/issues/32)) ([6eb9388](https://github.com/d0zingcat/kairos/commit/6eb93880d2182ff3a228eccd51c124091ac08461))
+
 # [1.5.0](https://github.com/d0zingcat/kairos/compare/v1.4.0...v1.5.0) (2026-03-05)
 
 
