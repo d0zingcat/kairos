@@ -9,6 +9,7 @@ import { GamesGrid } from "@/components/dashboard/games-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Gamepad2 } from "lucide-react"
 import { verifyAdminSession } from "@/lib/auth"
+import { getI18n } from "@/lib/i18n"
 
 interface PageProps {
   searchParams: Promise<{ status?: string; sort?: string; search?: string }>
@@ -16,13 +17,14 @@ interface PageProps {
 
 export default async function GamesPage({ searchParams }: PageProps) {
   const params = await searchParams
+  const { t } = await getI18n()
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Gamepad2 className="h-6 w-6 text-rose-400" />
         <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
-          Games
+          {t("media.game")}
         </h1>
       </div>
 
@@ -50,7 +52,7 @@ async function GameGrid({
   const gameList = await getGames({ status, sort, search })
 
   if (gameList.length === 0) {
-    return <EmptyState type="游戏" />
+    return <EmptyState type="game" />
   }
 
   return (

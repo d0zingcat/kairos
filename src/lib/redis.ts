@@ -5,26 +5,50 @@ const logger = createLogger("redis")
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379"
 
-let redis: Redis | null = null
+declare global {
+    var redis: Redis | undefined
+}
 
 export function getRedisClient(): Redis | null {
     if (process.env.NODE_ENV === "test") return null
 
-    if (!redis) {
+    if (!global.redis) {
         try {
-            redis = new Redis(REDIS_URL, {
-                maxRetriesPerRequest: 3,
-                retryStrategy(times) {
-                    const delay = Math.min(times * 50, 2000)
-                    return delay
+            const url = new URL(REDIS_URL)
+            const redisOptions: import("ioredis").RedisOptions = {
+                host: url.hostname,
+                port: parseInt(url.port) || 6379,
+                maxRetriesPerRequest: 1,
+                connectTimeout: 1000,
+                commandTimeout: 1000,
+                retryStrategy(times: number) {
+                    if (times > 1) return null
+                    return 50
                 },
-            })
+            }
 
-            redis.on("error", (err) => {
+            if (url.password) {
+                redisOptions.password = decodeURIComponent(url.password)
+            }
+
+            if (url.pathname && url.pathname !== "/") {
+                const db = parseInt(url.pathname.substring(1))
+                if (!isNaN(db)) {
+                    redisOptions.db = db
+                }
+            }
+
+            if (url.protocol === "rediss:") {
+                redisOptions.tls = {}
+            }
+
+            global.redis = new Redis(redisOptions)
+
+            global.redis.on("error", (err) => {
                 logger.error("Redis error", { error: err.message })
             })
 
-            redis.on("connect", () => {
+            global.redis.on("connect", () => {
                 logger.info("Connected to Redis")
             })
         } catch (err) {
@@ -33,7 +57,7 @@ export function getRedisClient(): Redis | null {
         }
     }
 
-    return redis
+    return global.redis
 }
 
 export async function getCache<T>(key: string): Promise<T | null> {

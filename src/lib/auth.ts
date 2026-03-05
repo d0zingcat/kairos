@@ -5,6 +5,7 @@ import { db } from "@/db"
 import { users } from "@/db/schema"
 import { and, eq } from "drizzle-orm"
 import { getRedisClient } from "@/lib/redis"
+import { cache } from "react"
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret-change-me"
@@ -12,6 +13,10 @@ const JWT_SECRET = new TextEncoder().encode(
 
 const SESSION_COOKIE_NAME = "kairos-session"
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 days
+
+// In-memory cache for revocation checks to reduce Redis load across nearly-simultaneous requests
+// Only caches "not revoked" status for a very short time (2 seconds)
+const revocationCache = new Map<string, { revoked: boolean; expires: number }>()
 
 type SessionRole = "admin" | "member"
 
@@ -46,7 +51,7 @@ export async function createUserSession(userId: string, role: SessionRole): Prom
   return token
 }
 
-async function getSessionPayload(): Promise<SessionPayload | null> {
+const getSessionPayload = cache(async (): Promise<SessionPayload | null> => {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get(SESSION_COOKIE_NAME)?.value
@@ -61,12 +66,34 @@ async function getSessionPayload(): Promise<SessionPayload | null> {
       return null
     }
 
-    // Check if token is revoked in Redis
+    // Check in-memory cache first (2s TTL)
+    const now = Date.now()
+    const cached = revocationCache.get(jti)
+    if (cached && cached.expires > now) {
+      if (cached.revoked) return null
+      return { userId, role, jti }
+    }
+
+    // Check if token is revoked in Redis (with timeout to avoid blocking)
     const redis = await getRedisClient()
     if (redis) {
-      const isRevoked = await redis.get(`revoked_token:${jti}`)
-      if (isRevoked) {
-        return null
+      try {
+        const isRevoked = await Promise.race([
+          redis.get(`revoked_token:${jti}`),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 500))
+        ])
+
+        // Cache the result for 2 seconds (regardless of whether it's revoked or not)
+        revocationCache.set(jti, {
+          revoked: Boolean(isRevoked),
+          expires: now + 2000
+        })
+
+        if (isRevoked) {
+          return null
+        }
+      } catch {
+        // Ignore Redis errors, allow session if Redis is unavailable
       }
     }
 
@@ -74,7 +101,7 @@ async function getSessionPayload(): Promise<SessionPayload | null> {
   } catch {
     return null
   }
-}
+})
 
 export async function verifyAdminSession(): Promise<boolean> {
   const session = await getSessionPayload()

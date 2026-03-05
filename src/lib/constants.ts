@@ -12,10 +12,8 @@ export interface MediaTypeConfig {
   searchTypes: string[]
 }
 
-export const MEDIA_TYPES: Record<MediaType, MediaTypeConfig> = {
+export const MEDIA_TYPES: Record<MediaType, Omit<MediaTypeConfig, "label" | "labelPlural">> = {
   book: {
-    label: "书",
-    labelPlural: "Books",
     icon: BookOpen,
     href: "/dashboard/books",
     color: "text-emerald-400",
@@ -23,8 +21,6 @@ export const MEDIA_TYPES: Record<MediaType, MediaTypeConfig> = {
     searchTypes: ["book"],
   },
   music: {
-    label: "音乐",
-    labelPlural: "Music",
     icon: Music,
     href: "/dashboard/music",
     color: "text-violet-400",
@@ -32,8 +28,6 @@ export const MEDIA_TYPES: Record<MediaType, MediaTypeConfig> = {
     searchTypes: ["music"],
   },
   watch: {
-    label: "影视",
-    labelPlural: "Watch",
     icon: Film,
     href: "/dashboard/watches",
     color: "text-amber-400",
@@ -41,8 +35,6 @@ export const MEDIA_TYPES: Record<MediaType, MediaTypeConfig> = {
     searchTypes: ["movie", "tv"],
   },
   game: {
-    label: "游戏",
-    labelPlural: "Games",
     icon: Gamepad2,
     href: "/dashboard/games",
     color: "text-rose-400",
@@ -52,29 +44,31 @@ export const MEDIA_TYPES: Record<MediaType, MediaTypeConfig> = {
 }
 
 export const BOOK_STATUSES = [
-  { value: "want_to_read", label: "想读" },
-  { value: "reading", label: "在读" },
-  { value: "finished", label: "已读" },
-  { value: "abandoned", label: "弃读" },
+  { value: "want_to_read" },
+  { value: "reading" },
+  { value: "finished" },
+  { value: "abandoned" },
 ] as const
 
 export const WATCH_STATUSES = [
-  { value: "want_to_watch", label: "想看" },
-  { value: "watching", label: "在看" },
-  { value: "finished", label: "已看" },
-  { value: "abandoned", label: "弃看" },
+  { value: "want_to_watch" },
+  { value: "watching" },
+  { value: "finished" },
+  { value: "abandoned" },
 ] as const
 
 export const GAME_STATUSES = [
-  { value: "backlog", label: "待玩" },
-  { value: "playing", label: "在玩" },
-  { value: "completed", label: "通关" },
-  { value: "abandoned", label: "弃坑" },
-  { value: "platinum", label: "白金" },
+  { value: "backlog" },
+  { value: "playing" },
+  { value: "completed" },
+  { value: "abandoned" },
+  { value: "platinum" },
 ] as const
 
 export const SORT_OPTIONS = [
-  { value: "date", label: "最新" },
-  { value: "rating", label: "评分" },
-  { value: "title", label: "标题" },
+  { value: "date" },
+  { value: "rating" },
+  { value: "title" },
 ] as const
+
+export const ADMIN_ONLY_PREFIXES = ["/settings", "/api/export"]

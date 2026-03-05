@@ -8,6 +8,7 @@ import { MusicGrid } from "@/components/dashboard/music-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Music } from "lucide-react"
 import { verifyAdminSession } from "@/lib/auth"
+import { getI18n } from "@/lib/i18n"
 
 interface PageProps {
   searchParams: Promise<{ sort?: string; search?: string }>
@@ -15,13 +16,14 @@ interface PageProps {
 
 export default async function MusicPage({ searchParams }: PageProps) {
   const params = await searchParams
+  const { t } = await getI18n()
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Music className="h-6 w-6 text-violet-400" />
         <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
-          Music
+          {t("media.music")}
         </h1>
       </div>
 
@@ -46,7 +48,7 @@ async function MusicGridContent({
   const musicList = await getMusicList({ sort, search })
 
   if (musicList.length === 0) {
-    return <EmptyState type="音乐" />
+    return <EmptyState type="music" />
   }
 
   return (

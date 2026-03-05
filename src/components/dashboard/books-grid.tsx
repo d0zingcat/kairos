@@ -7,8 +7,9 @@ import { EntryDialog } from "@/components/entry-dialog/entry-dialog"
 import { SelectionToolbar } from "@/components/dashboard/selection-toolbar"
 import { FilterBar } from "@/components/dashboard/filter-bar"
 import { deleteEntries } from "@/lib/actions/entries"
-import type { SearchResultItem } from "@/app/api/search/[type]/route"
+import type { SearchResultItem } from "@/lib/search-utils"
 import { useRouter } from "next/navigation"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface BookGridItem {
   id: string
@@ -40,16 +41,12 @@ export function BooksGrid({ books, canEdit, status, sort, search }: BooksGridPro
   const router = useRouter()
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
+  const { t } = useTranslation()
 
   // Selection State
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isDeleting, setIsDeleting] = useState(false)
-
-  const statusMap = useMemo(
-    () => new Map(BOOK_STATUSES.map((item) => [item.value, item.label])),
-    []
-  )
 
   const openEditor = (book: BookGridItem) => {
     if (!canEdit) return
@@ -88,7 +85,7 @@ export function BooksGrid({ books, canEdit, status, sort, search }: BooksGridPro
 
   const handleDelete = async () => {
     if (!canEdit || selectedIds.length === 0) return
-    if (!confirm(`确定要彻底删除已选择的 ${selectedIds.length} 个项目吗？`)) return
+    if (!confirm(t("grid.confirmDelete", { count: selectedIds.length }))) return
 
     setIsDeleting(true)
     try {
@@ -98,7 +95,7 @@ export function BooksGrid({ books, canEdit, status, sort, search }: BooksGridPro
       router.refresh()
     } catch (error) {
       console.error("Bulk delete failed:", error)
-      alert("批量删除失败")
+      alert(t("grid.deleteFailed"))
     } finally {
       setIsDeleting(false)
     }
@@ -107,6 +104,7 @@ export function BooksGrid({ books, canEdit, status, sort, search }: BooksGridPro
   return (
     <>
       <FilterBar
+        mediaType="book"
         statuses={BOOK_STATUSES}
         currentStatus={status}
         currentSort={sort}
@@ -128,11 +126,11 @@ export function BooksGrid({ books, canEdit, status, sort, search }: BooksGridPro
             coverUrl={book.coverUrl}
             rating={book.rating}
             favorite={book.favorite}
-            statusLabel={statusMap.get(book.status) ?? book.status}
+            statusLabel={t(`bookStatus.${book.status}`)}
             tags={book.tags}
             metaLines={[
-              book.authors?.length ? `作者：${book.authors.join(" / ")}` : "",
-              `阅读时间：${book.startDate ?? "-"} → ${book.finishDate ?? "-"}`,
+              book.authors?.length ? `${t("grid.author")}：${book.authors.join(" / ")}` : "",
+              `${t("grid.readingTime")}：${book.startDate ?? "-"} → ${book.finishDate ?? "-"}`,
             ].filter(Boolean)}
             note={book.notes}
             index={i}

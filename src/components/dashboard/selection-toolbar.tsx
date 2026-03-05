@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { Trash2, X, CheckSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface SelectionToolbarProps {
     selectedCount: number
@@ -17,6 +18,7 @@ export function SelectionToolbar({
     onDelete,
     isDeleting,
 }: SelectionToolbarProps) {
+    const { t } = useTranslation()
     if (selectedCount === 0) return null
 
     return (
@@ -29,7 +31,7 @@ export function SelectionToolbar({
             >
                 <div className="flex items-center gap-2 border-r border-border/50 pr-4">
                     <CheckSquare className="h-4 w-4 text-amber-500" />
-                    <span className="text-sm font-medium">已选择 {selectedCount} 项</span>
+                    <span className="text-sm font-medium">{t("grid.selectedCount", { count: selectedCount })}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -41,7 +43,7 @@ export function SelectionToolbar({
                         className="h-8 rounded-full px-4"
                     >
                         <Trash2 className="h-3.5 w-3.5" />
-                        <span>{isDeleting ? "删除中..." : "批量删除"}</span>
+                        <span>{isDeleting ? t("grid.deleting") : t("grid.batchDelete")}</span>
                     </Button>
 
                     <Button

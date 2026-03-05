@@ -9,6 +9,7 @@ import { WatchesGrid } from "@/components/dashboard/watches-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Film } from "lucide-react"
 import { verifyAdminSession } from "@/lib/auth"
+import { getI18n } from "@/lib/i18n"
 
 interface PageProps {
   searchParams: Promise<{ status?: string; sort?: string; search?: string }>
@@ -16,13 +17,14 @@ interface PageProps {
 
 export default async function WatchesPage({ searchParams }: PageProps) {
   const params = await searchParams
+  const { t } = await getI18n()
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Film className="h-6 w-6 text-amber-400" />
         <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
-          Watch
+          {t("media.watch")}
         </h1>
       </div>
 
@@ -50,7 +52,7 @@ async function WatchGrid({
   const watchList = await getWatches({ status, sort, search })
 
   if (watchList.length === 0) {
-    return <EmptyState type="影视" />
+    return <EmptyState type="watch" />
   }
 
   return (

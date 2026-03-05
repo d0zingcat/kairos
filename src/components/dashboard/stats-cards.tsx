@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { MEDIA_TYPES } from "@/lib/constants"
 import { motion } from "framer-motion"
 import type { LucideIcon } from "lucide-react"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface StatsCardsProps {
   stats: {
@@ -23,12 +24,13 @@ const cardVariants = {
 }
 
 export function StatsCards({ stats }: StatsCardsProps) {
+  const { t } = useTranslation()
   const cards: { label: string; value: number; color: string; icon?: LucideIcon }[] = [
-    { label: "本月", value: stats.monthly.all, color: "from-amber-500/20 to-orange-500/20" },
-    { label: "本年", value: stats.yearly.all, color: "from-emerald-500/20 to-teal-500/20" },
-    { label: "总计", value: stats.total.all, color: "from-violet-500/20 to-purple-500/20" },
+    { label: t("dashboard.monthly"), value: stats.monthly.all, color: "from-amber-500/20 to-orange-500/20" },
+    { label: t("dashboard.yearly"), value: stats.yearly.all, color: "from-emerald-500/20 to-teal-500/20" },
+    { label: t("dashboard.total"), value: stats.total.all, color: "from-violet-500/20 to-purple-500/20" },
     ...Object.entries(MEDIA_TYPES).map(([key, config]) => ({
-      label: config.label,
+      label: t(`media.${key}`),
       value: stats.total[key === "watch" ? "watches" : `${key}s`] ?? stats.total[key] ?? 0,
       color: "from-muted/70 to-muted/40",
       icon: config.icon,

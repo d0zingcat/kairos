@@ -20,10 +20,11 @@ import {
 } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Heart, CalendarIcon, Star, Loader2, Trash2 } from "lucide-react"
+import { CalendarIcon, Star, Loader2, Trash2, Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { zhCN } from "date-fns/locale"
+import { zhCN, enUS } from "date-fns/locale"
+import { useI18n } from "@/components/i18n/i18n-provider"
 import {
   BOOK_STATUSES,
   WATCH_STATUSES,
@@ -44,7 +45,7 @@ import {
   deleteWatch,
   deleteGame,
 } from "@/lib/actions/entries"
-import type { SearchResultItem } from "@/app/api/search/[type]/route"
+import type { SearchResultItem } from "@/lib/search-utils"
 
 interface EntryDialogProps {
   open: boolean
@@ -61,6 +62,9 @@ export function EntryDialog({
   mediaType,
   canEdit = true,
 }: EntryDialogProps) {
+  const { t, locale } = useI18n()
+  const dateLocale = locale === "zh" ? zhCN : enUS
+  const dateFormat = t("entry.dateFormat")
   const toDateString = (value: unknown): string => {
     if (typeof value === "string") return value
     if (value instanceof Date) return format(value, "yyyy-MM-dd")
@@ -374,7 +378,7 @@ export function EntryDialog({
     const localId = typeof meta.localId === "string" ? meta.localId : null
     if (!localId) return
 
-    if (!confirm("确定要删除这条记录吗？此操作不可撤销。")) {
+    if (!confirm(t("entry.confirmDelete"))) {
       return
     }
 
@@ -428,7 +432,7 @@ export function EntryDialog({
         onKeyDown={handleKeyDown}
       >
         <DialogHeader>
-          <DialogTitle className="text-foreground">录入记录</DialogTitle>
+          <DialogTitle className="text-foreground">{t("entry.title")}</DialogTitle>
         </DialogHeader>
 
         <div className="min-h-0 space-y-5 overflow-y-auto pr-1">
@@ -461,7 +465,7 @@ export function EntryDialog({
           {/* Rating */}
           <div>
             <label className="mb-2 block text-xs font-medium text-muted-foreground">
-              评分 (按 1-5 快速评分)
+              {t("entry.rating")}
             </label>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -494,7 +498,7 @@ export function EntryDialog({
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-xs font-medium text-muted-foreground">
-                    开始阅读
+                    {t("entry.startDate")}
                   </label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -504,8 +508,8 @@ export function EntryDialog({
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {bookStartDate
-                          ? format(new Date(bookStartDate), "yyyy年MM月dd日", { locale: zhCN })
-                          : "选择开始日期"}
+                          ? format(new Date(bookStartDate), dateFormat, { locale: dateLocale })
+                          : t("entry.selectStartDate")}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto border-border bg-popover p-0">
@@ -514,13 +518,14 @@ export function EntryDialog({
                         selected={bookStartDate ? new Date(bookStartDate) : undefined}
                         onSelect={(d) => setBookStartDate(d ? format(d, "yyyy-MM-dd") : "")}
                         initialFocus
+                        locale={dateLocale}
                       />
                     </PopoverContent>
                   </Popover>
                 </div>
                 <div>
                   <label className="mb-2 block text-xs font-medium text-muted-foreground">
-                    结束阅读
+                    {t("entry.finishDate")}
                   </label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -530,8 +535,8 @@ export function EntryDialog({
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {bookFinishDate
-                          ? format(new Date(bookFinishDate), "yyyy年MM月dd日", { locale: zhCN })
-                          : "选择结束日期"}
+                          ? format(new Date(bookFinishDate), dateFormat, { locale: dateLocale })
+                          : t("entry.selectFinishDate")}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto border-border bg-popover p-0">
@@ -540,6 +545,7 @@ export function EntryDialog({
                         selected={bookFinishDate ? new Date(bookFinishDate) : undefined}
                         onSelect={(d) => setBookFinishDate(d ? format(d, "yyyy-MM-dd") : "")}
                         initialFocus
+                        locale={dateLocale}
                       />
                     </PopoverContent>
                   </Popover>
@@ -548,31 +554,31 @@ export function EntryDialog({
 
               <div>
                 <label className="mb-2 block text-xs font-medium text-muted-foreground">
-                  作者
+                  {t("entry.author")}
                 </label>
                 <TagInput
                   value={bookAuthors}
                   onChange={setBookAuthors}
-                  placeholder="输入作者后按回车，支持多个"
+                  placeholder={t("entry.authorPlaceholder")}
                   colored={false}
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-xs font-medium text-muted-foreground">
-                  类别
+                  {t("entry.category")}
                 </label>
                 <TagInput
                   value={bookCategories}
                   onChange={setBookCategories}
-                  placeholder="输入类别后按回车，支持多个"
+                  placeholder={t("entry.categoryPlaceholder")}
                 />
               </div>
             </>
           ) : (
             <div>
               <label className="mb-2 block text-xs font-medium text-muted-foreground">
-                日期
+                {t("entry.date")}
               </label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -581,7 +587,7 @@ export function EntryDialog({
                     className="w-full justify-start border-border bg-card text-left text-foreground hover:bg-accent"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(date, "yyyy年MM月dd日", { locale: zhCN })}
+                    {format(date, dateFormat, { locale: dateLocale })}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto border-border bg-popover p-0">
@@ -590,6 +596,7 @@ export function EntryDialog({
                     selected={date}
                     onSelect={(d) => d && setDate(d)}
                     initialFocus
+                    locale={dateLocale}
                   />
                 </PopoverContent>
               </Popover>
@@ -600,7 +607,7 @@ export function EntryDialog({
           {statuses && (
             <div>
               <label className="mb-2 block text-xs font-medium text-muted-foreground">
-                状态
+                {t("entry.status")}
               </label>
               <Select
                 value={status || defaultStatus}
@@ -612,7 +619,7 @@ export function EntryDialog({
                 <SelectContent className="border-border bg-popover">
                   {statuses.map((s) => (
                     <SelectItem key={s.value} value={s.value}>
-                      {s.label}
+                      {t(`${mediaType}Status.${s.value}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -623,12 +630,12 @@ export function EntryDialog({
           {/* Notes */}
           <div>
             <label className="mb-2 block text-xs font-medium text-muted-foreground">
-              {mediaType === "book" ? "我的评价" : "笔记"}
+              {mediaType === "book" ? t("entry.myRating") : t("entry.note")}
             </label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="写点什么..."
+              placeholder={t("entry.notePlaceholder")}
               className="min-h-[80px] max-h-56 resize-y overflow-y-auto border-border bg-card text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -670,7 +677,7 @@ export function EntryDialog({
                 onClick={() => onOpenChange(false)}
                 className="text-muted-foreground hover:text-foreground"
               >
-                取消
+                {t("common.cancel")}
               </Button>
               <Button
                 onClick={handleSave}
@@ -680,7 +687,7 @@ export function EntryDialog({
                 {isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                保存
+                {t("common.save")}
               </Button>
             </div>
           </div>

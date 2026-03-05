@@ -14,9 +14,11 @@ import {
 import { Search, CheckSquare, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SORT_OPTIONS } from "@/lib/constants"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface FilterBarProps {
-  statuses?: readonly { value: string; label: string }[]
+  mediaType?: "book" | "music" | "watch" | "game"
+  statuses?: readonly { value: string }[]
   currentStatus?: string
   currentSort?: string
   currentSearch?: string
@@ -26,6 +28,7 @@ interface FilterBarProps {
 }
 
 export function FilterBar({
+  mediaType,
   statuses,
   currentStatus,
   currentSort,
@@ -38,6 +41,7 @@ export function FilterBar({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const { t } = useTranslation()
 
   // Initialize with currentSearch from URL
   const [searchValue, setSearchValue] = useState(currentSearch || "")
@@ -104,7 +108,7 @@ export function FilterBar({
           value={searchValue}
           onChange={handleSearchChange}
           onKeyDown={handleSearchKeyDown}
-          placeholder="搜索..."
+          placeholder={t("filterBar.searchPlaceholder")}
           className="border-border bg-card/60 pl-9 text-foreground placeholder:text-muted-foreground"
           disabled={isPending}
         />
@@ -120,10 +124,10 @@ export function FilterBar({
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="border-border bg-popover">
-            <SelectItem value="all">全部</SelectItem>
+            <SelectItem value="all">{t("filterBar.all")}</SelectItem>
             {statuses.map((s) => (
               <SelectItem key={s.value} value={s.value}>
-                {s.label}
+                {mediaType ? t(`${mediaType}Status.${s.value}`) : s.value}
               </SelectItem>
             ))}
           </SelectContent>
@@ -141,7 +145,7 @@ export function FilterBar({
         <SelectContent className="border-border bg-popover">
           {SORT_OPTIONS.map((s) => (
             <SelectItem key={s.value} value={s.value}>
-              {s.label}
+              {t(`sort.${s.value}`)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -160,12 +164,12 @@ export function FilterBar({
           {isSelectionMode ? (
             <>
               <X className="h-4 w-4" />
-              <span>退出管理</span>
+              <span>{t("filterBar.exitBatchMode")}</span>
             </>
           ) : (
             <>
               <CheckSquare className="h-4 w-4" />
-              <span>批量管理</span>
+              <span>{t("filterBar.batchMode")}</span>
             </>
           )}
         </Button>
