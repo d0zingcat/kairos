@@ -231,6 +231,23 @@
     "saving": "保存中...",
     "savePublicSettings": "保存公开设置"
   },
+  "privacy": {
+    "plazaTitle": "广场动态可见性",
+    "plazaDesc": "控制你的动态是否出现在广场混合信息流中",
+    "plazaPublic": "发布到广场",
+    "plazaPublicDesc": "你的动态会出现在广场信息流",
+    "plazaPrivate": "不发布到广场",
+    "plazaPrivateDesc": "你的动态不会出现在广场",
+    "profileTitle": "个人主页可见性",
+    "profileDesc": "控制你的个人主页是否可被访问",
+    "profilePublic": "公开个人主页",
+    "profilePublicDesc": "任何人都可以访问你的个人主页",
+    "profilePrivate": "私密个人主页",
+    "profilePrivateDesc": "你的个人主页不可被访问",
+    "saving": "保存中...",
+    "savePlazaSettings": "保存广场设置",
+    "saveProfileSettings": "保存主页设置"
+  },
   "goodreads": {
     "title": "Goodreads 导入",
     "description": "上传 Goodreads 导出的 CSV 文件，系统将追加导入并自动跳过重复书籍。",

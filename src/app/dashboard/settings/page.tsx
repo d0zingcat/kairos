@@ -34,7 +34,10 @@ export default async function SettingsPage() {
         </div>
       </div>
 
-      <ProfileVisibilityForm initialPublic={currentUser.isPublicProfile} />
+      <ProfileVisibilityForm 
+        initialPublicProfile={currentUser.isPublicProfile} 
+        initialPublishToPlaza={currentUser.publishToPlaza ?? false} 
+      />
       <GoodreadsImportCard />
 
       {isAdmin && visibility ? (

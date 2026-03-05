@@ -27,7 +27,7 @@ function toCountMap(items: Array<{ userId: string; count: number }>) {
 
 async function getPublicUsers() {
   const publicUsers = await db.query.users.findMany({
-    where: and(eq(users.isPublicProfile, true), eq(users.isActive, true)),
+    where: and(eq(users.publishToPlaza, true), eq(users.isActive, true)),
     orderBy: [desc(users.updatedAt)],
     limit: 200,
   })

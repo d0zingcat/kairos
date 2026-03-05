@@ -1,3 +1,128 @@
+# PROJECT KNOWLEDGE BASE — Kairos
+
+**Generated:** 2026-03-05
+**Commit:** HEAD
+**Branch:** main
+
+## OVERVIEW
+
+Personal life tracking application (books, music, movies/games) with Next.js 16 App Router, Drizzle ORM, PostgreSQL. Features: GitHub-style activity heatmap, Cmd+K quick entry, multi-user system, public plaza, Goodreads import, Docker deployment.
+
+## STRUCTURE
+
+```
+kairos/
+├── src/
+│   ├── app/           # Next.js App Router (routes, layouts, API)
+│   ├── components/    # React components (ui/, dashboard/, plaza/, etc.)
+│   ├── db/            # Drizzle ORM (schema.ts, migrations, seed)
+│   ├── lib/           # Core utilities, API clients, server actions
+│   └── test/          # Unit tests (Vitest)
+├── e2e/               # Playwright E2E tests
+├── drizzle/           # Migration files
+├── .github/workflows/ # CI/CD (lint, Docker, semantic-release)
+└── AGENTS.md          # This file
+```
+
+## WHERE TO LOOK
+
+| Task | Location | Notes |
+|------|----------|-------|
+| Add UI component | `src/components/ui/` | shadcn/ui "new-york" style, cva variants |
+| Dashboard feature | `src/components/dashboard/` | Media card grids, filter bars, stats |
+| Database schema | `src/db/schema.ts` | Drizzle tables, enums, indexes |
+| Server action | `src/lib/actions/` | "use server" directives, Zod validation |
+| External API | `src/lib/api/` | TMDB, Spotify, RAWG, Google Books, Hardcover |
+| API route | `src/app/api/*/route.ts` | GET/POST handlers, response format |
+| Page/route | `src/app/*/page.tsx` | App Router, RSC by default |
+| Utility function | `src/lib/` | logger, redis, auth, i18n, constants |
+| Test (unit) | `src/test/*.test.ts` | Vitest, @testing-library/react |
+| Test (E2E) | `e2e/*.spec.ts` | Playwright, auto-starts dev server |
+
+## CONVENTIONS
+
+**Imports**: `"use server"` → React → external → `@/` → relative. Path alias: `@/*` = `./src/*`
+
+**TypeScript**: Strict mode, explicit return types for exported functions, no `any`
+
+**Server Actions**: 
+- `"use server"` at top
+- Return `{ success: true/false, data/error: ... }`
+- Zod validation with `.safeParse()`
+- `revalidatePath()` after mutations
+- Chinese error messages in schemas
+
+**Components**: 
+- shadcn/ui: cva for variants, cn() for class merging
+- File naming: `PascalName.tsx`
+- RSC by default, client components opt-in with `"use client"`
+
+**Database**: 
+- All queries filter by `userId` for multi-user isolation
+- Parameterized queries only (no string interpolation)
+- Timestamps: `createdAt`/`updatedAt` via shared object
+
+**Logging**: Use `createLogger("namespace")` from `@/lib/logger` — NEVER `console.*` (35 violations to fix)
+
+**Styling**: Tailwind v4 CSS-only (`@theme inline` in globals.css), OKLCH colors, light/dark via `.dark` class
+
+## ANTI-PATTERNS (THIS PROJECT)
+
+- ❌ `console.log/error/warn` — Use `@/lib/logger` instead (35 instances need fixing)
+- ❌ `any` type — Use `unknown` or proper types
+- ❌ Direct database access without userId filter
+- ❌ String interpolation in SQL queries
+- ❌ Commit directly to `main` — NEVER (branch protection rule)
+- ❌ Manual version bumps — semantic-release handles on main merge
+
+## UNIQUE STYLES
+
+- **Color system**: OKLCH in globals.css `@theme inline`, not Tailwind config
+- **Base color**: Zinc (not default slate) for shadcn/ui
+- **Route structure**: Flat, no route groups `(groupname)` pattern
+- **Error boundaries**: Root + dashboard levels only, no global loading.tsx
+- **Migration**: Standalone script (`dist/migrate.js`) for Docker runtime execution
+- **Git hooks**: Custom `.githooks/` path, not Husky
+
+## COMMANDS
+
+```bash
+# Development
+bun run dev              # Next.js dev server (Turbopack)
+bun run build            # Production build
+bun run start            # Production server
+
+# Database
+bun run db:generate      # Generate Drizzle migrations
+bun run db:push          # Quick schema sync (dev)
+bun run db:migrate       # Run migrations
+bun run db:studio        # Drizzle Studio
+bun run db:seed          # Seed example data
+bun run db:import:goodreads -- <csv> <userId>  # Import Goodreads
+
+# Testing
+bun run test             # Vitest unit tests
+bun run test:e2e         # Playwright E2E
+bun test src/test/xxx.test.ts  # Single test file
+
+# Linting / Release
+bun run lint             # ESLint (blocks commits via .githooks)
+bun run release          # semantic-release (versioning + changelog)
+```
+
+## NOTES
+
+- **First run**: Visit `/register` — first account becomes admin
+- **Plaza**: `/plaza` shows users who enabled "publish_to_plaza"
+- **Goodreads import**: `/dashboard/settings` → upload CSV
+- **Privacy settings**: `/dashboard/settings` → toggle public profile / plaza publish
+- **Image domains**: 13 external domains allowed (TMDB, Spotify, Google Books, etc.)
+- **Docker**: `output: "standalone"` + multi-stage build, GHCR tagging: `sha-{short}` + `latest`
+- **Auto-migration**: Runs on startup if `DB_AUTO_MIGRATE=true` (default)
+- **Branch protection**: `main` requires PR — NEVER push directly
+
+---
+
 # Agent Workflow Instructions
 
 ## Default Post-change Workflow (Codex / Claude Code)

@@ -141,6 +141,30 @@ export async function toggleProfileVisibilityAction(
 
   revalidatePath("/dashboard/settings")
   revalidatePath("/plaza")
+  revalidatePath(`/u/${user.username}`)
 
-  return { success: isPublicProfile ? "已公开到广场" : "已设为仅自己可见" }
+  return { success: isPublicProfile ? "已公开个人主页" : "已设为私密" }
+}
+
+export async function togglePlazaVisibilityAction(
+  _prevState: { error?: string; success?: string } | null,
+  formData: FormData
+) {
+  const user = await getCurrentUser()
+  if (!user) {
+    redirect("/login")
+  }
+
+  const value = String(formData.get("publishToPlaza") ?? "false")
+  const publishToPlaza = value === "true"
+
+  await db
+    .update(users)
+    .set({ publishToPlaza })
+    .where(eq(users.id, user.id))
+
+  revalidatePath("/dashboard/settings")
+  revalidatePath("/plaza")
+
+  return { success: publishToPlaza ? "已发布到广场" : "已取消广场发布" }
 }
