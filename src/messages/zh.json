@@ -22,7 +22,8 @@
     "guestMode": "访客模式",
     "logout": "退出",
     "login": "登录 / 注册",
-    "settings": "设置"
+    "settings": "设置",
+    "changelog": "更新日志"
   },
   "theme": {
     "light": "白天",
@@ -230,6 +231,23 @@
     "privateDesc": "你的摘要不会出现在广场",
     "saving": "保存中...",
     "savePublicSettings": "保存公开设置"
+  },
+  "privacy": {
+    "plazaTitle": "广场动态可见性",
+    "plazaDesc": "控制你的动态是否出现在广场混合信息流中",
+    "plazaPublic": "发布到广场",
+    "plazaPublicDesc": "你的动态会出现在广场信息流",
+    "plazaPrivate": "不发布到广场",
+    "plazaPrivateDesc": "你的动态不会出现在广场",
+    "profileTitle": "个人主页可见性",
+    "profileDesc": "控制你的个人主页是否可被访问",
+    "profilePublic": "公开个人主页",
+    "profilePublicDesc": "任何人都可以访问你的个人主页",
+    "profilePrivate": "私密个人主页",
+    "profilePrivateDesc": "你的个人主页不可被访问",
+    "saving": "保存中...",
+    "savePlazaSettings": "保存广场设置",
+    "saveProfileSettings": "保存主页设置"
   },
   "goodreads": {
     "title": "Goodreads 导入",

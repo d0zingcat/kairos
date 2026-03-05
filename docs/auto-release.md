@@ -9,6 +9,19 @@ This project uses [semantic-release](https://github.com/semantic-release/semanti
 3. **Changelog**: Automatically updates `CHANGELOG.md` with release notes
 4. **Git Tag**: Creates a Git tag (e.g., `v0.3.14`)
 5. **GitHub Release**: Creates a GitHub Release with the generated notes
+6. **Product Changelog (Optional)**: If `OPENAI_API_KEY` secret exists, a follow-up job runs `bun run changelog:generate:product` and commits `src/data/product-changelog.json` back to `main`
+
+## Optional: Product Changelog Generation
+
+If you want user-facing release notes (instead of raw semantic-release notes), generate:
+
+```bash
+OPENAI_API_KEY=your_key bun run changelog:generate:product
+```
+
+This command reads `CHANGELOG.md` and writes curated entries to `src/data/product-changelog.json`.
+You can optionally set `OPENAI_CHANGELOG_MODEL` (default `gpt-4.1-mini`).
+In GitHub Actions, configure repository secret `OPENAI_API_KEY` and optional repository variable `OPENAI_CHANGELOG_MODEL`.
 
 ## Version Rules
 
