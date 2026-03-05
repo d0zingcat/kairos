@@ -2,11 +2,12 @@
 
 import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
-import { zhCN } from "date-fns/locale"
+import { motion } from "framer-motion"
+import { useTranslation } from "@/components/i18n/i18n-provider"
+import { enUS, zhCN } from "date-fns/locale"
 import { MEDIA_TYPES, type MediaType } from "@/lib/constants"
 import { Star } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { motion } from "framer-motion"
 
 interface TimelineItem {
   id: string
@@ -24,16 +25,19 @@ interface RecentTimelineProps {
 }
 
 export function RecentTimeline({ items }: RecentTimelineProps) {
+  const { t, locale } = useTranslation()
+  const dateLocale = locale === "zh" ? zhCN : enUS
+
   if (items.length === 0) {
     return (
       <div>
         <h2 className="mb-4 font-mono text-lg font-semibold text-foreground">
-          最近活动
+          {t("dashboard.recentActivity")}
         </h2>
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16">
-          <p className="text-sm text-muted-foreground">还没有记录</p>
+          <p className="text-sm text-muted-foreground">{t("dashboard.noActivity")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            按 ⌘K 开始录入
+            {t("dashboard.startEntry")}
           </p>
         </div>
       </div>
@@ -43,7 +47,7 @@ export function RecentTimeline({ items }: RecentTimelineProps) {
   return (
     <div>
       <h2 className="mb-4 font-mono text-lg font-semibold text-foreground">
-        最近活动
+        {t("dashboard.recentActivity")}
       </h2>
       <div className="space-y-2">
         {items.map((item, i) => {
@@ -81,7 +85,7 @@ export function RecentTimeline({ items }: RecentTimelineProps) {
                     variant="outline"
                     className={`shrink-0 border-none text-[10px] ${config.color}`}
                   >
-                    {config.label}
+                    {t(`media.${item.mediaType}`)}
                   </Badge>
                 </div>
                 <div className="mt-0.5 flex items-center gap-2">
@@ -96,7 +100,7 @@ export function RecentTimeline({ items }: RecentTimelineProps) {
                   <span className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(item.createdAt), {
                       addSuffix: true,
-                      locale: zhCN,
+                      locale: dateLocale,
                     })}
                   </span>
                 </div>

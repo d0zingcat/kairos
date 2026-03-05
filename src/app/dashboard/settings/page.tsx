@@ -7,11 +7,13 @@ import { SettingsForm } from "@/components/dashboard/settings-form"
 import { GoodreadsImportCard } from "@/components/dashboard/goodreads-import-card"
 import { ProfileVisibilityForm } from "@/components/dashboard/profile-visibility-form"
 import { ShieldCheck } from "lucide-react"
+import { getI18n } from "@/lib/i18n"
 
 export default async function SettingsPage() {
+  const { t } = await getI18n()
   const currentUser = await getCurrentUser()
   if (!currentUser) {
-    redirect("/login")
+    redirect("/login?next=%2Fdashboard%2Fsettings")
   }
 
   const isAdmin = currentUser.role === "admin"
@@ -24,10 +26,10 @@ export default async function SettingsPage() {
         <ShieldCheck className="h-6 w-6 text-amber-400" />
         <div>
           <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
-            设置
+            {t("nav.settings")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            你的公开可见性与系统配置
+            {t("visibility.description")}
           </p>
         </div>
       </div>

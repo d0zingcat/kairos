@@ -11,12 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useThemeMode, type ThemeMode } from "@/components/theme/theme-provider"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
-const themeOptions: { mode: ThemeMode; label: string; icon: ComponentType<{ className?: string }> }[] = [
-  { mode: "light", label: "白天", icon: Sun },
-  { mode: "dark", label: "暗夜", icon: Moon },
-  { mode: "system", label: "自动", icon: Laptop },
-]
+
 
 interface ThemeToggleProps {
   compact?: boolean
@@ -32,6 +29,13 @@ function CurrentThemeIcon({ mode, resolvedTheme }: { mode: ThemeMode; resolvedTh
 
 export function ThemeToggle({ compact = false }: ThemeToggleProps) {
   const { mode, resolvedTheme, setMode } = useThemeMode()
+  const { t } = useI18n()
+
+  const themeOptions: { mode: ThemeMode; label: string; icon: ComponentType<{ className?: string }> }[] = [
+    { mode: "light", label: t("theme.light"), icon: Sun },
+    { mode: "dark", label: t("theme.dark"), icon: Moon },
+    { mode: "system", label: t("theme.system"), icon: Laptop },
+  ]
 
   return (
     <DropdownMenu>
@@ -40,22 +44,23 @@ export function ThemeToggle({ compact = false }: ThemeToggleProps) {
           type="button"
           variant="ghost"
           size={compact ? "icon" : "sm"}
-          className={compact ? "text-muted-foreground" : "gap-2 text-muted-foreground hover:text-foreground"}
-          aria-label="切换主题"
-          title="切换主题"
+          className={compact ? "h-8 w-8 text-muted-foreground hover:text-foreground" : "h-9 gap-2 px-3 text-muted-foreground hover:bg-accent hover:text-foreground"}
+          aria-label={t("theme.switch")}
+          title={t("theme.switch")}
+          suppressHydrationWarning
         >
           <CurrentThemeIcon mode={mode} resolvedTheme={resolvedTheme} />
-          {!compact ? <span>{mode === "system" ? "自动" : resolvedTheme === "dark" ? "暗夜" : "白天"}</span> : null}
+          {!compact ? <span className="text-xs font-medium uppercase tracking-wider">{mode === "system" ? t("theme.system") : resolvedTheme === "dark" ? t("theme.dark") : t("theme.light")}</span> : null}
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-36">
         <DropdownMenuRadioGroup value={mode} onValueChange={(nextMode) => setMode(nextMode as ThemeMode)}>
           {themeOptions.map(({ mode: optionMode, label, icon: Icon }) => (
-            <DropdownMenuRadioItem key={optionMode} value={optionMode}>
-              <Icon className="h-4 w-4" />
-              <span>{label}</span>
-              {mode === optionMode ? <Check className="ml-auto h-4 w-4" /> : null}
+            <DropdownMenuRadioItem key={optionMode} value={optionMode} className="cursor-pointer">
+              <Icon className="h-4 w-4 pointer-events-none" />
+              <span className="pointer-events-none">{label}</span>
+              {mode === optionMode ? <Check className="ml-auto h-4 w-4 pointer-events-none" /> : null}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

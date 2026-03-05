@@ -4,6 +4,7 @@ import { ActivityCalendar } from "react-activity-calendar"
 import type { ThemeInput } from "react-activity-calendar"
 import { Tooltip as ReactTooltip } from "react-tooltip"
 import "react-tooltip/dist/react-tooltip.css"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface ActivityDay {
   date: string
@@ -88,6 +89,7 @@ function generateRollingYearData(data: ActivityDay[]): ActivityDay[] {
 }
 
 export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
+  const { t } = useTranslation()
   const fullData = generateRollingYearData(data)
   const legendColors = kairosTheme.light
 
@@ -95,10 +97,10 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
     <div className="overflow-x-auto rounded-xl border border-border/60 bg-card/60 p-4 sm:p-6">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-mono text-sm font-semibold text-foreground">
-          最近一年活动记录
+          {t("dashboard.activityYear")}
         </h2>
         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-          <span>少</span>
+          <span>{t("dashboard.less")}</span>
           <div className="flex gap-0.5">
             {(legendColors ?? []).map(
               (color) => (
@@ -110,7 +112,7 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
               )
             )}
           </div>
-          <span>多</span>
+          <span>{t("dashboard.more")}</span>
         </div>
       </div>
       <ActivityCalendar
@@ -128,14 +130,14 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
           const day = activity as ActivityDay
           const tooltipContent = day.details
             ? [
-              day.details.books > 0 && `${day.details.books} 书`,
-              day.details.music > 0 && `${day.details.music} 音乐`,
-              day.details.watches > 0 && `${day.details.watches} 影视`,
-              day.details.games > 0 && `${day.details.games} 游戏`,
+              day.details.books > 0 && `${day.details.books} ${t("media.book")}`,
+              day.details.music > 0 && `${day.details.music} ${t("media.music")}`,
+              day.details.watches > 0 && `${day.details.watches} ${t("media.watch")}`,
+              day.details.games > 0 && `${day.details.games} ${t("media.game")}`,
             ]
               .filter(Boolean)
               .join(", ")
-            : `${day.count} 条记录`
+            : `${day.count} ${t("dashboard.items")}`
 
           return (
             <g data-tooltip-id="heatmap-tooltip" data-tooltip-content={`${day.date}: ${tooltipContent}`}>

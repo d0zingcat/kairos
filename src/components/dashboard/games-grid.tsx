@@ -7,8 +7,9 @@ import { EntryDialog } from "@/components/entry-dialog/entry-dialog"
 import { SelectionToolbar } from "@/components/dashboard/selection-toolbar"
 import { FilterBar } from "@/components/dashboard/filter-bar"
 import { deleteEntries } from "@/lib/actions/entries"
-import type { SearchResultItem } from "@/app/api/search/[type]/route"
+import type { SearchResultItem } from "@/lib/search-utils"
 import { useRouter } from "next/navigation"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface GameGridItem {
   id: string
@@ -40,16 +41,12 @@ export function GamesGrid({ gameList, canEdit, status, sort, search }: GamesGrid
   const router = useRouter()
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
+  const { t } = useTranslation()
 
   // Selection State
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isDeleting, setIsDeleting] = useState(false)
-
-  const statusMap = useMemo(
-    () => new Map(GAME_STATUSES.map((item) => [item.value, item.label])),
-    []
-  )
 
   const openEditor = (item: GameGridItem) => {
     if (!canEdit) return
@@ -89,7 +86,7 @@ export function GamesGrid({ gameList, canEdit, status, sort, search }: GamesGrid
 
   const handleDelete = async () => {
     if (!canEdit || selectedIds.length === 0) return
-    if (!confirm(`确定要彻底删除已选择的 ${selectedIds.length} 个项目吗？`)) return
+    if (!confirm(t("grid.confirmDelete", { count: selectedIds.length }))) return
 
     setIsDeleting(true)
     try {
@@ -99,7 +96,7 @@ export function GamesGrid({ gameList, canEdit, status, sort, search }: GamesGrid
       router.refresh()
     } catch (error) {
       console.error("Bulk delete failed:", error)
-      alert("批量删除失败")
+      alert(t("grid.deleteFailed"))
     } finally {
       setIsDeleting(false)
     }
@@ -108,6 +105,7 @@ export function GamesGrid({ gameList, canEdit, status, sort, search }: GamesGrid
   return (
     <>
       <FilterBar
+        mediaType="game"
         statuses={GAME_STATUSES}
         currentStatus={status}
         currentSort={sort}
@@ -129,7 +127,7 @@ export function GamesGrid({ gameList, canEdit, status, sort, search }: GamesGrid
             coverUrl={g.coverUrl}
             rating={g.rating}
             favorite={g.favorite}
-            statusLabel={statusMap.get(g.status) ?? g.status}
+            statusLabel={t(`gameStatus.${g.status}`)}
             tags={g.tags}
             note={g.notes}
             date={g.finishDate}

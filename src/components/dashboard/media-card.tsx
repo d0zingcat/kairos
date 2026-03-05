@@ -5,6 +5,7 @@ import { Star, Heart } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface MediaCardProps {
   title: string
@@ -187,15 +188,16 @@ export function MediaCard({
 }
 
 export function EmptyState({ type }: { type: string }) {
+  const { t } = useTranslation()
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20"
     >
-      <p className="text-lg text-muted-foreground">还没有{type}记录</p>
+      <p className="text-lg text-muted-foreground">{t("media.noRecords", { type: t(`media.${type}`).toLowerCase() })}</p>
       <p className="mt-2 text-sm text-muted-foreground">
-        按 <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">⌘K</kbd> 快速添加
+        {t("media.quickAdd", { key: "⌘K" })}
       </p>
     </motion.div>
   )

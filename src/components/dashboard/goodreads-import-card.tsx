@@ -4,6 +4,7 @@ import { useState } from "react"
 import { BookUp, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 type ImportSummary = {
   total: number
@@ -13,6 +14,7 @@ type ImportSummary = {
 }
 
 export function GoodreadsImportCard() {
+  const { t } = useTranslation()
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [summary, setSummary] = useState<ImportSummary | null>(null)
@@ -24,7 +26,7 @@ export function GoodreadsImportCard() {
     setSummary(null)
 
     if (!file) {
-      setError("请先选择 Goodreads 导出 CSV 文件")
+      setError(t("goodreads.noFile"))
       return
     }
 
@@ -44,13 +46,13 @@ export function GoodreadsImportCard() {
       }
 
       if (!response.ok) {
-        setError(payload.error ?? "导入失败")
+        setError(payload.error ?? t("goodreads.importFailed"))
         return
       }
 
       setSummary(payload.summary ?? { total: 0, inserted: 0, skipped: 0, failed: 0 })
     } catch {
-      setError("导入失败，请稍后重试")
+      setError(t("goodreads.retryImport"))
     } finally {
       setIsPending(false)
     }
@@ -61,9 +63,9 @@ export function GoodreadsImportCard() {
       <div className="flex items-start gap-3">
         <BookUp className="mt-0.5 h-4 w-4 text-amber-300" />
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Goodreads 导入</h2>
+          <h2 className="text-sm font-semibold text-foreground">{t("goodreads.title")}</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            上传 Goodreads 导出的 CSV 文件，系统将追加导入并自动跳过重复书籍。
+            {t("goodreads.description")}
           </p>
         </div>
       </div>
@@ -80,12 +82,16 @@ export function GoodreadsImportCard() {
 
         {summary ? (
           <p className="text-sm text-emerald-400">
-            导入完成：新增 {summary.inserted} 条，跳过 {summary.skipped} 条，源数据 {summary.total} 条。
+            {t("goodreads.summary", {
+              inserted: summary.inserted,
+              skipped: summary.skipped,
+              total: summary.total
+            })}
           </p>
         ) : null}
 
         <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">重复判定：Book Id 优先，缺失时使用 书名+作者。</p>
+          <p className="text-xs text-muted-foreground">{t("goodreads.duplicateNote")}</p>
           <Button
             type="submit"
             disabled={isPending || !file}
@@ -94,9 +100,9 @@ export function GoodreadsImportCard() {
             {isPending ? (
               <span className="inline-flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                导入中...
+                {t("goodreads.importing")}
               </span>
-            ) : "导入 Goodreads"}
+            ) : t("goodreads.import")}
           </Button>
         </div>
       </form>
