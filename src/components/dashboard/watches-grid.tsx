@@ -7,8 +7,9 @@ import { EntryDialog } from "@/components/entry-dialog/entry-dialog"
 import { SelectionToolbar } from "@/components/dashboard/selection-toolbar"
 import { FilterBar } from "@/components/dashboard/filter-bar"
 import { deleteEntries } from "@/lib/actions/entries"
-import type { SearchResultItem } from "@/app/api/search/[type]/route"
+import type { SearchResultItem } from "@/lib/search-utils"
 import { useRouter } from "next/navigation"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface WatchGridItem {
   id: string
@@ -41,16 +42,12 @@ export function WatchesGrid({ watchList, canEdit, status, sort, search }: Watche
   const router = useRouter()
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
+  const { t } = useTranslation()
 
   // Selection State
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isDeleting, setIsDeleting] = useState(false)
-
-  const statusMap = useMemo(
-    () => new Map(WATCH_STATUSES.map((item) => [item.value, item.label])),
-    []
-  )
 
   const openEditor = (item: WatchGridItem) => {
     if (!canEdit) return
@@ -91,7 +88,7 @@ export function WatchesGrid({ watchList, canEdit, status, sort, search }: Watche
 
   const handleDelete = async () => {
     if (!canEdit || selectedIds.length === 0) return
-    if (!confirm(`确定要彻底删除已选择的 ${selectedIds.length} 个项目吗？`)) return
+    if (!confirm(t("grid.confirmDelete", { count: selectedIds.length }))) return
 
     setIsDeleting(true)
     try {
@@ -101,7 +98,7 @@ export function WatchesGrid({ watchList, canEdit, status, sort, search }: Watche
       router.refresh()
     } catch (error) {
       console.error("Bulk delete failed:", error)
-      alert("批量删除失败")
+      alert(t("grid.deleteFailed"))
     } finally {
       setIsDeleting(false)
     }
@@ -110,6 +107,7 @@ export function WatchesGrid({ watchList, canEdit, status, sort, search }: Watche
   return (
     <>
       <FilterBar
+        mediaType="watch"
         statuses={WATCH_STATUSES}
         currentStatus={status}
         currentSort={sort}
@@ -131,7 +129,7 @@ export function WatchesGrid({ watchList, canEdit, status, sort, search }: Watche
             coverUrl={w.posterUrl}
             rating={w.rating}
             favorite={w.favorite}
-            statusLabel={statusMap.get(w.status) ?? w.status}
+            statusLabel={t(`watchStatus.${w.status}`)}
             tags={w.tags}
             note={w.notes}
             date={w.watchDate}

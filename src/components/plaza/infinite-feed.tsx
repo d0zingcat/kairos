@@ -3,41 +3,17 @@
 import Link from "next/link"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { BookOpen, Film, Gamepad2, Loader2, Music } from "lucide-react"
+import { useTranslation } from "@/components/i18n/i18n-provider"
+import { formatDistanceToNow } from "date-fns"
+import { enUS, zhCN } from "date-fns/locale"
 
-type PlazaFeedItem = {
+export type PlazaFeedItem = {
   id: string
   userId: string
   username: string
   mediaType: "book" | "music" | "watch" | "game"
   title: string
   createdAt: string
-}
-
-function formatRelativeTime(input: string) {
-  const now = Date.now()
-  const target = new Date(input).getTime()
-  const diffMs = target - now
-  const minutes = Math.round(diffMs / (1000 * 60))
-  const rtf = new Intl.RelativeTimeFormat("zh-CN", { numeric: "auto" })
-
-  if (Math.abs(minutes) < 60) {
-    return rtf.format(minutes, "minute")
-  }
-
-  const hours = Math.round(minutes / 60)
-  if (Math.abs(hours) < 24) {
-    return rtf.format(hours, "hour")
-  }
-
-  const days = Math.round(hours / 24)
-  return rtf.format(days, "day")
-}
-
-function mediaLabel(type: "book" | "music" | "watch" | "game") {
-  if (type === "book") return "读了"
-  if (type === "music") return "听了"
-  if (type === "watch") return "看了"
-  return "玩了"
 }
 
 function MediaIcon({ type }: { type: "book" | "music" | "watch" | "game" }) {
@@ -58,6 +34,7 @@ export function InfiniteFeed({
   initialHasMore: boolean
   pageSize?: number
 }) {
+  const { t, locale } = useTranslation()
   const [items, setItems] = useState<PlazaFeedItem[]>(initialItems)
   const [cursor, setCursor] = useState<string | null>(initialCursor)
   const [hasMore, setHasMore] = useState(initialHasMore)
@@ -66,6 +43,18 @@ export function InfiniteFeed({
   const [recovered, setRecovered] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
+
+  const dateLocale = locale === "zh" ? zhCN : enUS
+
+  const getMediaAction = (type: string) => {
+    switch (type) {
+      case "book": return t("feed.read")
+      case "music": return t("feed.listened")
+      case "watch": return t("feed.watched")
+      case "game": return t("feed.played")
+      default: return ""
+    }
+  }
 
   const loadMore = useCallback(async () => {
     if (!hasMore || isLoading) {
@@ -98,7 +87,7 @@ export function InfiniteFeed({
       setHasMore(payload.hasMore)
       setRecovered(hadError)
     } catch {
-      setError("加载失败，请稍后重试")
+      setError(t("feed.loadFailed"))
       setRecovered(false)
     } finally {
       setIsLoading(false)
@@ -146,7 +135,7 @@ export function InfiniteFeed({
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-border/60 bg-card/50 p-6 text-sm text-muted-foreground">
-        还没有公开动态，先去记录你的第一条时间线吧。
+        {t("feed.noPublicFeed")}
       </div>
     )
   }
@@ -164,11 +153,16 @@ export function InfiniteFeed({
               <Link href={`/u/${item.username}`} className="font-medium text-sky-500 hover:text-sky-400">
                 @{item.username}
               </Link>
-              <span className="mx-1 text-muted-foreground">{mediaLabel(item.mediaType)}</span>
+              <span className="mx-1 text-muted-foreground">{getMediaAction(item.mediaType)}</span>
               <span className="font-medium">{item.title}</span>
             </div>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">{formatRelativeTime(item.createdAt)}</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {formatDistanceToNow(new Date(item.createdAt), {
+              addSuffix: true,
+              locale: dateLocale,
+            })}
+          </p>
         </div>
       ))}
 
@@ -177,7 +171,7 @@ export function InfiniteFeed({
       {isLoading ? (
         <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          加载更多中...
+          {t("feed.loadingMore")}
         </p>
       ) : null}
 
@@ -188,7 +182,7 @@ export function InfiniteFeed({
             aria-live="polite"
             className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-300 shadow-lg backdrop-blur"
           >
-            已恢复加载
+            {t("feed.resumed")}
           </p>
         </div>
       ) : null}
@@ -202,11 +196,11 @@ export function InfiniteFeed({
             disabled={isLoading || !hasMore}
             className="rounded-md border border-border bg-card px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
-            点击重试
+            {t("common.retry")}
           </button>
         </div>
       ) : null}
-      {!hasMore && !isLoading ? <p className="text-center text-xs text-muted-foreground">没有更多动态了</p> : null}
+      {!hasMore && !isLoading ? <p className="text-center text-xs text-muted-foreground">{t("feed.noMoreFeed")}</p> : null}
     </div>
   )
 }

@@ -11,6 +11,8 @@ export default async function DashboardLayout({
 }) {
   const access = await getAccessState()
   if (!access.canView) {
+    // Note: We'd ideally use the current path, but for now we fallback to /dashboard
+    // The individual pages (like settings) handle their own more specific redirects
     redirect("/login?next=%2Fdashboard")
   }
 

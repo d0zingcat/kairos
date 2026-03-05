@@ -9,6 +9,7 @@ import { BooksGrid } from "@/components/dashboard/books-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BookOpen } from "lucide-react"
 import { verifyAdminSession } from "@/lib/auth"
+import { getI18n } from "@/lib/i18n"
 
 interface PageProps {
   searchParams: Promise<{ status?: string; sort?: string; search?: string }>
@@ -16,22 +17,19 @@ interface PageProps {
 
 export default async function BooksPage({ searchParams }: PageProps) {
   const params = await searchParams
+  const { t } = await getI18n()
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <BookOpen className="h-6 w-6 text-emerald-400" />
         <h1 className="font-mono text-2xl font-bold tracking-tight text-foreground">
-          Books
+          {t("media.book")}
         </h1>
       </div>
 
       <Suspense fallback={<GridSkeleton />}>
-        <BookGrid
-          status={params.status}
-          sort={params.sort}
-          search={params.search}
-        />
+        <BookGrid status={params.status} sort={params.sort} search={params.search} />
       </Suspense>
     </div>
   )
@@ -50,17 +48,11 @@ async function BookGrid({
   const books = await getBooks({ status, sort, search })
 
   if (books.length === 0) {
-    return <EmptyState type="书籍" />
+    return <EmptyState type="book" />
   }
 
   return (
-    <BooksGrid
-      books={books}
-      canEdit={canEdit}
-      status={status}
-      sort={sort}
-      search={search}
-    />
+    <BooksGrid books={books} canEdit={canEdit} status={status} sort={sort} search={search} />
   )
 }
 

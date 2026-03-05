@@ -6,8 +6,9 @@ import { EntryDialog } from "@/components/entry-dialog/entry-dialog"
 import { SelectionToolbar } from "@/components/dashboard/selection-toolbar"
 import { FilterBar } from "@/components/dashboard/filter-bar"
 import { deleteEntries } from "@/lib/actions/entries"
-import type { SearchResultItem } from "@/app/api/search/[type]/route"
+import type { SearchResultItem } from "@/lib/search-utils"
 import { useRouter } from "next/navigation"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 interface MusicGridItem {
   id: string
@@ -36,6 +37,7 @@ export function MusicGrid({ musicList, canEdit, search, sort }: MusicGridProps) 
   const router = useRouter()
   const [entryDialogOpen, setEntryDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SearchResultItem | null>(null)
+  const { t } = useTranslation()
 
   // Selection State
   const [isSelectionMode, setIsSelectionMode] = useState(false)
@@ -78,7 +80,7 @@ export function MusicGrid({ musicList, canEdit, search, sort }: MusicGridProps) 
 
   const handleDelete = async () => {
     if (!canEdit || selectedIds.length === 0) return
-    if (!confirm(`确定要彻底删除已选择的 ${selectedIds.length} 个项目吗？`)) return
+    if (!confirm(t("grid.confirmDelete", { count: selectedIds.length }))) return
 
     setIsDeleting(true)
     try {
@@ -88,7 +90,7 @@ export function MusicGrid({ musicList, canEdit, search, sort }: MusicGridProps) 
       router.refresh()
     } catch (error) {
       console.error("Bulk delete failed:", error)
-      alert("批量删除失败")
+      alert(t("grid.deleteFailed"))
     } finally {
       setIsDeleting(false)
     }
@@ -97,6 +99,7 @@ export function MusicGrid({ musicList, canEdit, search, sort }: MusicGridProps) 
   return (
     <>
       <FilterBar
+        mediaType="music"
         currentSort={sort}
         currentSearch={search}
         canEdit={canEdit}

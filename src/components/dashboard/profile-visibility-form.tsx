@@ -5,12 +5,14 @@ import { Globe, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toggleProfileVisibilityAction } from "@/lib/actions/auth"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/components/i18n/i18n-provider"
 
 export function ProfileVisibilityForm({
   initialPublic,
 }: {
   initialPublic: boolean
 }) {
+  const { t } = useTranslation()
   const [isPublicProfile, setIsPublicProfile] = useState(initialPublic)
   const [state, formAction, isPending] = useActionState<
     { error?: string; success?: string } | null,
@@ -24,9 +26,9 @@ export function ProfileVisibilityForm({
       <div className="flex items-start gap-3">
         <Globe className="mt-0.5 h-4 w-4 text-sky-300" />
         <div>
-          <h2 className="text-sm font-semibold text-foreground">公开广场可见性</h2>
+          <h2 className="text-sm font-semibold text-foreground">{t("visibility.title")}</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            开启后，你的摘要统计与最近动态会出现在广场页面。
+            {t("visibility.description")}
           </p>
         </div>
       </div>
@@ -45,8 +47,8 @@ export function ProfileVisibilityForm({
           <div className="flex items-center gap-3">
             <Globe className={cn("h-4 w-4", isPublicProfile ? "text-emerald-300" : "text-muted-foreground")} />
             <div>
-              <p className={cn("text-sm font-medium", isPublicProfile ? "text-foreground" : "text-foreground/85")}>公开到广场</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">其他人可在广场看到你的摘要动态</p>
+              <p className={cn("text-sm font-medium", isPublicProfile ? "text-foreground" : "text-foreground/85")}>{t("visibility.public")}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{t("visibility.publicDesc")}</p>
             </div>
           </div>
         </button>
@@ -64,8 +66,8 @@ export function ProfileVisibilityForm({
           <div className="flex items-center gap-3">
             <Lock className={cn("h-4 w-4", !isPublicProfile ? "text-amber-300" : "text-muted-foreground")} />
             <div>
-              <p className={cn("text-sm font-medium", !isPublicProfile ? "text-foreground" : "text-foreground/85")}>仅自己可见</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">你的摘要不会出现在广场</p>
+              <p className={cn("text-sm font-medium", !isPublicProfile ? "text-foreground" : "text-foreground/85")}>{t("visibility.private")}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{t("visibility.privateDesc")}</p>
             </div>
           </div>
         </button>
@@ -80,7 +82,7 @@ export function ProfileVisibilityForm({
           disabled={isPending}
           className="bg-gradient-to-r from-sky-500 to-blue-600 text-white hover:from-sky-600 hover:to-blue-700"
         >
-          {isPending ? "保存中..." : "保存公开设置"}
+          {isPending ? t("visibility.saving") : t("visibility.savePublicSettings")}
         </Button>
       </div>
     </form>

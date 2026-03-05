@@ -14,7 +14,8 @@ import {
 import { MEDIA_TYPES, type MediaType } from "@/lib/constants"
 import { Loader2 } from "lucide-react"
 import { EntryDialog } from "@/components/entry-dialog/entry-dialog"
-import type { SearchResultItem } from "@/app/api/search/[type]/route"
+import { useI18n } from "@/components/i18n/i18n-provider"
+import type { SearchResultItem } from "@/lib/search-utils"
 
 interface CommandPaletteProps {
   open: boolean
@@ -23,12 +24,15 @@ interface CommandPaletteProps {
 
 type SearchType = "book" | "music" | "movie" | "tv" | "game" | null
 
-const SEARCH_TYPE_LABEL: Record<Exclude<SearchType, null>, string> = {
-  book: "书籍",
-  music: "音乐",
-  movie: "电影",
-  tv: "电视剧",
-  game: "游戏",
+function getSearchTypeLabel(type: SearchType, t: (key: string) => string): string {
+  switch (type) {
+    case "book": return t("search.book")
+    case "music": return t("search.music")
+    case "movie": return t("search.movie")
+    case "tv": return t("search.tv")
+    case "game": return t("search.game")
+    default: return ""
+  }
 }
 
 function parseSlashCommand(value: string): { searchType: SearchType; query: string } {
@@ -43,6 +47,7 @@ function parseSlashCommand(value: string): { searchType: SearchType; query: stri
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const router = useRouter()
+  const { t } = useI18n()
   const [searchType, setSearchType] = useState<SearchType>(null)
   const [input, setInput] = useState("")
   const [results, setResults] = useState<SearchResultItem[]>([])
@@ -152,8 +157,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandInput
           placeholder={
             searchType
-              ? `搜索${searchType}...`
-              : "输入 /book, /music, /movie, /tv, /game 后搜索..."
+              ? t("search.searchWithType", { type: getSearchTypeLabel(searchType, t) })
+              : t("search.searchTip")
           }
           value={input}
           onValueChange={handleInputChange}
@@ -162,45 +167,45 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           <div className="flex items-center justify-between border-b border-border px-3 py-2 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
               <span className="rounded-md bg-muted px-2 py-0.5 text-foreground">
-                当前模式：{SEARCH_TYPE_LABEL[searchType]}
+                {t("search.searchType", { type: getSearchTypeLabel(searchType, t) })}
               </span>
-              <span>输入关键词后开始搜索</span>
+              <span>{t("search.enterKeyword")}</span>
             </div>
             <button
               type="button"
               onClick={handleClearSearchType}
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              清除模式
+              {t("search.clearMode")}
             </button>
           </div>
         )}
         <CommandList>
           {!searchType && (
-            <CommandGroup heading="快捷指令">
+            <CommandGroup heading={t("search.shortcuts")}>
               <CommandItem onSelect={() => setSearchType("book")}>
                 <MEDIA_TYPES.book.icon className="mr-2 h-4 w-4" />
-                <span>搜索书籍</span>
+                <span>{t("search.searchBook")}</span>
                 <kbd className="ml-auto text-xs text-muted-foreground">/book</kbd>
               </CommandItem>
               <CommandItem onSelect={() => setSearchType("music")}>
                 <MEDIA_TYPES.music.icon className="mr-2 h-4 w-4" />
-                <span>搜索音乐</span>
+                <span>{t("search.searchMusic")}</span>
                 <kbd className="ml-auto text-xs text-muted-foreground">/music</kbd>
               </CommandItem>
               <CommandItem onSelect={() => setSearchType("movie")}>
                 <MEDIA_TYPES.watch.icon className="mr-2 h-4 w-4" />
-                <span>搜索电影</span>
+                <span>{t("search.searchMovie")}</span>
                 <kbd className="ml-auto text-xs text-muted-foreground">/movie</kbd>
               </CommandItem>
               <CommandItem onSelect={() => setSearchType("tv")}>
                 <MEDIA_TYPES.watch.icon className="mr-2 h-4 w-4" />
-                <span>搜索电视剧</span>
+                <span>{t("search.searchTv")}</span>
                 <kbd className="ml-auto text-xs text-muted-foreground">/tv</kbd>
               </CommandItem>
               <CommandItem onSelect={() => setSearchType("game")}>
                 <MEDIA_TYPES.game.icon className="mr-2 h-4 w-4" />
-                <span>搜索游戏</span>
+                <span>{t("search.searchGame")}</span>
                 <kbd className="ml-auto text-xs text-muted-foreground">/game</kbd>
               </CommandItem>
             </CommandGroup>
@@ -214,10 +219,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 </div>
               )}
               {!loading && results.length === 0 && (
-                <CommandEmpty>未找到结果</CommandEmpty>
+                <CommandEmpty>{t("search.noResults")}</CommandEmpty>
               )}
               {!loading && results.length > 0 && (
-                <CommandGroup heading="搜索结果">
+                <CommandGroup heading={t("search.searchType", { type: getSearchTypeLabel(searchType, t) })}>
                   {results.map((item) => (
                     <CommandItem
                       key={item.externalId}

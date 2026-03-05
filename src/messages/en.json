@@ -1,5 +1,10 @@
 {
+  "site": {
+    "title": "Kairos — Record Every Moment of Life",
+    "description": "Personal life tracking: Books, Music, Movies, Games"
+  },
   "common": {
+    "github": "GitHub Repository",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -16,7 +21,8 @@
     "loggedIn": "Logged In",
     "guestMode": "Guest Mode",
     "logout": "Logout",
-    "login": "Login / Register"
+    "login": "Login / Register",
+    "settings": "Settings"
   },
   "theme": {
     "light": "Light",
@@ -46,28 +52,53 @@
     "searchTip": "Type /book, /music, /movie, /tv, /game to search..."
   },
   "entry": {
-    "title": "Add Entry",
-    "rating": "Rating (Press 1-5 to rate quickly)",
+    "title": "Entry Detail",
+    "rating": "Rating (Press 1-5 to rate)",
     "startDate": "Start Date",
     "finishDate": "Finish Date",
     "selectStartDate": "Select start date",
     "selectFinishDate": "Select finish date",
-    "author": "Author",
-    "authorPlaceholder": "Enter author and press enter, supports multiple",
-    "category": "Category",
-    "categoryPlaceholder": "Enter category and press enter, supports multiple",
+    "author": "Authors",
+    "authorPlaceholder": "Type author and press Enter",
+    "category": "Categories",
+    "categoryPlaceholder": "Type category and press Enter",
     "date": "Date",
     "status": "Status",
-    "myRating": "My Rating",
+    "myRating": "My Review",
     "note": "Note",
     "notePlaceholder": "Write something...",
-    "confirmDelete": "Are you sure you want to delete this entry? This cannot be undone."
+    "confirmDelete": "Are you sure you want to delete this record? This action cannot be undone.",
+    "dateFormat": "yyyy-MM-dd"
+  },
+  "sort": {
+    "date": "Newest",
+    "rating": "Rating",
+    "title": "Title"
   },
   "status": {
     "reading": "Reading",
     "completed": "Completed",
     "paused": "Paused",
     "abandoned": "Abandoned"
+  },
+  "bookStatus": {
+    "want_to_read": "Want to Read",
+    "reading": "Reading",
+    "finished": "Finished",
+    "abandoned": "Abandoned"
+  },
+  "watchStatus": {
+    "want_to_watch": "Want to Watch",
+    "watching": "Watching",
+    "finished": "Finished",
+    "abandoned": "Abandoned"
+  },
+  "gameStatus": {
+    "backlog": "Backlog",
+    "playing": "Playing",
+    "completed": "Completed",
+    "abandoned": "Abandoned",
+    "platinum": "Platinum"
   },
   "activity": {
     "recentYear": "Activity in the Past Year",
@@ -91,20 +122,82 @@
     "noMoreFeed": "No more posts"
   },
   "dashboard": {
-    "favorites": "Favorites",
-    "noFavorites": "No favorites yet",
     "author": "Author: {authors}",
     "readingTime": "Reading time: {start} → {finish}",
     "monthly": "This Month",
     "yearly": "This Year",
     "total": "Total",
     "recentActivity": "Recent Activity",
+    "favorites": "Favorites",
+    "noActivity": "No activity yet",
+    "noFavorites": "No favorites yet",
+    "activityYear": "Activity in the last year",
+    "less": "Less",
+    "more": "More",
+    "items": "items",
     "noRecords": "No records yet",
-    "startEntry": "Press ⌘K to start adding"
+    "startEntry": "Press ⌘K to start adding",
+    "errorTitle": "Failed to load dashboard data",
+    "errorMessage": "We encountered an issue loading this page. This is usually caused by network fluctuations or temporary server issues.",
+    "retry": "Retry",
+    "title": "Overview",
+    "subtitle": "Your life records at a glance"
   },
   "media": {
     "noRecords": "No {type} records yet",
-    "quickAdd": "Press {key} to quickly add"
+    "quickAdd": "Press {key} to quickly add",
+    "book": "Books",
+    "music": "Music",
+    "movie": "Movies",
+    "tv": "TV Shows",
+    "game": "Games",
+    "watch": "Watch",
+    "all": "All"
+  },
+  "filterBar": {
+    "searchPlaceholder": "Search...",
+    "all": "All",
+    "exitBatchMode": "Exit Batch",
+    "batchMode": "Batch Mode",
+    "add": "Add"
+  },
+  "grid": {
+    "confirmDelete": "Are you sure you want to permanently delete {count} selected items?",
+    "deleteFailed": "Batch delete failed",
+    "author": "Author",
+    "readingTime": "Reading time",
+    "deleting": "Deleting...",
+    "batchDelete": "Batch Delete",
+    "selectedCount": "{count} items selected"
+  },
+  "plaza": {
+    "title": "Plaza",
+    "subtitle": "Only shows user-initiated public activity",
+    "summary": "{users} public users, {items} items on first screen",
+    "publicUsers": "Public Users",
+    "totalRecords": "Total Records",
+    "firstScreen": "First Screen",
+    "users": "users",
+    "items": "items",
+    "returnToDashboard": "Return to Dashboard"
+  },
+  "profile": {
+    "timeline": "Public Timeline Summary",
+    "summary": "Summary Statistics",
+    "totalRecords": "Total records: {count}",
+    "noPublicFeed": "No public posts yet.",
+    "returnToPlaza": "Return to Plaza"
+  },
+  "home": {
+    "enterDashboard": "Enter Dashboard",
+    "viewPlaza": "View Plaza",
+    "book": "Books",
+    "music": "Music",
+    "movie": "Movies",
+    "game": "Games",
+    "titleSecondary": "καιρός — Greek for \"the right moment\"",
+    "builtWith": "Built with Next.js, Tailwind CSS & shadcn/ui",
+    "allRightsReserved": "All rights reserved."
   },
   "version": {
     "checking": "Checking version...",
@@ -124,7 +217,10 @@
     "passwordProtectedDesc": "Enter password to view, admin password can edit.",
     "passwordNote": "Password protection uses `VIEWER_PASSWORD_HASH` (falls back to admin password when not configured).",
     "saving": "Saving...",
-    "saveSettings": "Save Settings"
+    "saveSettings": "Save Settings",
+    "dataManagement": "Data Management",
+    "exportJson": "Export as JSON Backup",
+    "exportDesc": "The exported file contains all your book, movie, music, and game records and ratings, which can be used for local backup or future data migration."
   },
   "visibility": {
     "title": "Public Feed Visibility",

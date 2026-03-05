@@ -4,22 +4,15 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { MEDIA_TYPES } from "@/lib/constants"
-import { LayoutDashboard, LogOut, Command, SlidersHorizontal, Globe2 } from "lucide-react"
+import { LayoutDashboard, LogOut, Command, Settings, Globe2 } from "lucide-react"
 import { logoutAction } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { useCommandPalette } from "@/components/command-palette/provider"
 import { motion } from "framer-motion"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { VersionDisplay } from "@/components/version-display"
-
-const baseNavItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/plaza", label: "Plaza", icon: Globe2 },
-  { href: MEDIA_TYPES.book.href, label: MEDIA_TYPES.book.labelPlural, icon: MEDIA_TYPES.book.icon },
-  { href: MEDIA_TYPES.music.href, label: MEDIA_TYPES.music.labelPlural, icon: MEDIA_TYPES.music.icon },
-  { href: MEDIA_TYPES.watch.href, label: MEDIA_TYPES.watch.labelPlural, icon: MEDIA_TYPES.watch.icon },
-  { href: MEDIA_TYPES.game.href, label: MEDIA_TYPES.game.labelPlural, icon: MEDIA_TYPES.game.icon },
-]
+import { LocaleSwitcher } from "@/components/i18n/locale-switcher"
+import { useI18n } from "@/components/i18n/i18n-provider"
 
 interface DashboardNavProps {
   canEdit: boolean
@@ -29,12 +22,17 @@ interface DashboardNavProps {
 export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
   const pathname = usePathname()
   const { setOpen } = useCommandPalette()
-  const navItems = canEdit
-    ? [
-        ...baseNavItems,
-        { href: "/dashboard/settings", label: "Settings", icon: SlidersHorizontal },
-      ]
-    : baseNavItems
+  const { t } = useI18n()
+
+  const navItems = [
+    { href: "/dashboard", label: t("dashboard.title"), icon: LayoutDashboard },
+    { href: "/dashboard/plaza", label: t("plaza.title"), icon: Globe2 },
+    { href: MEDIA_TYPES.book.href, label: t("media.book"), icon: MEDIA_TYPES.book.icon },
+    { href: MEDIA_TYPES.music.href, label: t("media.music"), icon: MEDIA_TYPES.music.icon },
+    { href: MEDIA_TYPES.watch.href, label: t("media.watch"), icon: MEDIA_TYPES.watch.icon },
+    { href: MEDIA_TYPES.game.href, label: t("media.game"), icon: MEDIA_TYPES.game.icon },
+    ...(hasSession ? [{ href: "/dashboard/settings", label: t("nav.settings"), icon: Settings }] : []),
+  ]
 
   return (
     <>
@@ -44,14 +42,17 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
           {/* Logo */}
           <div className="flex h-16 items-center justify-between gap-3 px-4">
             <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600">
-              <span className="text-sm font-bold text-white">K</span>
-            </div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600">
+                <span className="text-sm font-bold text-white">K</span>
+              </div>
               <span className="font-mono text-lg font-semibold tracking-tight text-foreground">
                 Kairos
               </span>
             </div>
-            <ThemeToggle compact />
+            <div className="flex items-center gap-1">
+              <ThemeToggle compact />
+              <LocaleSwitcher compact />
+            </div>
           </div>
 
           {/* Quick add */}
@@ -63,7 +64,7 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
               disabled={!canEdit}
             >
               <Command className="h-3.5 w-3.5" />
-              <span>{canEdit ? "快速录入" : "只读模式"}</span>
+              <span>{canEdit ? t("nav.quickEntry") : t("nav.readOnly")}</span>
               <kbd className="ml-auto rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
                 ⌘K
               </kbd>
@@ -105,7 +106,7 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
           <div className="border-t border-border/70 p-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                {hasSession ? "已登录" : "访客模式"}
+                {hasSession ? t("nav.loggedIn") : t("nav.guestMode")}
               </span>
               <VersionDisplay />
             </div>
@@ -117,7 +118,7 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
                   type="submit"
                 >
                   <LogOut className="h-4 w-4" />
-                  退出
+                  {t("nav.logout")}
                 </Button>
               </form>
             ) : (
@@ -127,7 +128,7 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
                   className="w-full justify-start gap-2 text-sm text-muted-foreground hover:text-foreground"
                   type="button"
                 >
-                  登录 / 注册
+                  {t("nav.login")}
                 </Button>
               </Link>
             )}
@@ -147,6 +148,7 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
         </div>
         <div className="flex items-center gap-1">
           <ThemeToggle compact />
+          <LocaleSwitcher compact />
           <Button
             variant="ghost"
             size="icon"

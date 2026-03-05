@@ -36,14 +36,20 @@ function applyTheme(mode: ThemeMode, resolvedTheme: ResolvedTheme) {
   root.style.colorScheme = resolvedTheme
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export function ThemeProvider({
+  children,
+  initialMode = "system"
+}: {
+  children: React.ReactNode
+  initialMode?: ThemeMode
+}) {
   const [mode, setModeState] = useState<ThemeMode>(() => {
     if (typeof window === "undefined") {
-      return "system"
+      return initialMode
     }
 
     const saved = localStorage.getItem(THEME_STORAGE_KEY)
-    return isThemeMode(saved) ? saved : "system"
+    return isThemeMode(saved) ? saved : initialMode
   })
 
   const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(() => getSystemTheme())
