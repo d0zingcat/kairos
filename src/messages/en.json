@@ -22,7 +22,8 @@
     "guestMode": "Guest Mode",
     "logout": "Logout",
     "login": "Login / Register",
-    "settings": "Settings"
+    "settings": "Settings",
+    "changelog": "Changelog"
   },
   "theme": {
     "light": "Light",
@@ -231,6 +232,23 @@
     "privateDesc": "Your summary won't appear on the feed",
     "saving": "Saving...",
     "savePublicSettings": "Save Visibility Settings"
+  },
+  "privacy": {
+    "plazaTitle": "Plaza Feed Visibility",
+    "plazaDesc": "Control whether your activity appears in the public plaza feed",
+    "plazaPublic": "Publish to Plaza",
+    "plazaPublicDesc": "Your activity will appear in the plaza feed",
+    "plazaPrivate": "Do Not Publish to Plaza",
+    "plazaPrivateDesc": "Your activity won't appear in the plaza",
+    "profileTitle": "Profile Page Visibility",
+    "profileDesc": "Control whether your profile page can be accessed",
+    "profilePublic": "Public Profile",
+    "profilePublicDesc": "Anyone can access your profile page",
+    "profilePrivate": "Private Profile",
+    "profilePrivateDesc": "Your profile page cannot be accessed",
+    "saving": "Saving...",
+    "savePlazaSettings": "Save Plaza Settings",
+    "saveProfileSettings": "Save Profile Settings"
   },
   "goodreads": {
     "title": "Goodreads Import",

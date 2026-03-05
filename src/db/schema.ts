@@ -64,12 +64,14 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull().default("member"),
   isPublicProfile: boolean("is_public_profile").notNull().default(false),
+  publishToPlaza: boolean("publish_to_plaza").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
   ...timestamps,
 }, (table) => ({
   usernameUnique: uniqueIndex("users_username_unique").on(table.username),
   roleIdx: index("users_role_idx").on(table.role),
   publicProfileIdx: index("users_public_profile_idx").on(table.isPublicProfile),
+  publishToPlazaIdx: index("users_publish_to_plaza_idx").on(table.publishToPlaza),
 }))
 
 // ── Books ────────────────────────────────────────────────
