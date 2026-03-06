@@ -125,6 +125,87 @@ bun run release          # semantic-release (versioning + changelog)
 
 # Agent Workflow Instructions
 
+## Agent Git Workflow (MANDATORY)
+
+**All agents MUST use `git worktree` to create new branches from `main` for ANY new feature or task.**
+
+**Policy:** NEVER work on the current branch. ALWAYS create a fresh worktree from main for each new task.
+
+### Standard Workflow (Always Use Worktree)
+
+For ANY new feature, bug fix, or task:
+
+```bash
+# 1. Fetch latest main
+git fetch origin main
+
+# 2. Create a new worktree in a sibling directory
+git worktree add ../kairos-<branch-name> main
+
+# 3. Navigate to the new worktree
+cd ../kairos-<branch-name>
+
+# 4. Create your branch from main
+git checkout -b <branch-name>
+
+# Now you have a clean workspace isolated from other work
+```
+
+**Example:**
+```bash
+# Starting from /workspace/kairos on ANY branch
+git fetch origin main
+git worktree add ../kairos-feat/new-feature main
+cd ../kairos-feat/new-feature
+git checkout -b feat/new-feature
+# Now working on feat/new-feature from main in complete isolation
+```
+
+### Why Always Use Worktree
+
+**Benefits:**
+- ✅ Complete isolation between tasks
+- ✅ No need to stash or commit incomplete work
+- ✅ No risk of mixing changes between features
+- ✅ Each worktree has its own git state and node_modules
+- ✅ Can work on multiple branches in parallel
+- ✅ Original branch always remains clean
+- ✅ Easy cleanup after completion
+
+**Worktree Structure:**
+```
+/workspace/
+├── kairos/                    # Original repository
+│   └── .git/
+├── kairos-feat/feature-a/     # Worktree for feature A
+├── kairos-feat/feature-b/     # Worktree for feature B
+└── kairos-fix/bug-fix/        # Worktree for bug fix
+```
+
+### Cleanup After Completion
+
+```bash
+# When done with a worktree, remove it
+git -C /workspace/kairos worktree remove ../kairos-<branch-name>
+
+# Or from within the worktree:
+cd /workspace/kairos
+git worktree remove ../kairos-<branch-name>
+```
+
+### Branch Naming Conventions
+
+| Prefix | Purpose | Example |
+|--------|---------|---------|
+| `feat/` | New features | `feat/search-enhancement` |
+| `fix/` | Bug fixes | `fix/login-error` |
+| `chore/` | Maintenance tasks | `chore/update-deps` |
+| `docs/` | Documentation | `docs/api-reference` |
+| `refactor/` | Code refactoring | `refactor/auth-module` |
+| `test/` | Test-related | `test/add-e2e-cases` |
+
+---
+
 ## Default Post-change Workflow (Codex / Claude Code)
 
 After any code change is completed, unless the user explicitly says to skip:
@@ -198,6 +279,50 @@ Template rules:
 - All changes must go through a Pull Request workflow
 - Merge to `main` only via PR (squash merge preferred)
 - semantic-release handles versioning automatically on main merge - do NOT bump versions manually
+
+### Creating New Branches (Enforced Workflow)
+
+**All new branches MUST be created from `main`**, never from other feature branches.
+
+**Recommended methods:**
+
+```bash
+# Method 1: Using helper script (recommended)
+./scripts/git-new-branch.sh feat/your-feature
+
+# Method 2: Using git alias (after setup)
+git nb feat/your-feature
+
+# Method 3: Manual (ensure you're on main first)
+git checkout main
+git pull origin main
+git checkout -b feat/your-feature
+
+# Method 4: Direct from origin/main
+git checkout -b feat/your-feature origin/main
+```
+
+**Branch naming conventions:**
+
+| Prefix | Purpose | Example |
+|--------|---------|---------|
+| `feat/` | New features | `feat/search-enhancement` |
+| `fix/` | Bug fixes | `fix/login-error` |
+| `chore/` | Maintenance tasks | `chore/update-deps` |
+| `docs/` | Documentation | `docs/api-reference` |
+| `refactor/` | Code refactoring | `refactor/auth-module` |
+| `test/` | Test-related | `test/add-e2e-cases` |
+| `style/` | Code style/formatting | `style/format-components` |
+| `perf/` | Performance improvements | `perf/query-optimization` |
+| `ci/` | CI/CD changes | `ci/caching-setup` |
+| `build/` | Build system or dependencies | `build/bun-upgrade` |
+| `hotfix/` | Urgent production fixes | `hotfix/security-patch` |
+
+**Enforcement:**
+
+- Pre-commit hook runs `bun run lint` to ensure code quality
+- Branch protection rules on GitHub prevent direct pushes to `main`
+- **This AGENTS.md file instructs all agents to always branch from main**
 
 ---
 

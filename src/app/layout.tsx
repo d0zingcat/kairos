@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
 import { Toaster } from "sonner";
-import { Github } from "lucide-react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -54,8 +53,6 @@ export default async function RootLayout({
   const locale = cookieStore.get("kairos-locale")?.value || "zh";
   const theme = cookieStore.get("kairos-theme")?.value || "system";
 
-  const { t } = await getI18n();
-
   return (
     <html lang={locale === "zh" ? "zh-CN" : "en"} suppressHydrationWarning>
       <head>
@@ -90,15 +87,6 @@ export default async function RootLayout({
           <ThemeProvider initialMode={theme as "light" | "dark" | "system"}>
             {children}
             <Toaster position="top-center" richColors />
-            <a
-              href={process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/d0zingcat/kairos"}
-              target="_blank"
-              rel="noreferrer"
-              className="fixed bottom-4 right-4 z-50 p-3 bg-background border rounded-full shadow-sm hover:shadow-md transition-all text-muted-foreground hover:text-foreground"
-              aria-label={t("common.github")}
-            >
-              <Github className="w-5 h-5" />
-            </a>
           </ThemeProvider>
         </I18nProvider>
       </body>
