@@ -26,6 +26,7 @@ jobs:
           node-version: 22
 
       - name: Setup Bun
+        if: ${{ secrets.OPENAI_API_KEY != '' }}
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -51,6 +52,7 @@ jobs:
           key: ${{ runner.os }}-eslint-${{ hashFiles('**/*.ts', '**/*.tsx') }}
 
       - name: Install dependencies
+        if: ${{ secrets.OPENAI_API_KEY != '' }}
         run: bun install --frozen-lockfile
 
       - name: Release
