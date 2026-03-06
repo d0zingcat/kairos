@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import { hash } from "bcryptjs"
-import { books, music, watches, games, appSettings, users } from "./schema"
+import { books, music, watches, games, users } from "./schema"
 
 const connectionString = process.env.DATABASE_URL!
 const client = postgres(connectionString)
@@ -16,7 +16,6 @@ async function seed() {
   await db.delete(watches)
   await db.delete(games)
   await db.delete(users)
-  await db.delete(appSettings)
 
   const [adminUser] = await db.insert(users).values({
     username: "admin",
@@ -25,11 +24,6 @@ async function seed() {
     isPublicProfile: true,
     isActive: true,
   }).returning()
-
-  await db.insert(appSettings).values({
-    key: "site",
-    visibility: "private",
-  })
 
   // ── Books ──────────────────────────────────────────
   await db.insert(books).values([

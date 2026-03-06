@@ -46,7 +46,6 @@ db/
 - `watch_type`: movie, tv
 - `watch_status`: want_to_watch, watching, finished, abandoned
 - `game_status`: backlog, playing, completed, abandoned, platinum
-- `site_visibility`: public, private, password
 - `user_role`: admin, member
 
 **Indexes** (auto-created):

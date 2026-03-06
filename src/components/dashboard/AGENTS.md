@@ -17,7 +17,6 @@ dashboard/
 ├── plaza-client.tsx        # Dashboard plaza view (not public plaza)
 ├── profile-visibility-form.tsx  # Privacy settings form
 ├── selection-toolbar.tsx   # Bulk selection toolbar
-├── settings-form.tsx       # Account/settings form
 ├── stats-cards.tsx         # Statistics summary cards
 ├── watches-grid.tsx        # Movie/TV cards grid
 └── goodreads-import-card.tsx  # Goodreads CSV import UI
@@ -32,7 +31,7 @@ dashboard/
 | Filter logic | `filter-bar.tsx` | Status, rating, date filters |
 | Bulk actions | `selection-toolbar.tsx` | Multi-select delete, favorite toggle |
 | Navigation | `nav.tsx` | Dashboard sidebar nav (books/music/games/watches/settings) |
-| Settings forms | `settings-form.tsx`, `profile-visibility-form.tsx` | Account + privacy settings |
+| Settings forms | `profile-visibility-form.tsx` | Account privacy settings |
 | Import UI | `goodreads-import-card.tsx` | CSV upload, progress tracking |
 
 ## CONVENTIONS
