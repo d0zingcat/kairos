@@ -67,26 +67,30 @@ jobs:
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_CHANGELOG_MODEL: ${{ vars.OPENAI_CHANGELOG_MODEL }}
-    if: ${{ env.OPENAI_API_KEY != '' }}
     steps:
       - name: Checkout main
+        if: ${{ env.OPENAI_API_KEY != '' }}
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
 
       - name: Setup Bun
+        if: ${{ env.OPENAI_API_KEY != '' }}
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
       - name: Install dependencies
+        if: ${{ env.OPENAI_API_KEY != '' }}
         run: bun install --frozen-lockfile
 
       - name: Generate product changelog
+        if: ${{ env.OPENAI_API_KEY != '' }}
         run: bun run changelog:generate:product
 
       - name: Commit and push product changelog
+        if: ${{ env.OPENAI_API_KEY != '' }}
         run: |
           if git diff --quiet -- src/data/product-changelog.*.json; then
             echo "No product changelog changes"
