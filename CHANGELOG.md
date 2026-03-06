@@ -1,3 +1,19 @@
+# [1.6.0](https://github.com/d0zingcat/kairos/compare/v1.5.1...v1.6.0) (2026-03-06)
+
+
+### Bug Fixes
+
+* **github-actions:** move env check from job to step level ([#39](https://github.com/d0zingcat/kairos/issues/39)) ([28fa101](https://github.com/d0zingcat/kairos/commit/28fa10195bf39c8c76f2be669de1354d5ebc6eaf))
+* **github-actions:** move secrets context check to step level ([#37](https://github.com/d0zingcat/kairos/issues/37)) ([00660eb](https://github.com/d0zingcat/kairos/commit/00660eb7f3bbab573e9dd8d972f18c39fecf0dc3))
+* **github-actions:** use env context instead of secrets in if conditions ([#38](https://github.com/d0zingcat/kairos/issues/38)) ([18e712d](https://github.com/d0zingcat/kairos/commit/18e712dbd7a51c605c9971d048fdf3dbf0f54718))
+
+
+### Features
+
+* add openai key judgement ([8735e5d](https://github.com/d0zingcat/kairos/commit/8735e5d78de7d1bd6c43f365279dad7690bf6e50))
+* **changelog:** add multi-language support and refine generation prompt ([#36](https://github.com/d0zingcat/kairos/issues/36)) ([c196c6c](https://github.com/d0zingcat/kairos/commit/c196c6c10016c085e1a7e5fc3eda00164c487666))
+* **changelog:** file-backed user changelog + OpenAI generator ([#34](https://github.com/d0zingcat/kairos/issues/34)) ([1ff5b7d](https://github.com/d0zingcat/kairos/commit/1ff5b7d34a1483bba53c47dfe794268dfc49a56f))
+
 ## [1.5.1](https://github.com/d0zingcat/kairos/compare/v1.5.0...v1.5.1) (2026-03-05)
 
 
