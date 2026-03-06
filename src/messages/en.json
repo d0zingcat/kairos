@@ -221,7 +221,9 @@
     "saveSettings": "Save Settings",
     "dataManagement": "Data Management",
     "exportJson": "Export as JSON Backup",
-    "exportDesc": "The exported file contains all your book, movie, music, and game records and ratings, which can be used for local backup or future data migration."
+    "exportDesc": "The exported file contains all your book, movie, music, and game records and ratings, which can be used for local backup or future data migration.",
+    "versionTitle": "Version & Updates",
+    "versionDesc": "Check for latest version and changelog"
   },
   "visibility": {
     "title": "Public Feed Visibility",
