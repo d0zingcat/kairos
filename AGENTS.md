@@ -125,6 +125,107 @@ bun run release          # semantic-release (versioning + changelog)
 
 # Agent Workflow Instructions
 
+## Agent Git Workflow (MANDATORY)
+
+**All agents MUST create new branches from `main`, never from other branches.**
+
+### Basic Workflow (No Uncommitted Changes)
+
+When an agent needs to create a branch for any work:
+
+1. **ALWAYS fetch latest main first:**
+   ```bash
+   git fetch origin main
+   ```
+
+2. **ALWAYS create branch from origin/main:**
+   ```bash
+   git checkout -b <branch-name> origin/main
+   ```
+
+3. **NEVER create branch from current branch:**
+   ```bash
+   # ❌ WRONG - Don't do this (creates from current branch)
+   git checkout -b feat/new-feature
+   
+   # ✅ CORRECT - Always specify origin/main
+   git checkout -b feat/new-feature origin/main
+   ```
+
+### Advanced Workflow (With Uncommitted Changes)
+
+**If current branch has uncommitted changes AND you need to create a new branch from main:**
+
+Use `git worktree` to avoid stashing or committing incomplete work:
+
+```bash
+# 1. Fetch latest main
+git fetch origin main
+
+# 2. Create a new worktree in a sibling directory
+# This creates a separate working directory with a clean main branch
+git worktree add ../kairos-<branch-name> main
+
+# 3. Navigate to the new worktree
+cd ../kairos-<branch-name>
+
+# 4. Create your new branch from main
+git checkout -b <branch-name>
+
+# Now you have:
+# - Original worktree: your previous branch with uncommitted changes (safe)
+# - New worktree: clean branch from main ready for new work
+```
+
+**Example:**
+```bash
+# You're in /workspace/kairos on branch feat/feature-A with uncommitted changes
+git fetch origin main
+git worktree add ../kairos-feat/feature-b main
+cd ../kairos-feat/feature-b
+git checkout -b feat/feature-b
+# Now working on feat/feature-b from main, original work untouched
+```
+
+**Benefits of using worktree:**
+- ✅ No need to stash or commit incomplete work
+- ✅ Both branches exist simultaneously in separate directories
+- ✅ Can work on multiple branches in parallel
+- ✅ Original changes remain safe and accessible
+- ✅ Each worktree has its own git state and node_modules
+
+**Cleanup after completing work:**
+```bash
+# Remove the worktree when done
+git worktree remove <path-to-worktree>
+```
+
+### Agent Reminder
+
+Before creating any branch, verify you're starting from main:
+```bash
+git rev-parse --abbrev-ref HEAD  # Should show 'main'
+```
+
+If not on main, switch first:
+```bash
+git checkout main && git pull origin main
+git checkout -b feat/your-feature origin/main
+```
+
+**Branch naming conventions:**
+
+| Prefix | Purpose | Example |
+|--------|---------|---------|
+| `feat/` | New features | `feat/search-enhancement` |
+| `fix/` | Bug fixes | `fix/login-error` |
+| `chore/` | Maintenance tasks | `chore/update-deps` |
+| `docs/` | Documentation | `docs/api-reference` |
+| `refactor/` | Code refactoring | `refactor/auth-module` |
+| `test/` | Test-related | `test/add-e2e-cases` |
+
+---
+
 ## Default Post-change Workflow (Codex / Claude Code)
 
 After any code change is completed, unless the user explicitly says to skip:
@@ -197,6 +298,50 @@ Template rules:
 - All changes must go through a Pull Request workflow
 - Merge to `main` only via PR (squash merge preferred)
 - semantic-release handles versioning automatically on main merge - do NOT bump versions manually
+
+### Creating New Branches (Enforced Workflow)
+
+**All new branches MUST be created from `main`**, never from other feature branches.
+
+**Recommended methods:**
+
+```bash
+# Method 1: Using helper script (recommended)
+./scripts/git-new-branch.sh feat/your-feature
+
+# Method 2: Using git alias (after setup)
+git nb feat/your-feature
+
+# Method 3: Manual (ensure you're on main first)
+git checkout main
+git pull origin main
+git checkout -b feat/your-feature
+
+# Method 4: Direct from origin/main
+git checkout -b feat/your-feature origin/main
+```
+
+**Branch naming conventions:**
+
+| Prefix | Purpose | Example |
+|--------|---------|---------|
+| `feat/` | New features | `feat/search-enhancement` |
+| `fix/` | Bug fixes | `fix/login-error` |
+| `chore/` | Maintenance tasks | `chore/update-deps` |
+| `docs/` | Documentation | `docs/api-reference` |
+| `refactor/` | Code refactoring | `refactor/auth-module` |
+| `test/` | Test-related | `test/add-e2e-cases` |
+| `style/` | Code style/formatting | `style/format-components` |
+| `perf/` | Performance improvements | `perf/query-optimization` |
+| `ci/` | CI/CD changes | `ci/caching-setup` |
+| `build/` | Build system or dependencies | `build/bun-upgrade` |
+| `hotfix/` | Urgent production fixes | `hotfix/security-patch` |
+
+**Enforcement:**
+
+- Pre-commit hook runs `bun run lint` to ensure code quality
+- Branch protection rules on GitHub prevent direct pushes to `main`
+- **This AGENTS.md file instructs all agents to always branch from main**
 
 ---
 
