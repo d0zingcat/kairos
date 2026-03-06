@@ -1,159 +1,158 @@
 [
   {
-    "version": "1.6.0",
+    "version": "1.7.0",
     "date": "2026-03-06",
-    "summary": "Introduce multi-language support and enhanced changelog generation with AI assistance.",
+    "summary": "Moved version display to settings for a cleaner interface.",
     "items": [
       {
         "tag": "feature",
-        "text": "Add multi-language support for changelog generation."
+        "text": "Relocated version display to the settings page and removed the floating GitHub button for a streamlined user experience."
+      }
+    ]
+  },
+  {
+    "version": "1.6.0",
+    "date": "2026-03-06",
+    "summary": "Added multi-language support and improved changelog generation.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Introduced multi-language support for changelog generation to better serve diverse users."
       },
       {
         "tag": "feature",
-        "text": "Implement file-backed user changelog with AI-powered generation."
+        "text": "Enabled user changelog storage with AI-assisted generation for enhanced changelog accuracy."
       },
       {
         "tag": "feature",
-        "text": "Add validation for OpenAI API key usage."
+        "text": "Implemented validation for API key usage to ensure proper functionality."
       }
     ]
   },
   {
     "version": "1.5.1",
     "date": "2026-03-05",
-    "summary": "Fix permissions issue in release workflow to ensure smooth operations.",
+    "summary": "Fixed permissions for release workflow to improve deployment reliability.",
     "items": [
       {
         "tag": "fix",
-        "text": "Correct permissions for issues and pull-requests in release workflow."
+        "text": "Updated release workflow permissions to allow issue and pull request management for smoother releases."
       }
     ]
   },
   {
     "version": "1.5.0",
     "date": "2026-03-05",
-    "summary": "Add public plaza feature and support for multiple languages with security and user experience improvements.",
+    "summary": "Added public plaza and internationalization support with security and user experience enhancements.",
     "items": [
       {
         "tag": "feature",
-        "text": "Introduce public plaza for user activity sharing."
-      },
-      {
-        "tag": "feature",
-        "text": "Add internationalization support."
+        "text": "Introduced a public plaza for community engagement and added support for multiple languages."
       },
       {
         "tag": "improvement",
-        "text": "Enhance security and user experience."
+        "text": "Merged security and user experience enhancements for a safer and more intuitive platform."
       }
     ]
   },
   {
     "version": "1.4.0",
     "date": "2026-03-03",
-    "summary": "Improve application reliability and error handling for a smoother user experience.",
+    "summary": "Enhanced reliability and stability with improved error handling and testing.",
     "items": [
       {
         "tag": "improvement",
-        "text": "Enhance error handling and reliability features."
+        "text": "Implemented advanced error boundaries and comprehensive testing to increase application stability."
       }
     ]
   },
   {
     "version": "1.3.0",
     "date": "2026-03-03",
-    "summary": "Add support for multiple languages and progressive web app features with data export and batch operations.",
+    "summary": "Added bilingual support and progressive web app features with data export and batch operations.",
     "items": [
       {
         "tag": "feature",
-        "text": "Add Chinese and English language support."
+        "text": "Enabled bilingual support for Chinese and English users."
       },
       {
         "tag": "feature",
-        "text": "Implement progressive web app support."
-      },
-      {
-        "tag": "feature",
-        "text": "Enable data export and batch operations."
+        "text": "Introduced progressive web app capabilities, data export options, and batch operation features for improved usability."
       }
     ]
   },
   {
     "version": "1.2.0",
     "date": "2026-03-03",
-    "summary": "Enhance security with rate limiting and input validation, and fix middleware conflicts for better stability.",
+    "summary": "Improved security with rate limiting and input validation, and resolved middleware conflicts.",
     "items": [
       {
         "tag": "security",
-        "text": "Implement rate limiting and token revocation for improved security."
-      },
-      {
-        "tag": "improvement",
-        "text": "Add input validation to prevent invalid data."
+        "text": "Implemented rate limiting and input validation to enhance platform security."
       },
       {
         "tag": "fix",
-        "text": "Resolve middleware conflicts to improve stability."
+        "text": "Resolved conflicts in middleware to ensure smoother operation."
       }
     ]
   },
   {
     "version": "1.1.1",
     "date": "2026-03-03",
-    "summary": "Improve performance with database indexing and caching for faster data access.",
+    "summary": "Improved performance with database indexing and caching.",
     "items": [
       {
         "tag": "performance",
-        "text": "Add database indices and caching to speed up data retrieval."
+        "text": "Added database indices and caching mechanisms to speed up data access and improve responsiveness."
       }
     ]
   },
   {
     "version": "1.1.0",
     "date": "2026-03-03",
-    "summary": "Set up automated testing frameworks to ensure software quality.",
+    "summary": "Set up automated testing frameworks for better quality assurance.",
     "items": [
       {
-        "tag": "infra",
-        "text": "Introduce automated testing frameworks for better code quality assurance."
+        "tag": "improvement",
+        "text": "Established automated testing using modern frameworks to ensure software reliability."
       }
     ]
   },
   {
     "version": "1.0.1",
     "date": "2026-03-02",
-    "summary": "Fix release workflow permissions to enable proper version publishing.",
+    "summary": "Fixed release process permissions to enable smoother deployments.",
     "items": [
       {
         "tag": "fix",
-        "text": "Add necessary permissions for pull requests in release workflow."
+        "text": "Added necessary permissions for pull requests in the release workflow to prevent deployment issues."
       }
     ]
   },
   {
     "version": "1.0.0",
     "date": "2026-03-02",
-    "summary": "Initial public release with core features including multi-user timelines, theme modes, media search and entry management.",
+    "summary": "Initial major release with core features including multi-user timelines, theme modes, and media management.",
     "items": [
       {
         "tag": "feature",
-        "text": "Launch personal life tracker with multi-user timelines and public plaza."
+        "text": "Launched personal life tracker with multi-user timelines and public plaza for community sharing."
       },
       {
         "tag": "feature",
-        "text": "Add light, dark, and system theme modes with user controls."
+        "text": "Added light, dark, and system theme modes with easy switching for personalized appearance."
       },
       {
         "tag": "feature",
-        "text": "Integrate music search with Spotify and fallback options."
+        "text": "Introduced media management features including book import, music search, and entry editing with rich metadata."
       },
       {
-        "tag": "feature",
-        "text": "Enable importing book data from external sources."
+        "tag": "fix",
+        "text": "Resolved various usability and compatibility issues to ensure smooth user experience."
       },
       {
-        "tag": "improvement",
-        "text": "Improve search experience and editing usability."
+        "tag": "performance",
+        "text": "Optimized sorting and search features for faster and more relevant results."
       }
     ]
   }
