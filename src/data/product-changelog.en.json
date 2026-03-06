@@ -1,141 +1,160 @@
 [
-    {
-        "version": "v1.5.1",
-        "date": "2026-03-05",
-        "summary": "Stability updates for the release process, ensuring more reliable future version releases.",
-        "items": [
-            {
-                "tag": "infra",
-                "text": "Fixed authentication configuration for the auto-release flow, reducing release failure risks."
-            }
-        ]
-    },
-    {
-        "version": "v1.5.0",
-        "date": "2026-03-05",
-        "summary": "Kairos begins supporting more complete public sharing and multi-language experiences.",
-        "items": [
-            {
-                "tag": "feature",
-                "text": "Added Plaza capabilities, providing more complete public content display."
-            },
-            {
-                "tag": "ux",
-                "text": "Added Chinese and English localization support for natural interface language switching."
-            },
-            {
-                "tag": "security",
-                "text": "Merged multiple security and interaction enhancements for overall stability."
-            }
-        ]
-    },
-    {
-        "version": "v1.4.0",
-        "date": "2026-03-03",
-        "summary": "Focused on engineering reliability, improving online stability and maintainability.",
-        "items": [
-            {
-                "tag": "improvement",
-                "text": "Introduced Error Boundaries to gracefully catch page exceptions."
-            },
-            {
-                "tag": "improvement",
-                "text": "Supplemented testing and data validation chains to reduce regression issues."
-            }
-        ]
-    },
-    {
-        "version": "v1.3.0",
-        "date": "2026-03-03",
-        "summary": "Enhanced cross-platform experience, supporting offline capabilities and batch processing scenes.",
-        "items": [
-            {
-                "tag": "feature",
-                "text": "Support for Chinese and English bilingual support."
-            },
-            {
-                "tag": "feature",
-                "text": "PWA support, can be used as an app-like experience."
-            },
-            {
-                "tag": "improvement",
-                "text": "Added data export and batch operations for higher management efficiency."
-            }
-        ]
-    },
-    {
-        "version": "v1.2.0",
-        "date": "2026-03-03",
-        "summary": "Enhanced security protection and request validation capabilities.",
-        "items": [
-            {
-                "tag": "security",
-                "text": "Added rate limiting, JWT revocation, and input validation mechanisms."
-            },
-            {
-                "tag": "fix",
-                "text": "Fixed middleware conflicts for a more stable access flow."
-            }
-        ]
-    },
-    {
-        "version": "v1.1.1",
-        "date": "2026-03-03",
-        "summary": "Performance-oriented update, improving data access and response speeds.",
-        "items": [
-            {
-                "tag": "performance",
-                "text": "Added database indexes and Redis caching logic."
-            }
-        ]
-    },
-    {
-        "version": "v1.1.0",
-        "date": "2026-03-03",
-        "summary": "Formal establishment of the testing system for more controllable version quality.",
-        "items": [
-            {
-                "tag": "infra",
-                "text": "Introduced Vitest and Playwright automated testing frameworks."
-            }
-        ]
-    },
-    {
-        "version": "v1.0.1",
-        "date": "2026-03-02",
-        "summary": "Release pipeline fix version.",
-        "items": [
-            {
-                "tag": "infra",
-                "text": "Fixed semantic-release permissions and fetch depth configurations."
-            }
-        ]
-    },
-    {
-        "version": "v1.0.0",
-        "date": "2026-03-02",
-        "summary": "First complete milestone of Kairos, covering records, search, import, plaza, and theme systems.",
-        "items": [
-            {
-                "tag": "feature",
-                "text": "Launched Goodreads import, Spotify music search, multi-user timelines, and public plaza."
-            },
-            {
-                "tag": "ux",
-                "text": "Supports Light/Dark/System themes, refined entry and editing experience."
-            },
-            {
-                "tag": "improvement",
-                "text": "Enhanced search robustness and observability, sorted by latest update by default."
-            },
-            {
-                "tag": "fix",
-                "text": "Fixed critical stability issues such as heatmaps, login redirection, and long content scrolling."
-            },
-            {
-                "tag": "infra",
-                "text": "Supports auto-migration on startup and version check capabilities, reducing deployment and maintenance costs."
-            }
-        ]
-    }
+  {
+    "version": "1.6.0",
+    "date": "2026-03-06",
+    "summary": "Introduce multi-language support and enhanced changelog generation with AI assistance.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Add multi-language support for changelog generation."
+      },
+      {
+        "tag": "feature",
+        "text": "Implement file-backed user changelog with AI-powered generation."
+      },
+      {
+        "tag": "feature",
+        "text": "Add validation for OpenAI API key usage."
+      }
+    ]
+  },
+  {
+    "version": "1.5.1",
+    "date": "2026-03-05",
+    "summary": "Fix permissions issue in release workflow to ensure smooth operations.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Correct permissions for issues and pull-requests in release workflow."
+      }
+    ]
+  },
+  {
+    "version": "1.5.0",
+    "date": "2026-03-05",
+    "summary": "Add public plaza feature and support for multiple languages with security and user experience improvements.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Introduce public plaza for user activity sharing."
+      },
+      {
+        "tag": "feature",
+        "text": "Add internationalization support."
+      },
+      {
+        "tag": "improvement",
+        "text": "Enhance security and user experience."
+      }
+    ]
+  },
+  {
+    "version": "1.4.0",
+    "date": "2026-03-03",
+    "summary": "Improve application reliability and error handling for a smoother user experience.",
+    "items": [
+      {
+        "tag": "improvement",
+        "text": "Enhance error handling and reliability features."
+      }
+    ]
+  },
+  {
+    "version": "1.3.0",
+    "date": "2026-03-03",
+    "summary": "Add support for multiple languages and progressive web app features with data export and batch operations.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Add Chinese and English language support."
+      },
+      {
+        "tag": "feature",
+        "text": "Implement progressive web app support."
+      },
+      {
+        "tag": "feature",
+        "text": "Enable data export and batch operations."
+      }
+    ]
+  },
+  {
+    "version": "1.2.0",
+    "date": "2026-03-03",
+    "summary": "Enhance security with rate limiting and input validation, and fix middleware conflicts for better stability.",
+    "items": [
+      {
+        "tag": "security",
+        "text": "Implement rate limiting and token revocation for improved security."
+      },
+      {
+        "tag": "improvement",
+        "text": "Add input validation to prevent invalid data."
+      },
+      {
+        "tag": "fix",
+        "text": "Resolve middleware conflicts to improve stability."
+      }
+    ]
+  },
+  {
+    "version": "1.1.1",
+    "date": "2026-03-03",
+    "summary": "Improve performance with database indexing and caching for faster data access.",
+    "items": [
+      {
+        "tag": "performance",
+        "text": "Add database indices and caching to speed up data retrieval."
+      }
+    ]
+  },
+  {
+    "version": "1.1.0",
+    "date": "2026-03-03",
+    "summary": "Set up automated testing frameworks to ensure software quality.",
+    "items": [
+      {
+        "tag": "infra",
+        "text": "Introduce automated testing frameworks for better code quality assurance."
+      }
+    ]
+  },
+  {
+    "version": "1.0.1",
+    "date": "2026-03-02",
+    "summary": "Fix release workflow permissions to enable proper version publishing.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Add necessary permissions for pull requests in release workflow."
+      }
+    ]
+  },
+  {
+    "version": "1.0.0",
+    "date": "2026-03-02",
+    "summary": "Initial public release with core features including multi-user timelines, theme modes, media search and entry management.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Launch personal life tracker with multi-user timelines and public plaza."
+      },
+      {
+        "tag": "feature",
+        "text": "Add light, dark, and system theme modes with user controls."
+      },
+      {
+        "tag": "feature",
+        "text": "Integrate music search with Spotify and fallback options."
+      },
+      {
+        "tag": "feature",
+        "text": "Enable importing book data from external sources."
+      },
+      {
+        "tag": "improvement",
+        "text": "Improve search experience and editing usability."
+      }
+    ]
+  }
 ]
