@@ -212,9 +212,7 @@
     "description": "管理账号公开范围与数据备份。",
     "dataManagement": "数据管理",
     "exportJson": "导出为 JSON 备份",
-    "exportDesc": "导出的文件包含您的所有书、影、音、游记录及评价，可用于本地备份或未来的数据迁移。",
-    "versionTitle": "版本与更新",
-    "versionDesc": "检查最新版本和更新记录"
+    "exportDesc": "导出的文件包含您的所有书、影、音、游记录及评价，可用于本地备份或未来的数据迁移。"
   },
   "privacy": {
     "plazaTitle": "广场动态可见性",
