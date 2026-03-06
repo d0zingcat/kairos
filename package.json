@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "release": "semantic-release",
+    "changelog:generate:product": "bun run scripts/generate-product-changelog.ts",
     "prepare": "git config core.hooksPath .githooks || true",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",

@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { MEDIA_TYPES } from "@/lib/constants"
-import { LayoutDashboard, LogOut, Command, Settings, Globe2 } from "lucide-react"
+import { LayoutDashboard, LogOut, Command, Settings, Globe2, ScrollText } from "lucide-react"
 import { logoutAction } from "@/lib/actions/auth"
 import { Button } from "@/components/ui/button"
 import { useCommandPalette } from "@/components/command-palette/provider"
@@ -27,6 +27,7 @@ export function DashboardNav({ canEdit, hasSession }: DashboardNavProps) {
   const navItems = [
     { href: "/dashboard", label: t("dashboard.title"), icon: LayoutDashboard },
     { href: "/dashboard/plaza", label: t("plaza.title"), icon: Globe2 },
+    { href: "/dashboard/changelog", label: t("nav.changelog"), icon: ScrollText },
     { href: MEDIA_TYPES.book.href, label: t("media.book"), icon: MEDIA_TYPES.book.icon },
     { href: MEDIA_TYPES.music.href, label: t("media.music"), icon: MEDIA_TYPES.music.icon },
     { href: MEDIA_TYPES.watch.href, label: t("media.watch"), icon: MEDIA_TYPES.watch.icon },
