@@ -154,12 +154,13 @@ If the user says any of the following, run the full workflow above immediately:
 When executing `ship` / `收尾`, enforce the following to avoid malformed PR descriptions:
 
 1. **Never** pass multi-line PR Markdown via inline `gh pr create --body "..."`.
-2. **Always** write PR content to a temp file and use:
-   - `gh pr create --body-file <file>` or
-   - `gh pr edit --body-file <file>`
-3. In PR body text, avoid shell-sensitive inline command composition; keep literal Markdown in the file.
+2. **Always** use one of the following for PR content (to ensure formatting and safety):
+   - **Temp file**: `gh pr create --body-file <file>`
+   - **Heredoc (stdin)**: `cat <<'EOF' | gh pr create --body-file -`
+   - *Note: Prefer quoted heredocs (`'EOF'`) to prevent accidental shell expansion.*
+3. In PR body text, avoid shell-sensitive inline command composition; keep literal Markdown in the source.
 4. After creating/updating PR, **must verify** title/body rendering is correct (headings, bullets, line breaks).
-5. If formatting is broken, immediately fix by re-running `gh pr edit --body-file <file>` before finishing.
+5. If formatting is broken, immediately fix by re-running the creation/edit command before finishing.
 
 ### Standard PR Body Template
 
