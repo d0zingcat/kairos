@@ -127,93 +127,73 @@ bun run release          # semantic-release (versioning + changelog)
 
 ## Agent Git Workflow (MANDATORY)
 
-**All agents MUST create new branches from `main`, never from other branches.**
+**All agents MUST use `git worktree` to create new branches from `main` for ANY new feature or task.**
 
-### Basic Workflow (No Uncommitted Changes)
+**Policy:** NEVER work on the current branch. ALWAYS create a fresh worktree from main for each new task.
 
-When an agent needs to create a branch for any work:
+### Standard Workflow (Always Use Worktree)
 
-1. **ALWAYS fetch latest main first:**
-   ```bash
-   git fetch origin main
-   ```
-
-2. **ALWAYS create branch from origin/main:**
-   ```bash
-   git checkout -b <branch-name> origin/main
-   ```
-
-3. **NEVER create branch from current branch:**
-   ```bash
-   # ❌ WRONG - Don't do this (creates from current branch)
-   git checkout -b feat/new-feature
-   
-   # ✅ CORRECT - Always specify origin/main
-   git checkout -b feat/new-feature origin/main
-   ```
-
-### Advanced Workflow (With Uncommitted Changes)
-
-**If current branch has uncommitted changes AND you need to create a new branch from main:**
-
-Use `git worktree` to avoid stashing or committing incomplete work:
+For ANY new feature, bug fix, or task:
 
 ```bash
 # 1. Fetch latest main
 git fetch origin main
 
 # 2. Create a new worktree in a sibling directory
-# This creates a separate working directory with a clean main branch
 git worktree add ../kairos-<branch-name> main
 
 # 3. Navigate to the new worktree
 cd ../kairos-<branch-name>
 
-# 4. Create your new branch from main
+# 4. Create your branch from main
 git checkout -b <branch-name>
 
-# Now you have:
-# - Original worktree: your previous branch with uncommitted changes (safe)
-# - New worktree: clean branch from main ready for new work
+# Now you have a clean workspace isolated from other work
 ```
 
 **Example:**
 ```bash
-# You're in /workspace/kairos on branch feat/feature-A with uncommitted changes
+# Starting from /workspace/kairos on ANY branch
 git fetch origin main
-git worktree add ../kairos-feat/feature-b main
-cd ../kairos-feat/feature-b
-git checkout -b feat/feature-b
-# Now working on feat/feature-b from main, original work untouched
+git worktree add ../kairos-feat/new-feature main
+cd ../kairos-feat/new-feature
+git checkout -b feat/new-feature
+# Now working on feat/new-feature from main in complete isolation
 ```
 
-**Benefits of using worktree:**
+### Why Always Use Worktree
+
+**Benefits:**
+- ✅ Complete isolation between tasks
 - ✅ No need to stash or commit incomplete work
-- ✅ Both branches exist simultaneously in separate directories
-- ✅ Can work on multiple branches in parallel
-- ✅ Original changes remain safe and accessible
+- ✅ No risk of mixing changes between features
 - ✅ Each worktree has its own git state and node_modules
+- ✅ Can work on multiple branches in parallel
+- ✅ Original branch always remains clean
+- ✅ Easy cleanup after completion
 
-**Cleanup after completing work:**
-```bash
-# Remove the worktree when done
-git worktree remove <path-to-worktree>
+**Worktree Structure:**
+```
+/workspace/
+├── kairos/                    # Original repository
+│   └── .git/
+├── kairos-feat/feature-a/     # Worktree for feature A
+├── kairos-feat/feature-b/     # Worktree for feature B
+└── kairos-fix/bug-fix/        # Worktree for bug fix
 ```
 
-### Agent Reminder
+### Cleanup After Completion
 
-Before creating any branch, verify you're starting from main:
 ```bash
-git rev-parse --abbrev-ref HEAD  # Should show 'main'
+# When done with a worktree, remove it
+git -C /workspace/kairos worktree remove ../kairos-<branch-name>
+
+# Or from within the worktree:
+cd /workspace/kairos
+git worktree remove ../kairos-<branch-name>
 ```
 
-If not on main, switch first:
-```bash
-git checkout main && git pull origin main
-git checkout -b feat/your-feature origin/main
-```
-
-**Branch naming conventions:**
+### Branch Naming Conventions
 
 | Prefix | Purpose | Example |
 |--------|---------|---------|
