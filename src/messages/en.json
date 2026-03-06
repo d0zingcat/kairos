@@ -210,30 +210,12 @@
     "upToDate": "Up to date"
   },
   "settings": {
-    "public": "Public",
-    "publicDesc": "Anyone can view, only admins can edit.",
-    "private": "Private",
-    "privateDesc": "Only admins can access and edit.",
-    "passwordProtected": "Password Protected",
-    "passwordProtectedDesc": "Enter password to view, admin password can edit.",
-    "passwordNote": "Password protection uses `VIEWER_PASSWORD_HASH` (falls back to admin password when not configured).",
-    "saving": "Saving...",
-    "saveSettings": "Save Settings",
+    "description": "Manage profile visibility and data backups.",
     "dataManagement": "Data Management",
     "exportJson": "Export as JSON Backup",
     "exportDesc": "The exported file contains all your book, movie, music, and game records and ratings, which can be used for local backup or future data migration.",
     "versionTitle": "Version & Updates",
     "versionDesc": "Check for latest version and changelog"
-  },
-  "visibility": {
-    "title": "Public Feed Visibility",
-    "description": "When enabled, your summary stats and recent activity will appear on the feed page.",
-    "public": "Public Feed",
-    "publicDesc": "Others can see your summary on the feed",
-    "private": "Private",
-    "privateDesc": "Your summary won't appear on the feed",
-    "saving": "Saving...",
-    "savePublicSettings": "Save Visibility Settings"
   },
   "privacy": {
     "plazaTitle": "Plaza Feed Visibility",

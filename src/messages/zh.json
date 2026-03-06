@@ -209,30 +209,12 @@
     "upToDate": "已是最新版本"
   },
   "settings": {
-    "public": "公开",
-    "publicDesc": "任何人都可浏览，只有管理员可编辑。",
-    "private": "私有",
-    "privateDesc": "只有管理员可以访问与编辑。",
-    "passwordProtected": "密码保护",
-    "passwordProtectedDesc": "输入访问密码后可浏览，管理员密码可编辑。",
-    "passwordNote": "密码保护模式使用 `VIEWER_PASSWORD_HASH`（未配置时回退管理员密码）。",
-    "saving": "保存中...",
-    "saveSettings": "保存设置",
+    "description": "管理账号公开范围与数据备份。",
     "dataManagement": "数据管理",
     "exportJson": "导出为 JSON 备份",
     "exportDesc": "导出的文件包含您的所有书、影、音、游记录及评价，可用于本地备份或未来的数据迁移。",
     "versionTitle": "版本与更新",
     "versionDesc": "检查最新版本和更新记录"
-  },
-  "visibility": {
-    "title": "公开广场可见性",
-    "description": "开启后，你的摘要统计与最近动态会出现在广场页面。",
-    "public": "公开到广场",
-    "publicDesc": "其他人可在广场看到你的摘要动态",
-    "private": "仅自己可见",
-    "privateDesc": "你的摘要不会出现在广场",
-    "saving": "保存中...",
-    "savePublicSettings": "保存公开设置"
   },
   "privacy": {
     "plazaTitle": "广场动态可见性",
