@@ -210,6 +210,8 @@
   },
   "settings": {
     "description": "管理账号公开范围与数据备份。",
+    "openChangelog": "查看产品更新日志",
+    "changelogDesc": "查看 Kairos 的产品更新内容与版本重点。",
     "dataManagement": "数据管理",
     "exportJson": "导出为 JSON 备份",
     "exportDesc": "导出的文件包含您的所有书、影、音、游记录及评价，可用于本地备份或未来的数据迁移。"
