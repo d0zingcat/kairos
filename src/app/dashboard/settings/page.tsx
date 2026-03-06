@@ -6,8 +6,7 @@ import { getStoredSiteVisibility } from "@/lib/site-settings"
 import { SettingsForm } from "@/components/dashboard/settings-form"
 import { GoodreadsImportCard } from "@/components/dashboard/goodreads-import-card"
 import { ProfileVisibilityForm } from "@/components/dashboard/profile-visibility-form"
-import { VersionDisplay } from "@/components/version-display"
-import { ShieldCheck, Github } from "lucide-react"
+import { ShieldCheck } from "lucide-react"
 import { getI18n } from "@/lib/i18n"
 
 export default async function SettingsPage() {
@@ -33,20 +32,6 @@ export default async function SettingsPage() {
             {t("visibility.description")}
           </p>
         </div>
-      </div>
-
-      {/* Version & GitHub Link Section */}
-      <div className="rounded-2xl border border-border/60 bg-card/50 p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Github className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-sm font-medium">{t("settings.versionTitle")}</h2>
-          </div>
-          <VersionDisplay />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {t("settings.versionDesc")}
-        </p>
       </div>
 
       <ProfileVisibilityForm 
