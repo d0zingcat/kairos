@@ -62,20 +62,25 @@ function isEntry(value: unknown): value is ProductChangelogEntry {
   })
 }
 
-export async function getProductChangelogData(): Promise<ProductChangelogEntry[]> {
+export async function getProductChangelogData(locale: string = "zh"): Promise<ProductChangelogEntry[]> {
   try {
-    const filePath = join(process.cwd(), "src/data/product-changelog.json")
+    const lang = locale?.toLowerCase().startsWith("en") ? "en" : "zh"
+    const fileName = `product-changelog.${lang}.json`
+    const filePath = join(process.cwd(), "src/data", fileName)
+
+    logger.debug(`loading product changelog`, { filePath, locale, lang })
+
     const content = await readFile(filePath, "utf-8")
     const parsed: unknown = JSON.parse(content)
 
     if (!Array.isArray(parsed)) {
-      logger.warn("product changelog file is not an array")
+      logger.warn(`product changelog file ${fileName} is not an array`)
       return []
     }
 
     const validEntries = parsed.filter(isEntry)
     if (validEntries.length !== parsed.length) {
-      logger.warn("product changelog file contains invalid entries", {
+      logger.warn(`product changelog file ${fileName} contains invalid entries`, {
         total: parsed.length,
         valid: validEntries.length,
       })
@@ -85,6 +90,7 @@ export async function getProductChangelogData(): Promise<ProductChangelogEntry[]
   } catch (error) {
     logger.error("failed to read product changelog", {
       error: error instanceof Error ? error.message : "unknown error",
+      locale,
     })
     return []
   }
