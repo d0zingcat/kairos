@@ -7,12 +7,11 @@
 
 ```
 lib/
-├── access.ts              # Access control utilities (site visibility)
+├── access.ts              # Access control utilities
 ├── actions/               # Server actions ("use server")
 │   ├── auth.ts           # Login, register, session management
 │   ├── entries.ts        # CRUD for books/music/watch/games
-│   ├── plaza.ts          # Plaza feed, public activity
-│   └── settings.ts       # User settings updates
+│   └── plaza.ts          # Plaza feed, public activity
 ├── api/                   # External API clients
 │   ├── google-books.ts   # Google Books API
 │   ├── hardcover.ts      # Hardcover API (Chinese books)
@@ -26,8 +25,6 @@ lib/
 ├── logger.ts              # Structured logging (createLogger)
 ├── redis.ts               # Redis client (ioredis, API caching)
 ├── search-utils.ts        # Search result merging/deduplication
-├── site-settings.ts       # Site config (author, GitHub URL)
-├── site-visibility.ts     # Site visibility mode helpers
 ├── utils.ts               # cn() class merger (clsx + tailwind-merge)
 └── validations/
     └── entry.ts          # Zod schemas for entry validation
