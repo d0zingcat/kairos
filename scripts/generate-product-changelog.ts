@@ -79,29 +79,24 @@ function assertEntry(value: unknown): ProductChangelogEntry {
   }
 }
 
-async function main(): Promise<void> {
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is required")
-  }
-
-  const model = process.env.OPENAI_CHANGELOG_MODEL || "gpt-4.1-mini"
-  const changelogPath = join(process.cwd(), "CHANGELOG.md")
-  const outputPath = join(process.cwd(), "src/data/product-changelog.json")
-  const changelog = await readFile(changelogPath, "utf-8")
-
+async function generateForLocale(
+  apiKey: string,
+  model: string,
+  changelog: string,
+  locale: "zh" | "en"
+): Promise<ProductChangelogEntry[]> {
   const prompt = [
     "You are a release-notes editor.",
     "Convert semantic-release style CHANGELOG markdown into user-facing product changelog JSON.",
-    "Output language: Simplified Chinese.",
+    `Output language: ${locale === "zh" ? "Simplified Chinese" : "English"}.`,
     "Only include released versions (exclude Unreleased).",
     "Keep newest version first.",
     "Each version requires: version (vX.Y.Z), date (YYYY-MM-DD), summary (one sentence), items (2-5 items when possible).",
     "Each item needs: tag and text.",
     "Allowed tags: feature, fix, improvement, ux, performance, security, infra.",
-    "Avoid commit hashes, PR numbers, and engineering jargon.",
+    "CRITICAL: Hide all technical key terms and engineering jargon (Commit hashes, PR numbers, internal variable names, file paths, specific library updates like 'Update dependency X' or 'Refactor Y').",
+    "Translate technical changes into user-perceivable benefits or high-level descriptions. Example: 'Add Redis cache' -> 'Improve data loading speed'.",
     "Preserve factual accuracy; do not invent features.",
-    "If a version has very technical changes only, map them to infra/improvement in user language.",
     "Return strict JSON object with key entries.",
   ].join("\n")
 
@@ -173,24 +168,41 @@ async function main(): Promise<void> {
 
   if (!response.ok) {
     const errorText = await response.text()
-    throw new Error(`OpenAI API failed (${response.status}): ${errorText}`)
+    throw new Error(`OpenAI API failed (${response.status}) for ${locale}: ${errorText}`)
   }
 
   const data = (await response.json()) as OpenAIResponse
   const content = data.choices?.[0]?.message?.content
   if (!content) {
-    throw new Error("OpenAI response content is empty")
+    throw new Error(`OpenAI response content is empty for ${locale}`)
   }
 
   const parsed = JSON.parse(content) as { entries?: unknown[] }
   if (!Array.isArray(parsed.entries)) {
-    throw new Error("response entries is missing or invalid")
+    throw new Error(`response entries is missing or invalid for ${locale}`)
   }
 
-  const normalized = parsed.entries.map(assertEntry)
-  await writeFile(outputPath, `${JSON.stringify(normalized, null, 2)}\n`, "utf-8")
+  return parsed.entries.map(assertEntry)
+}
 
-  console.log(`Generated ${normalized.length} versions into src/data/product-changelog.json`)
+async function main(): Promise<void> {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is required")
+  }
+
+  const model = process.env.OPENAI_CHANGELOG_MODEL || "gpt-4o-mini"
+  const changelogPath = join(process.cwd(), "CHANGELOG.md")
+  const changelog = await readFile(changelogPath, "utf-8")
+
+  const locales: ("zh" | "en")[] = ["zh", "en"]
+
+  for (const locale of locales) {
+    const outputPath = join(process.cwd(), `src/data/product-changelog.${locale}.json`)
+    const normalized = await generateForLocale(apiKey, model, changelog, locale)
+    await writeFile(outputPath, `${JSON.stringify(normalized, null, 2)}\n`, "utf-8")
+    console.log(`Generated ${normalized.length} versions into ${outputPath}`)
+  }
 }
 
 main().catch((error) => {

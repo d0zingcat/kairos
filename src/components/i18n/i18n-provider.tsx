@@ -87,6 +87,8 @@ export function I18nProvider({
     setLocaleState(newLocale);
     localStorage.setItem(LOCALE_STORAGE_KEY, newLocale);
     document.cookie = `${LOCALE_STORAGE_KEY}=${newLocale}; path=/; max-age=31536000; samesite=lax`;
+    // Refresh to update server components
+    window.location.reload();
   }, []);
 
   const t = useCallback(

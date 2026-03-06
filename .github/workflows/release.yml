@@ -88,13 +88,13 @@ jobs:
 
       - name: Commit and push product changelog
         run: |
-          if git diff --quiet -- src/data/product-changelog.json; then
+          if git diff --quiet -- src/data/product-changelog.*.json; then
             echo "No product changelog changes"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/product-changelog.json
+          git add src/data/product-changelog.*.json
           git commit -m "docs(changelog): refresh product changelog [skip ci]"
           git push origin HEAD:main
