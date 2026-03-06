@@ -1,0 +1,141 @@
+[
+    {
+        "version": "v1.5.1",
+        "date": "2026-03-05",
+        "summary": "Stability updates for the release process, ensuring more reliable future version releases.",
+        "items": [
+            {
+                "tag": "infra",
+                "text": "Fixed authentication configuration for the auto-release flow, reducing release failure risks."
+            }
+        ]
+    },
+    {
+        "version": "v1.5.0",
+        "date": "2026-03-05",
+        "summary": "Kairos begins supporting more complete public sharing and multi-language experiences.",
+        "items": [
+            {
+                "tag": "feature",
+                "text": "Added Plaza capabilities, providing more complete public content display."
+            },
+            {
+                "tag": "ux",
+                "text": "Added Chinese and English localization support for natural interface language switching."
+            },
+            {
+                "tag": "security",
+                "text": "Merged multiple security and interaction enhancements for overall stability."
+            }
+        ]
+    },
+    {
+        "version": "v1.4.0",
+        "date": "2026-03-03",
+        "summary": "Focused on engineering reliability, improving online stability and maintainability.",
+        "items": [
+            {
+                "tag": "improvement",
+                "text": "Introduced Error Boundaries to gracefully catch page exceptions."
+            },
+            {
+                "tag": "improvement",
+                "text": "Supplemented testing and data validation chains to reduce regression issues."
+            }
+        ]
+    },
+    {
+        "version": "v1.3.0",
+        "date": "2026-03-03",
+        "summary": "Enhanced cross-platform experience, supporting offline capabilities and batch processing scenes.",
+        "items": [
+            {
+                "tag": "feature",
+                "text": "Support for Chinese and English bilingual support."
+            },
+            {
+                "tag": "feature",
+                "text": "PWA support, can be used as an app-like experience."
+            },
+            {
+                "tag": "improvement",
+                "text": "Added data export and batch operations for higher management efficiency."
+            }
+        ]
+    },
+    {
+        "version": "v1.2.0",
+        "date": "2026-03-03",
+        "summary": "Enhanced security protection and request validation capabilities.",
+        "items": [
+            {
+                "tag": "security",
+                "text": "Added rate limiting, JWT revocation, and input validation mechanisms."
+            },
+            {
+                "tag": "fix",
+                "text": "Fixed middleware conflicts for a more stable access flow."
+            }
+        ]
+    },
+    {
+        "version": "v1.1.1",
+        "date": "2026-03-03",
+        "summary": "Performance-oriented update, improving data access and response speeds.",
+        "items": [
+            {
+                "tag": "performance",
+                "text": "Added database indexes and Redis caching logic."
+            }
+        ]
+    },
+    {
+        "version": "v1.1.0",
+        "date": "2026-03-03",
+        "summary": "Formal establishment of the testing system for more controllable version quality.",
+        "items": [
+            {
+                "tag": "infra",
+                "text": "Introduced Vitest and Playwright automated testing frameworks."
+            }
+        ]
+    },
+    {
+        "version": "v1.0.1",
+        "date": "2026-03-02",
+        "summary": "Release pipeline fix version.",
+        "items": [
+            {
+                "tag": "infra",
+                "text": "Fixed semantic-release permissions and fetch depth configurations."
+            }
+        ]
+    },
+    {
+        "version": "v1.0.0",
+        "date": "2026-03-02",
+        "summary": "First complete milestone of Kairos, covering records, search, import, plaza, and theme systems.",
+        "items": [
+            {
+                "tag": "feature",
+                "text": "Launched Goodreads import, Spotify music search, multi-user timelines, and public plaza."
+            },
+            {
+                "tag": "ux",
+                "text": "Supports Light/Dark/System themes, refined entry and editing experience."
+            },
+            {
+                "tag": "improvement",
+                "text": "Enhanced search robustness and observability, sorted by latest update by default."
+            },
+            {
+                "tag": "fix",
+                "text": "Fixed critical stability issues such as heatmaps, login redirection, and long content scrolling."
+            },
+            {
+                "tag": "infra",
+                "text": "Supports auto-migration on startup and version check capabilities, reducing deployment and maintenance costs."
+            }
+        ]
+    }
+]

@@ -5,9 +5,9 @@
 一个现代化的个人生活动态记录应用，追踪你的书、音乐、影视和游戏。
 
 详细更新记录请见 [CHANGELOG.md](CHANGELOG.md)。
-面向用户的版本摘要展示数据维护在 `src/data/product-changelog.json`，用于仪表盘「更新日志」页面。
+面向用户的版本摘要数据维护在 `src/data/product-changelog.{zh,en}.json`，用于仪表盘「更新日志」页面。
 
-可选：使用 OpenAI 自动从 `CHANGELOG.md` 生成用户向版本摘要：
+可选：使用 OpenAI 自动从 `CHANGELOG.md` 生成用户向版本摘要（支持中英文，自动处理技术术语）：
 
 ```bash
 OPENAI_API_KEY=your_key bun run changelog:generate:product
