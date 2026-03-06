@@ -37,7 +37,7 @@ const tagColor: Record<ProductChangelogTag, string> = {
 export default async function ChangelogPage() {
   const { locale } = await getI18n()
   const tagLabel = locale === "en" ? enTagLabel : zhTagLabel
-  const changelog = await getProductChangelogData()
+  const changelog = await getProductChangelogData(locale)
 
   return (
     <div className="space-y-8">
@@ -66,49 +66,49 @@ export default async function ChangelogPage() {
       ) : (
         <div className="space-y-6">
           {changelog.map((entry, index) => (
-          <Card key={entry.version} className="relative overflow-hidden">
-            {index === 0 ? (
-              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-500 to-orange-600" />
-            ) : null}
-            <CardHeader className="gap-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <Badge variant="outline" className="font-mono text-sm">
-                  {entry.version}
-                </Badge>
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span>{entry.date}</span>
-                </div>
-                {index === 0 ? (
-                  <Badge className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
-                    {locale === "en" ? "Latest" : "最新"}
+            <Card key={entry.version} className="relative overflow-hidden">
+              {index === 0 ? (
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-500 to-orange-600" />
+              ) : null}
+              <CardHeader className="gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge variant="outline" className="font-mono text-sm">
+                    {entry.version}
                   </Badge>
-                ) : null}
-              </div>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Sparkles className="h-4 w-4 text-amber-500" />
-                {locale === "en" ? "Release Summary" : "版本摘要"}
-              </CardTitle>
-              <CardDescription>{entry.summary}</CardDescription>
-            </CardHeader>
-
-            <CardContent>
-              <ul className="space-y-2">
-                {entry.items.map((item, itemIndex) => (
-                  <li
-                    key={`${entry.version}-${itemIndex}`}
-                    className="flex items-start gap-2 rounded-md border border-border/50 bg-muted/30 px-3 py-2"
-                  >
-                    <Badge variant="secondary" className={`mt-0.5 ${tagColor[item.tag]}`}>
-                      <Tag className="mr-1 h-3 w-3" />
-                      {tagLabel[item.tag]}
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <Calendar className="h-3.5 w-3.5" />
+                    <span>{entry.date}</span>
+                  </div>
+                  {index === 0 ? (
+                    <Badge className="bg-gradient-to-r from-amber-500 to-orange-600 text-white">
+                      {locale === "en" ? "Latest" : "最新"}
                     </Badge>
-                    <span className="text-sm text-foreground">{item.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+                  ) : null}
+                </div>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Sparkles className="h-4 w-4 text-amber-500" />
+                  {locale === "en" ? "Release Summary" : "版本摘要"}
+                </CardTitle>
+                <CardDescription>{entry.summary}</CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <ul className="space-y-2">
+                  {entry.items.map((item, itemIndex) => (
+                    <li
+                      key={`${entry.version}-${itemIndex}`}
+                      className="flex items-start gap-2 rounded-md border border-border/50 bg-muted/30 px-3 py-2"
+                    >
+                      <Badge variant="secondary" className={`mt-0.5 ${tagColor[item.tag]}`}>
+                        <Tag className="mr-1 h-3 w-3" />
+                        {tagLabel[item.tag]}
+                      </Badge>
+                      <span className="text-sm text-foreground">{item.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
