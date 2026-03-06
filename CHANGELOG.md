@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/d0zingcat/kairos/compare/v1.6.0...v1.7.0) (2026-03-06)
+
+
+### Features
+
+* move version display to settings and remove GitHub floating button ([#35](https://github.com/d0zingcat/kairos/issues/35)) ([5d38765](https://github.com/d0zingcat/kairos/commit/5d387650970f4817f1dae96cad5af28317c15472))
+
 # [1.6.0](https://github.com/d0zingcat/kairos/compare/v1.5.1...v1.6.0) (2026-03-06)
 
 
