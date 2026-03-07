@@ -7,13 +7,13 @@
 详细更新记录请见 [CHANGELOG.md](CHANGELOG.md)。
 面向用户的版本摘要数据维护在 `src/data/product-changelog.{zh,en}.json`，用于产品更新日志页面（入口位于 `/dashboard/settings`）。
 
-可选：使用 OpenAI 自动从 `CHANGELOG.md` 生成用户向版本摘要（支持中英文，自动处理技术术语）：
+可选：使用 OpenAI 自动从 `CHANGELOG.md` 生成用户向版本摘要（支持中英文，自动处理技术术语）。脚本只会读取最新一个 release，并将新版本追加到 `src/data/product-changelog.{zh,en}.json` 顶部，不会改写历史版本描述：
 
 ```bash
 OPENAI_API_KEY=your_key bun run changelog:generate:product
 ```
 
-可通过 `OPENAI_CHANGELOG_MODEL` 覆盖默认模型（默认：`gpt-4.1-mini`）。
+可通过 `OPENAI_CHANGELOG_MODEL` 覆盖默认模型（默认：`gpt-4o-mini`）。
 
 ![Kairos](https://img.shields.io/badge/Next.js-16-black?style=flat-square)
 ![Tailwind](https://img.shields.io/badge/Tailwind-v4-blue?style=flat-square)
