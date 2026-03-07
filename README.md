@@ -5,7 +5,7 @@
 一个现代化的个人生活动态记录应用，追踪你的书、音乐、影视和游戏。
 
 详细更新记录请见 [CHANGELOG.md](CHANGELOG.md)。
-面向用户的版本摘要数据维护在 `src/data/product-changelog.{zh,en}.json`，用于仪表盘「更新日志」页面。
+面向用户的版本摘要数据维护在 `src/data/product-changelog.{zh,en}.json`，用于产品更新日志页面（入口位于 `/dashboard/settings`）。
 
 可选：使用 OpenAI 自动从 `CHANGELOG.md` 生成用户向版本摘要（支持中英文，自动处理技术术语）：
 
@@ -33,6 +33,7 @@ OPENAI_API_KEY=your_key bun run changelog:generate:product
 - 🌓 **白天/暗夜/自动主题** — 支持手动切换和跟随系统主题自动切换
 - 🌐 **多语言支持 (i18n)** — 支持中英文切换，适配多语言用户
 - 💾 **数据管理 (JSON 备份)** — 支持在管理设置页导出所有媒体记录为 JSON 文件，方便备份与迁移
+- 📝 **产品更新日志入口整合** — 「更新日志」入口已收纳到设置页，减少外层导航冗余
 - 🔒 **三种访问模式** — 支持 `public` / `private` / `password`，可在「管理设置」页实时切换（`/dashboard/settings`）
 - 🏷️ **标签录入与多作者支持** — 采用 `TagInput` 组件，支持回车/逗号录入多个作者与类别，分类标签自动配色，作者标签简洁去色
 - 🗑️ **记录删除与动态同步** — 编辑已有记录时支持点击垃圾桶图标删除，删除后实时从个人仪表盘及广场同步移除
