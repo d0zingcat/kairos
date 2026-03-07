@@ -1,42 +1,45 @@
 [
   {
-    "version": "1.7.0",
-    "date": "2026-03-06",
-    "summary": "Moved version display to settings and removed floating GitHub button for cleaner interface.",
+    "version": "1.7.1",
+    "date": "2026-03-07",
+    "summary": "Improved settings organization by relocating version display and changelog entries.",
     "items": [
       {
-        "tag": "ux",
-        "text": "Moved version display to settings for better user experience."
-      },
+        "tag": "fix",
+        "text": "Moved changelog entry into settings for better organization."
+      }
+    ]
+  },
+  {
+    "version": "1.7.0",
+    "date": "2026-03-06",
+    "summary": "Enhanced user interface by relocating version display and removing redundant buttons.",
+    "items": [
       {
-        "tag": "ux",
-        "text": "Removed floating GitHub button to declutter the interface."
+        "tag": "feature",
+        "text": "Moved version display to settings and removed GitHub floating button for cleaner UI."
       }
     ]
   },
   {
     "version": "1.6.0",
     "date": "2026-03-06",
-    "summary": "Added multi-language support and improved changelog generation with enhanced OpenAI integration.",
+    "summary": "Added multi-language support and improved changelog generation with user-friendly features.",
     "items": [
       {
         "tag": "feature",
-        "text": "Added multi-language support for changelog generation."
+        "text": "Added multi-language support for changelog and refined generation prompts."
       },
       {
         "tag": "feature",
-        "text": "Implemented file-backed user changelog with AI-powered generation."
-      },
-      {
-        "tag": "improvement",
-        "text": "Enhanced OpenAI key validation for better reliability."
+        "text": "Introduced file-backed user changelog with AI-assisted generation for easier updates."
       }
     ]
   },
   {
     "version": "1.5.1",
     "date": "2026-03-05",
-    "summary": "Fixed permissions in release workflow to ensure smooth release process.",
+    "summary": "Fixed release workflow permissions to ensure smooth deployment processes.",
     "items": [
       {
         "tag": "fix",
@@ -47,45 +50,37 @@
   {
     "version": "1.5.0",
     "date": "2026-03-05",
-    "summary": "Introduced public plaza and internationalization support with security and user experience enhancements.",
+    "summary": "Introduced public plaza and multi-language support with security and user experience enhancements.",
     "items": [
       {
         "tag": "feature",
-        "text": "Added public plaza for community interaction."
+        "text": "Added public plaza feature for community engagement."
       },
       {
         "tag": "feature",
         "text": "Implemented internationalization support for multiple languages."
       },
       {
-        "tag": "security",
-        "text": "Merged security enhancements to protect user data."
-      },
-      {
-        "tag": "ux",
-        "text": "Improved user experience with interface refinements."
+        "tag": "improvement",
+        "text": "Merged security and user experience enhancements for better overall performance."
       }
     ]
   },
   {
     "version": "1.4.0",
     "date": "2026-03-03",
-    "summary": "Enhanced reliability and stability with error handling and testing improvements.",
+    "summary": "Improved application reliability and stability through engineering enhancements.",
     "items": [
       {
         "tag": "improvement",
-        "text": "Added error boundaries to improve application stability."
-      },
-      {
-        "tag": "improvement",
-        "text": "Implemented comprehensive testing for better reliability."
+        "text": "Implemented error boundaries and testing to enhance reliability."
       }
     ]
   },
   {
     "version": "1.3.0",
     "date": "2026-03-03",
-    "summary": "Added Chinese and English language support, progressive web app features, data export, and batch operations.",
+    "summary": "Added internationalization and progressive web app features with enhanced data management.",
     "items": [
       {
         "tag": "feature",
@@ -93,90 +88,78 @@
       },
       {
         "tag": "feature",
-        "text": "Implemented progressive web app capabilities for offline use."
-      },
-      {
-        "tag": "feature",
-        "text": "Enabled data export and batch operations for user convenience."
+        "text": "Implemented progressive web app support, data export, and batch operations."
       }
     ]
   },
   {
     "version": "1.2.0",
     "date": "2026-03-03",
-    "summary": "Improved security with rate limiting and input validation, and resolved middleware conflicts.",
+    "summary": "Enhanced security and input validation with improved rate limiting and token management.",
     "items": [
       {
-        "tag": "security",
-        "text": "Implemented rate limiting and input validation to enhance security."
-      },
-      {
-        "tag": "security",
-        "text": "Added token revocation to protect user sessions."
-      },
-      {
-        "tag": "fix",
-        "text": "Resolved middleware conflicts for smoother operation."
+        "tag": "feature",
+        "text": "Implemented rate limiting, token revocation, and input validation for better security."
       }
     ]
   },
   {
     "version": "1.1.1",
     "date": "2026-03-03",
-    "summary": "Improved performance by optimizing data access with caching and indexing.",
+    "summary": "Improved data loading speed with database indexing and caching.",
     "items": [
       {
         "tag": "performance",
-        "text": "Added database indices and caching to speed up data retrieval."
+        "text": "Added database indices and caching to speed up data access."
       }
     ]
   },
   {
     "version": "1.1.0",
     "date": "2026-03-03",
-    "summary": "Set up testing frameworks to ensure software quality.",
+    "summary": "Set up comprehensive testing frameworks to ensure software quality.",
     "items": [
       {
         "tag": "infra",
-        "text": "Established automated testing with Vitest and Playwright."
+        "text": "Established testing frameworks for automated and end-to-end testing."
       }
     ]
   },
   {
     "version": "1.0.1",
     "date": "2026-03-02",
-    "summary": "Fixed release workflow permissions to enable proper release automation.",
+    "summary": "Fixed release process permissions to enable proper deployment.",
     "items": [
       {
         "tag": "fix",
-        "text": "Added pull request permissions and adjusted fetch depth for release process."
+        "text": "Added pull-request permissions and adjusted fetch depth for release automation."
       }
     ]
   },
   {
     "version": "1.0.0",
     "date": "2026-03-02",
-    "summary": "Initial release with personal life tracker, multi-user timeline, public plaza, theme modes, and extensive media management features.",
+    "summary": "Launched initial version with core features including multi-user timelines, media imports, theme modes, and a personal life tracker.",
     "items": [
       {
         "tag": "feature",
-        "text": "Launched personal life tracker with multi-user support and public plaza."
+        "text": "Introduced personal life tracker with multi-user timelines and public plaza."
       },
       {
         "tag": "feature",
-        "text": "Added light, dark, and system theme modes with easy switching."
+        "text": "Added media import from Goodreads and music search with Spotify integration."
       },
       {
         "tag": "feature",
-        "text": "Enabled importing from Goodreads and music search with Spotify integration."
+        "text": "Implemented light/dark/system theme modes with user controls."
       },
       {
         "tag": "feature",
-        "text": "Provided multi-category media management including books, music, watches, and games."
+        "text": "Enabled entry deletion and tag input with colorful badges for better organization."
       },
       {
-        "tag": "ux",
-        "text": "Improved search resilience and editing experience for better usability."
+        "tag": "improvement",
+        "text": "Improved search resilience, editing experience, and overall user interface."
       }
     ]
   }
