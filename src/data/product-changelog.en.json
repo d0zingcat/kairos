@@ -1,5 +1,20 @@
 [
   {
+    "version": "1.7.3",
+    "date": "2026-03-07",
+    "summary": "This update improves the release process and ensures the product changelog is correctly appended for better user awareness.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Resolved an issue with the release process to ensure smoother updates."
+      },
+      {
+        "tag": "improvement",
+        "text": "Enhanced the product changelog to provide clearer update information."
+      }
+    ]
+  },
+  {
     "version": "1.7.2",
     "date": "2026-03-07",
     "summary": "Fixed an issue to improve Docker build process reliability.",
