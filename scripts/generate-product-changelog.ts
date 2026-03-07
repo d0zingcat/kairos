@@ -22,6 +22,12 @@ interface ProductChangelogEntry {
   items: ProductChangelogItem[]
 }
 
+interface ReleaseSection {
+  version: string
+  date: string
+  markdown: string
+}
+
 interface OpenAIResponse {
   choices?: {
     message?: {
@@ -79,25 +85,95 @@ function assertEntry(value: unknown): ProductChangelogEntry {
   }
 }
 
+function normalizeVersion(version: string): string {
+  return version.trim().replace(/^v/i, "")
+}
+
+function extractLatestReleaseSection(changelog: string): ReleaseSection {
+  const lines = changelog.split("\n")
+  const releaseHeader = /^(#{1,2})\s+\[?(\d+\.\d+\.\d+)\]?(?:\([^)]+\))?\s+\((\d{4}-\d{2}-\d{2})\)\s*$/
+
+  let startIndex = -1
+  let version = ""
+  let date = ""
+
+  for (const [index, line] of lines.entries()) {
+    const match = line.trim().match(releaseHeader)
+    if (!match) {
+      continue
+    }
+
+    startIndex = index
+    version = match[2]
+    date = match[3]
+    break
+  }
+
+  if (startIndex === -1) {
+    throw new Error("no released version found in CHANGELOG.md")
+  }
+
+  let endIndex = lines.length
+  for (let index = startIndex + 1; index < lines.length; index += 1) {
+    if (releaseHeader.test(lines[index].trim())) {
+      endIndex = index
+      break
+    }
+  }
+
+  return {
+    version,
+    date,
+    markdown: lines.slice(startIndex, endIndex).join("\n").trim(),
+  }
+}
+
+async function readExistingEntries(path: string): Promise<ProductChangelogEntry[]> {
+  try {
+    const content = await readFile(path, "utf-8")
+    const parsed = JSON.parse(content) as unknown
+    if (!Array.isArray(parsed)) {
+      return []
+    }
+
+    return parsed.map(assertEntry)
+  } catch {
+    return []
+  }
+}
+
+function formatVersionForLocale(version: string, locale: "zh" | "en", existing: ProductChangelogEntry[]): string {
+  const hasVPrefix = existing.some((entry) => entry.version.trim().startsWith("v"))
+  if (hasVPrefix || locale === "zh") {
+    return `v${normalizeVersion(version)}`
+  }
+
+  return normalizeVersion(version)
+}
+
 async function generateForLocale(
   apiKey: string,
   model: string,
-  changelog: string,
+  release: ReleaseSection,
   locale: "zh" | "en"
-): Promise<ProductChangelogEntry[]> {
+): Promise<Pick<ProductChangelogEntry, "summary" | "items">> {
   const prompt = [
     "You are a release-notes editor.",
-    "Convert semantic-release style CHANGELOG markdown into user-facing product changelog JSON.",
+    "Convert a single semantic-release version section into one user-facing product changelog entry.",
     `Output language: ${locale === "zh" ? "Simplified Chinese" : "English"}.`,
-    "Only include released versions (exclude Unreleased).",
-    "Keep newest version first.",
-    "Each version requires: version (vX.Y.Z), date (YYYY-MM-DD), summary (one sentence), items (2-5 items when possible).",
-    "Each item needs: tag and text.",
+    `This release version is ${release.version}.`,
+    `This release date is ${release.date}.`,
+    "Only summarize this single release section.",
+    "Do not mention, regenerate, or revise any older versions.",
+    "Return exactly one entry payload for the latest version only.",
+    "The entry requires: summary (one sentence), items (2-5 items when possible).",
+    "Each item requires: tag and text.",
     "Allowed tags: feature, fix, improvement, ux, performance, security, infra.",
     "CRITICAL: Hide all technical key terms and engineering jargon (Commit hashes, PR numbers, internal variable names, file paths, specific library updates like 'Update dependency X' or 'Refactor Y').",
     "Translate technical changes into user-perceivable benefits or high-level descriptions. Example: 'Add Redis cache' -> 'Improve data loading speed'.",
     "Preserve factual accuracy; do not invent features.",
-    "Return strict JSON object with key entries.",
+    "Do not include version or date fields in the response.",
+    "Return strict JSON object with key entry.",
   ].join("\n")
 
   const body = {
@@ -109,7 +185,7 @@ async function generateForLocale(
       },
       {
         role: "user",
-        content: `${prompt}\n\nCHANGELOG:\n${changelog}`,
+        content: `${prompt}\n\nLATEST RELEASE SECTION:\n${release.markdown}`,
       },
     ],
     response_format: {
@@ -120,31 +196,26 @@ async function generateForLocale(
         schema: {
           type: "object",
           additionalProperties: false,
-          required: ["entries"],
+          required: ["entry"],
           properties: {
-            entries: {
-              type: "array",
-              items: {
-                type: "object",
-                additionalProperties: false,
-                required: ["version", "date", "summary", "items"],
-                properties: {
-                  version: { type: "string" },
-                  date: { type: "string" },
-                  summary: { type: "string" },
+            entry: {
+              type: "object",
+              additionalProperties: false,
+              required: ["summary", "items"],
+              properties: {
+                summary: { type: "string" },
+                items: {
+                  type: "array",
                   items: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      additionalProperties: false,
-                      required: ["tag", "text"],
-                      properties: {
-                        tag: {
-                          type: "string",
-                          enum: TAGS,
-                        },
-                        text: { type: "string" },
+                    type: "object",
+                    additionalProperties: false,
+                    required: ["tag", "text"],
+                    properties: {
+                      tag: {
+                        type: "string",
+                        enum: TAGS,
                       },
+                      text: { type: "string" },
                     },
                   },
                 },
@@ -177,12 +248,43 @@ async function generateForLocale(
     throw new Error(`OpenAI response content is empty for ${locale}`)
   }
 
-  const parsed = JSON.parse(content) as { entries?: unknown[] }
-  if (!Array.isArray(parsed.entries)) {
-    throw new Error(`response entries is missing or invalid for ${locale}`)
+  const parsed = JSON.parse(content) as { entry?: unknown }
+  if (!parsed.entry || typeof parsed.entry !== "object") {
+    throw new Error(`response entry is missing or invalid for ${locale}`)
   }
 
-  return parsed.entries.map(assertEntry)
+  const entry = parsed.entry as Record<string, unknown>
+  const summary = typeof entry.summary === "string" ? entry.summary.trim() : ""
+  if (!summary) {
+    throw new Error(`response summary is missing or empty for ${locale}`)
+  }
+
+  const items = Array.isArray(entry.items)
+    ? entry.items.map((item) => {
+        if (!item || typeof item !== "object") {
+          throw new Error("item is not an object")
+        }
+
+        const record = item as Record<string, unknown>
+        if (!TAGS.includes(record.tag as ProductChangelogTag) || typeof record.text !== "string") {
+          throw new Error("item shape is invalid")
+        }
+
+        return {
+          tag: record.tag as ProductChangelogTag,
+          text: record.text.trim(),
+        }
+      })
+    : []
+
+  if (items.length === 0) {
+    throw new Error(`response items is missing or empty for ${locale}`)
+  }
+
+  return {
+    summary,
+    items,
+  }
 }
 
 async function main(): Promise<void> {
@@ -194,14 +296,36 @@ async function main(): Promise<void> {
   const model = process.env.OPENAI_CHANGELOG_MODEL || "gpt-4o-mini"
   const changelogPath = join(process.cwd(), "CHANGELOG.md")
   const changelog = await readFile(changelogPath, "utf-8")
+  const latestRelease = extractLatestReleaseSection(changelog)
 
   const locales: ("zh" | "en")[] = ["zh", "en"]
 
   for (const locale of locales) {
     const outputPath = join(process.cwd(), `src/data/product-changelog.${locale}.json`)
-    const normalized = await generateForLocale(apiKey, model, changelog, locale)
-    await writeFile(outputPath, `${JSON.stringify(normalized, null, 2)}\n`, "utf-8")
-    console.log(`Generated ${normalized.length} versions into ${outputPath}`)
+    const existingEntries = await readExistingEntries(outputPath)
+    const latestVersion = normalizeVersion(latestRelease.version)
+    const alreadyExists = existingEntries.some(
+      (entry) => normalizeVersion(entry.version) === latestVersion
+    )
+
+    if (alreadyExists) {
+      console.log(`Skipped ${outputPath}: ${latestRelease.version} already exists`)
+      continue
+    }
+
+    const generated = await generateForLocale(apiKey, model, latestRelease, locale)
+    const nextEntries: ProductChangelogEntry[] = [
+      {
+        version: formatVersionForLocale(latestRelease.version, locale, existingEntries),
+        date: latestRelease.date,
+        summary: generated.summary,
+        items: generated.items,
+      },
+      ...existingEntries,
+    ]
+
+    await writeFile(outputPath, `${JSON.stringify(nextEntries, null, 2)}\n`, "utf-8")
+    console.log(`Appended ${latestRelease.version} into ${outputPath}`)
   }
 }
 
