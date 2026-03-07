@@ -1,60 +1,75 @@
 [
   {
-    "version": "1.7.1",
+    "version": "1.7.2",
     "date": "2026-03-07",
-    "summary": "Improved settings organization by relocating version display and changelog entries.",
+    "summary": "Fixed an issue to improve Docker build process reliability.",
     "items": [
       {
         "tag": "fix",
-        "text": "Moved changelog entry into settings for better organization."
+        "text": "Prevent unnecessary operations during Docker build to enhance stability."
+      }
+    ]
+  },
+  {
+    "version": "1.7.1",
+    "date": "2026-03-07",
+    "summary": "Improved settings organization for better user experience.",
+    "items": [
+      {
+        "tag": "improvement",
+        "text": "Moved changelog display into settings for easier access."
       }
     ]
   },
   {
     "version": "1.7.0",
     "date": "2026-03-06",
-    "summary": "Enhanced user interface by relocating version display and removing redundant buttons.",
+    "summary": "Enhanced version display and simplified interface controls.",
     "items": [
       {
         "tag": "feature",
-        "text": "Moved version display to settings and removed GitHub floating button for cleaner UI."
+        "text": "Moved version display to settings and removed floating GitHub button for cleaner UI."
       }
     ]
   },
   {
     "version": "1.6.0",
     "date": "2026-03-06",
-    "summary": "Added multi-language support and improved changelog generation with user-friendly features.",
+    "summary": "Added multi-language support and improved changelog generation.",
     "items": [
       {
         "tag": "feature",
-        "text": "Added multi-language support for changelog and refined generation prompts."
+        "text": "Introduced multi-language support for changelogs."
       },
       {
         "tag": "feature",
-        "text": "Introduced file-backed user changelog with AI-assisted generation for easier updates."
+        "text": "Enhanced changelog generation with improved prompts."
+      },
+      {
+        "tag": "feature",
+        "text": "Added user changelog file support with AI-assisted generation."
       }
     ]
   },
   {
     "version": "1.5.1",
     "date": "2026-03-05",
-    "summary": "Fixed release workflow permissions to ensure smooth deployment processes.",
+    "summary": "Improved release workflow permissions for smoother deployments.",
     "items": [
       {
         "tag": "fix",
-        "text": "Added necessary permissions for issues and pull requests in release workflow."
+        "text": "Added necessary permissions for issue and pull request management during releases."
       }
     ]
   },
   {
     "version": "1.5.0",
     "date": "2026-03-05",
-    "summary": "Introduced public plaza and multi-language support with security and user experience enhancements.",
+    "summary": "Introduced public plaza and internationalization support with security and usability enhancements.",
     "items": [
       {
         "tag": "feature",
-        "text": "Added public plaza feature for community engagement."
+        "text": "Added public plaza for user activity sharing."
       },
       {
         "tag": "feature",
@@ -62,29 +77,29 @@
       },
       {
         "tag": "improvement",
-        "text": "Merged security and user experience enhancements for better overall performance."
+        "text": "Merged security and user experience enhancements."
       }
     ]
   },
   {
     "version": "1.4.0",
     "date": "2026-03-03",
-    "summary": "Improved application reliability and stability through engineering enhancements.",
+    "summary": "Improved application reliability and error handling.",
     "items": [
       {
         "tag": "improvement",
-        "text": "Implemented error boundaries and testing to enhance reliability."
+        "text": "Enhanced error boundaries and testing for better stability."
       }
     ]
   },
   {
     "version": "1.3.0",
     "date": "2026-03-03",
-    "summary": "Added internationalization and progressive web app features with enhanced data management.",
+    "summary": "Added language support and progressive web app features.",
     "items": [
       {
         "tag": "feature",
-        "text": "Added support for Chinese and English languages."
+        "text": "Added Chinese and English language support."
       },
       {
         "tag": "feature",
@@ -95,51 +110,55 @@
   {
     "version": "1.2.0",
     "date": "2026-03-03",
-    "summary": "Enhanced security and input validation with improved rate limiting and token management.",
+    "summary": "Enhanced security and input validation features.",
     "items": [
       {
         "tag": "feature",
-        "text": "Implemented rate limiting, token revocation, and input validation for better security."
+        "text": "Implemented rate limiting, session revocation, and input validation for improved security."
+      },
+      {
+        "tag": "fix",
+        "text": "Resolved conflicts in middleware to ensure smooth operation."
       }
     ]
   },
   {
     "version": "1.1.1",
     "date": "2026-03-03",
-    "summary": "Improved data loading speed with database indexing and caching.",
+    "summary": "Improved data loading performance.",
     "items": [
       {
         "tag": "performance",
-        "text": "Added database indices and caching to speed up data access."
+        "text": "Added database indexing and caching to speed up data access."
       }
     ]
   },
   {
     "version": "1.1.0",
     "date": "2026-03-03",
-    "summary": "Set up comprehensive testing frameworks to ensure software quality.",
+    "summary": "Set up comprehensive testing frameworks for quality assurance.",
     "items": [
       {
         "tag": "infra",
-        "text": "Established testing frameworks for automated and end-to-end testing."
+        "text": "Integrated Vitest and Playwright testing frameworks."
       }
     ]
   },
   {
     "version": "1.0.1",
     "date": "2026-03-02",
-    "summary": "Fixed release process permissions to enable proper deployment.",
+    "summary": "Fixed release workflow permissions for smoother automation.",
     "items": [
       {
         "tag": "fix",
-        "text": "Added pull-request permissions and adjusted fetch depth for release automation."
+        "text": "Added pull request permissions and adjusted fetch depth for release automation."
       }
     ]
   },
   {
     "version": "1.0.0",
     "date": "2026-03-02",
-    "summary": "Launched initial version with core features including multi-user timelines, media imports, theme modes, and a personal life tracker.",
+    "summary": "Initial release with core features for personal life tracking and media management.",
     "items": [
       {
         "tag": "feature",
@@ -147,19 +166,19 @@
       },
       {
         "tag": "feature",
-        "text": "Added media import from Goodreads and music search with Spotify integration."
+        "text": "Added support for importing Goodreads data and managing various media types."
       },
       {
         "tag": "feature",
-        "text": "Implemented light/dark/system theme modes with user controls."
+        "text": "Implemented light/dark/system theme modes with easy switching."
       },
       {
         "tag": "feature",
-        "text": "Enabled entry deletion and tag input with colorful badges for better organization."
+        "text": "Provided comprehensive search and editing capabilities across books, music, games, and watches."
       },
       {
-        "tag": "improvement",
-        "text": "Improved search resilience, editing experience, and overall user interface."
+        "tag": "fix",
+        "text": "Improved user interface usability and fixed various bugs for a smooth experience."
       }
     ]
   }
