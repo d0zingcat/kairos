@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/d0zingcat/kairos/compare/v1.7.1...v1.7.2) (2026-03-07)
+
+
+### Bug Fixes
+
+* stop generating migrations during Docker build ([#43](https://github.com/d0zingcat/kairos/issues/43)) ([54b0e97](https://github.com/d0zingcat/kairos/commit/54b0e978022e0e51c25bc4d81eb16606f8f22403))
+
 ## [1.7.1](https://github.com/d0zingcat/kairos/compare/v1.7.0...v1.7.1) (2026-03-07)
 
 
