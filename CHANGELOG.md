@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/d0zingcat/kairos/compare/v1.7.0...v1.7.1) (2026-03-07)
+
+
+### Bug Fixes
+
+* move changelog entry into settings ([#42](https://github.com/d0zingcat/kairos/issues/42)) ([26abdaf](https://github.com/d0zingcat/kairos/commit/26abdafb830d25e1a4a1feb99285b3a8feb7e26c))
+
 # [1.7.0](https://github.com/d0zingcat/kairos/compare/v1.6.0...v1.7.0) (2026-03-06)
 
 
