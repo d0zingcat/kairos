@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/d0zingcat/kairos/compare/v1.7.2...v1.7.3) (2026-03-07)
+
+
+### Bug Fixes
+
+* gate release and append product changelog ([#44](https://github.com/d0zingcat/kairos/issues/44)) ([e8c415a](https://github.com/d0zingcat/kairos/commit/e8c415a4b1028ad693204d782d1493aa74f1c33c))
+
 ## [1.7.2](https://github.com/d0zingcat/kairos/compare/v1.7.1...v1.7.2) (2026-03-07)
 
 
