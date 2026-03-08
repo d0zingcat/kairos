@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { searchMovies, searchTV, posterUrl } from "@/lib/api/tmdb"
-import { searchBooks, normalizeBookResult } from "@/lib/api/google-books"
 import { searchHardcoverBooks } from "@/lib/api/hardcover"
 import { searchGames, normalizeGameResult } from "@/lib/api/rawg"
 import { searchSpotify, normalizeSpotifyResult } from "@/lib/api/spotify"
@@ -90,24 +89,14 @@ export async function GET(
           },
         }))
 
-        const [hardcoverBooks, googleBooks] = await Promise.all([
-          searchHardcoverBooks(query, { traceId }).catch((error) => {
-            logger.warn("hardcover search failed", {
-              query,
-              error: error instanceof Error ? error.message : "unknown",
-              traceId,
-            })
-            return []
-          }),
-          searchBooks(query, { traceId }).catch((error) => {
-            logger.warn("google books search failed", {
-              query,
-              error: error instanceof Error ? error.message : "unknown",
-              traceId,
-            })
-            return []
-          }),
-        ])
+        const hardcoverBooks = await searchHardcoverBooks(query, { traceId }).catch((error) => {
+          logger.warn("hardcover search failed", {
+            query,
+            error: error instanceof Error ? error.message : "unknown",
+            traceId,
+          })
+          return []
+        })
 
         const hardcoverResults = hardcoverBooks.map((book) => ({
           externalId: book.externalId,
@@ -127,28 +116,14 @@ export async function GET(
           },
         }))
 
-        const googleResults = googleBooks.map((b) => {
-          const normalized = normalizeBookResult(b)
-          return {
-            externalId: normalized.externalId,
-            title: normalized.title,
-            subtitle: normalized.authors.join(", ") || null,
-            coverUrl: normalized.coverUrl,
-            type: "book",
-            meta: normalized,
-          }
-        })
-
         results = mergeUniqueResults([
           ...localResults,
           ...hardcoverResults,
-          ...googleResults,
         ])
         logger.debug("book search completed", {
           query,
           localCount: localResults.length,
           hardcoverCount: hardcoverResults.length,
-          googleCount: googleResults.length,
           mergedCount: results.length,
           traceId,
         })
@@ -396,10 +371,9 @@ export async function GET(
           })
         }
 
-        // Fallback to MusicBrainz if Spotify returns no results
+        // Also query MusicBrainz as fallback/alternative source
         let musicbrainzResults: SearchResultItem[] = []
-        if (spotifyResults.length === 0) {
-          logger.debug("spotify returned no results, falling back to musicbrainz", { query, traceId })
+        try {
           const [albums, tracks] = await Promise.all([
             searchAlbums(query, { traceId }).catch((error) => {
               logger.warn("music album search failed", {
@@ -427,6 +401,13 @@ export async function GET(
             type: "music",
             meta: { musicType: m.type, releaseDate: m.releaseDate, source: "musicbrainz" },
           }))
+          logger.debug("musicbrainz search completed", { query, count: musicbrainzResults.length, traceId })
+        } catch (error) {
+          logger.warn("musicbrainz search failed", {
+            query,
+            error: error instanceof Error ? error.message : "unknown",
+            traceId,
+          })
         }
 
         results = mergeUniqueResults([...localResults, ...spotifyResults, ...musicbrainzResults])
