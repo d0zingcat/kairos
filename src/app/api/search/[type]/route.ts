@@ -13,6 +13,24 @@ import { mergeUniqueResults, type SearchResultItem } from "@/lib/search-utils"
 
 const logger = createLogger("api/search")
 
+/**
+ * Parse MUSIC_SEARCH_SOURCES environment variable to determine which music APIs to use.
+ * Defaults to "spotify,musicbrainz" if not set.
+ * Examples: "spotify" (Spotify only), "spotify,musicbrainz" (both)
+ */
+function getMusicSearchSources(): { spotify: boolean; musicbrainz: boolean } {
+  const sources = (process.env.MUSIC_SEARCH_SOURCES ?? "spotify,musicbrainz")
+    .toLowerCase()
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  return {
+    spotify: sources.includes("spotify"),
+    musicbrainz: sources.includes("musicbrainz"),
+  }
+}
+
 
 export async function GET(
   request: NextRequest,
@@ -343,71 +361,78 @@ export async function GET(
           },
         }))
 
-        // Try Spotify first
+        const sources = getMusicSearchSources()
+        logger.debug("music search sources", { sources, traceId })
+
+        // Try Spotify if enabled
         let spotifyResults: SearchResultItem[] = []
-        try {
-          const spotifyItems = await searchSpotify(query, { traceId })
-          spotifyResults = spotifyItems.map((m) => {
-            const normalized = normalizeSpotifyResult(m)
-            return {
-              externalId: normalized.externalId,
-              title: normalized.title,
-              subtitle: normalized.artist,
-              coverUrl: normalized.coverUrl,
-              type: "music",
-              meta: {
-                musicType: normalized.type,
-                releaseDate: normalized.releaseDate,
-                source: "spotify",
-              },
-            }
-          })
-          logger.debug("spotify search completed", { query, count: spotifyResults.length, traceId })
-        } catch (error) {
-          logger.warn("spotify search failed", {
-            query,
-            error: error instanceof Error ? error.message : "unknown",
-            traceId,
-          })
+        if (sources.spotify) {
+          try {
+            const spotifyItems = await searchSpotify(query, { traceId })
+            spotifyResults = spotifyItems.map((m) => {
+              const normalized = normalizeSpotifyResult(m)
+              return {
+                externalId: normalized.externalId,
+                title: normalized.title,
+                subtitle: normalized.artist,
+                coverUrl: normalized.coverUrl,
+                type: "music",
+                meta: {
+                  musicType: normalized.type,
+                  releaseDate: normalized.releaseDate,
+                  source: "spotify",
+                },
+              }
+            })
+            logger.debug("spotify search completed", { query, count: spotifyResults.length, traceId })
+          } catch (error) {
+            logger.warn("spotify search failed", {
+              query,
+              error: error instanceof Error ? error.message : "unknown",
+              traceId,
+            })
+          }
         }
 
-        // Also query MusicBrainz as fallback/alternative source
+        // Also query MusicBrainz if enabled
         let musicbrainzResults: SearchResultItem[] = []
-        try {
-          const [albums, tracks] = await Promise.all([
-            searchAlbums(query, { traceId }).catch((error) => {
-              logger.warn("music album search failed", {
-                query,
-                error: error instanceof Error ? error.message : "unknown",
-                traceId,
-              })
-              return []
-            }),
-            searchTracks(query, { traceId }).catch((error) => {
-              logger.warn("music track search failed", {
-                query,
-                error: error instanceof Error ? error.message : "unknown",
-                traceId,
-              })
-              return []
-            }),
-          ])
-          const combined = [...albums, ...tracks].slice(0, 10)
-          musicbrainzResults = combined.map((m) => ({
-            externalId: m.id,
-            title: m.title,
-            subtitle: m.artist,
-            coverUrl: m.coverUrl,
-            type: "music",
-            meta: { musicType: m.type, releaseDate: m.releaseDate, source: "musicbrainz" },
-          }))
-          logger.debug("musicbrainz search completed", { query, count: musicbrainzResults.length, traceId })
-        } catch (error) {
-          logger.warn("musicbrainz search failed", {
-            query,
-            error: error instanceof Error ? error.message : "unknown",
-            traceId,
-          })
+        if (sources.musicbrainz) {
+          try {
+            const [albums, tracks] = await Promise.all([
+              searchAlbums(query, { traceId }).catch((error) => {
+                logger.warn("music album search failed", {
+                  query,
+                  error: error instanceof Error ? error.message : "unknown",
+                  traceId,
+                })
+                return []
+              }),
+              searchTracks(query, { traceId }).catch((error) => {
+                logger.warn("music track search failed", {
+                  query,
+                  error: error instanceof Error ? error.message : "unknown",
+                  traceId,
+                })
+                return []
+              }),
+            ])
+            const combined = [...albums, ...tracks].slice(0, 10)
+            musicbrainzResults = combined.map((m) => ({
+              externalId: m.id,
+              title: m.title,
+              subtitle: m.artist,
+              coverUrl: m.coverUrl,
+              type: "music",
+              meta: { musicType: m.type, releaseDate: m.releaseDate, source: "musicbrainz" },
+            }))
+            logger.debug("musicbrainz search completed", { query, count: musicbrainzResults.length, traceId })
+          } catch (error) {
+            logger.warn("musicbrainz search failed", {
+              query,
+              error: error instanceof Error ? error.message : "unknown",
+              traceId,
+            })
+          }
         }
 
         results = mergeUniqueResults([...localResults, ...spotifyResults, ...musicbrainzResults])
