@@ -6,10 +6,8 @@ const nextConfig: NextConfig = {
     unoptimized: process.env.NODE_ENV === "development",
     remotePatterns: [
       { protocol: "https", hostname: "image.tmdb.org" },
-      { protocol: "https", hostname: "books.google.com" },
       { protocol: "https", hostname: "media.rawg.io" },
       { protocol: "https", hostname: "coverartarchive.org" },
-      { protocol: "https", hostname: "lastfm.freetls.fastly.net" },
       { protocol: "https", hostname: "images.hardcover.app" },
       { protocol: "https", hostname: "assets.hardcover.app" },
       { protocol: "https", hostname: "i.scdn.co" },
