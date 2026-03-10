@@ -47,6 +47,9 @@ export function MusicGrid({ musicList, canEdit, search, sort }: MusicGridProps) 
   const openEditor = (item: MusicGridItem) => {
     if (!canEdit) return
 
+    // Determine source: if has externalId, it's from an external source (Spotify/MusicBrainz)
+    const isExternalSource = Boolean(item.externalId)
+
     setSelectedItem({
       externalId: item.externalId ?? item.id,
       title: item.title,
@@ -54,7 +57,7 @@ export function MusicGrid({ musicList, canEdit, search, sort }: MusicGridProps) 
       coverUrl: item.coverUrl,
       type: "music",
       meta: {
-        source: "local",
+        source: isExternalSource ? "external" : "local",
         localId: item.id,
         musicType: item.type,
         artist: item.artist,
@@ -120,6 +123,7 @@ export function MusicGrid({ musicList, canEdit, search, sort }: MusicGridProps) 
             rating={m.rating}
             favorite={m.favorite}
             tags={m.tags}
+            metaLines={m.type === "track" ? ["单曲"] : m.type === "album" ? ["专辑"] : undefined}
             note={m.notes}
             date={m.listenDate}
             index={i}

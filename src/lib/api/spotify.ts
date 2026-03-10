@@ -105,7 +105,7 @@ export async function searchSpotify(
     return []
   }
 
-  const url = `${SPOTIFY_BASE}/search?q=${encodeURIComponent(query)}&type=album,track&limit=10&market=from_token`
+  const url = `${SPOTIFY_BASE}/search?q=${encodeURIComponent(query)}&type=album,track&limit=10`
 
   logger.debugApi("request", url, undefined, traceMeta)
 
@@ -116,7 +116,8 @@ export async function searchSpotify(
   })
 
   if (!res.ok) {
-    logger.warn("spotify search returned non-200", { query, status: res.status, ...traceMeta })
+    const errorText = await res.text().catch(() => "unknown error")
+    logger.warn("spotify search returned non-200", { query, status: res.status, error: errorText, ...traceMeta })
     return []
   }
 

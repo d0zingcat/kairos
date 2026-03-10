@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/dashboard/media-card"
 import { WatchesGrid } from "@/components/dashboard/watches-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Film } from "lucide-react"
-import { verifyAdminSession } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 import { getI18n } from "@/lib/i18n"
 
 interface PageProps {
@@ -48,7 +48,7 @@ async function WatchGrid({
   sort?: string
   search?: string
 }) {
-  const canEdit = await verifyAdminSession()
+  const canEdit = await getCurrentUser() !== null
   const watchList = await getWatches({ status, sort, search })
 
   if (watchList.length === 0) {

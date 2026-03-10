@@ -8,6 +8,7 @@ export type FeedItem = {
   username: string
   mediaType: "book" | "music" | "watch" | "game"
   title: string
+  musicType?: "track" | "album"
   createdAt: Date
 }
 
@@ -171,6 +172,7 @@ export async function getPublicPlazaFeed(options?: {
       username: usernameMap.get(item.userId) ?? "unknown",
       mediaType: "music" as const,
       title: item.title,
+      musicType: item.type,
       createdAt: item.createdAt,
     })),
     ...recentWatches.map((item) => ({
@@ -321,6 +323,7 @@ export async function getPublicUserProfile(username: string, feedLimit = 30) {
       username: user.username,
       mediaType: "music" as const,
       title: item.title,
+      musicType: item.type,
       createdAt: item.createdAt,
     })),
     ...recentWatches.map((item) => ({
