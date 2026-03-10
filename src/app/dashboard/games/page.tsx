@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/dashboard/media-card"
 import { GamesGrid } from "@/components/dashboard/games-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Gamepad2 } from "lucide-react"
-import { verifyAdminSession } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 import { getI18n } from "@/lib/i18n"
 
 interface PageProps {
@@ -48,7 +48,7 @@ async function GameGrid({
   sort?: string
   search?: string
 }) {
-  const canEdit = await verifyAdminSession()
+  const canEdit = await getCurrentUser() !== null
   const gameList = await getGames({ status, sort, search })
 
   if (gameList.length === 0) {

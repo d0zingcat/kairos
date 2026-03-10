@@ -53,6 +53,38 @@ export async function loginAction(
   redirect(redirectPath)
 }
 
+// 预留用户名列表（保留给官方、管理员等）
+const RESERVED_USERNAMES = [
+  "admin",
+  "official",
+  "system",
+  "root",
+  "user",
+  "users",
+  "help",
+  "support",
+  "contact",
+  "about",
+  "privacy",
+  "terms",
+  "api",
+  "dev",
+  "developer",
+  "test",
+  "demo",
+  "bot",
+  "robots",
+  "status",
+  "announcements",
+  "news",
+  "moderator",
+  "mod",
+  "superuser",
+  "staff",
+  "team",
+  "kairos",
+]
+
 export async function registerAction(
   _prevState: { error?: string } | null,
   formData: FormData
@@ -69,6 +101,9 @@ export async function registerAction(
   }
   if (!/^[a-z0-9_\-.]+$/.test(username)) {
     return { error: "用户名仅支持小写字母、数字、_-." }
+  }
+  if (RESERVED_USERNAMES.includes(username)) {
+    return { error: "该用户名为预留用户名，不可使用" }
   }
   if (password.length < 8) {
     return { error: "密码至少 8 位" }
