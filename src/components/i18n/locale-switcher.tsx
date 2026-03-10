@@ -14,13 +14,13 @@ interface LocaleSwitcherProps {
   compact?: boolean;
 }
 
+const localeLabels: Record<"zh" | "en", string> = {
+  zh: "中文",
+  en: "English",
+};
+
 export function LocaleSwitcher({ compact }: LocaleSwitcherProps) {
   const { locale, setLocale } = useI18n();
-
-  const localeLabels: Record<"zh" | "en", string> = {
-    zh: "中文",
-    en: "English",
-  };
 
   if (compact) {
     return (

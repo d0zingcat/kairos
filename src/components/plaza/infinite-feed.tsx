@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { BookOpen, Film, Gamepad2, Loader2, Music } from "lucide-react"
+import { BookOpen, Film, Gamepad2, Loader2, Music, Disc, Disc3 } from "lucide-react"
 import { useTranslation } from "@/components/i18n/i18n-provider"
 import { formatDistanceToNow } from "date-fns"
 import { enUS, zhCN } from "date-fns/locale"
@@ -13,12 +13,16 @@ export type PlazaFeedItem = {
   username: string
   mediaType: "book" | "music" | "watch" | "game"
   title: string
+  musicType?: "track" | "album"
   createdAt: string
 }
 
-function MediaIcon({ type }: { type: "book" | "music" | "watch" | "game" }) {
+function MediaIcon({ type, musicType }: { type: "book" | "music" | "watch" | "game", musicType?: "track" | "album" }) {
   if (type === "book") return <BookOpen className="h-4 w-4 text-emerald-400" />
-  if (type === "music") return <Music className="h-4 w-4 text-violet-400" />
+  if (type === "music") {
+    if (musicType === "track") return <Disc3 className="h-4 w-4 text-violet-400" />
+    return <Disc className="h-4 w-4 text-violet-400" />
+  }
   if (type === "watch") return <Film className="h-4 w-4 text-amber-400" />
   return <Gamepad2 className="h-4 w-4 text-rose-400" />
 }
@@ -148,7 +152,7 @@ export function InfiniteFeed({
           className="rounded-2xl border border-border/60 bg-card/50 p-4"
         >
           <div className="flex items-center gap-3">
-            <MediaIcon type={item.mediaType} />
+            <MediaIcon type={item.mediaType} musicType={item.musicType} />
             <div className="text-sm text-foreground/90">
               <Link href={`/u/${item.username}`} className="font-medium text-sky-500 hover:text-sky-400">
                 @{item.username}

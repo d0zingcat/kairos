@@ -80,6 +80,7 @@ export function EntryDialog({
   const [bookCategories, setBookCategories] = useState<string[]>([])
   const [bookStartDate, setBookStartDate] = useState("")
   const [bookFinishDate, setBookFinishDate] = useState("")
+  const [musicType, setMusicType] = useState<"track" | "album">("album")
   const [isPending, startTransition] = useTransition()
 
   const statuses =
@@ -115,6 +116,7 @@ export function EntryDialog({
     const existingRating = typeof meta.rating === "number" ? meta.rating : 0
     const existingFavorite = typeof meta.favorite === "boolean" ? meta.favorite : false
     const existingStatus = typeof meta.status === "string" ? meta.status : ""
+    const existingMusicType = typeof meta.musicType === "string" ? (meta.musicType as "track" | "album") : "album"
 
     const parseDateInput = (value: unknown): Date | null => {
       if (typeof value !== "string" || !value) return null
@@ -136,6 +138,7 @@ export function EntryDialog({
     setRating(existingRating)
     setFavorite(existingFavorite)
     setStatus(existingStatus)
+    setMusicType(existingMusicType)
   }, [item, mediaType])
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -240,10 +243,6 @@ export function EntryDialog({
           case "music":
             {
               const localId = typeof meta.localId === "string" ? meta.localId : null
-              const existingType =
-                typeof meta.musicType === "string"
-                  ? (meta.musicType as "track" | "album")
-                  : "album"
               const existingArtist = typeof meta.artist === "string" ? meta.artist : null
               const existingAlbumTitle = typeof meta.albumTitle === "string" ? meta.albumTitle : null
               const existingGenre = Array.isArray(meta.genre) ? (meta.genre as string[]) : []
@@ -255,7 +254,7 @@ export function EntryDialog({
                 rating: rating > 0 ? rating : null,
                 notes: notes || null,
                 favorite,
-                type: existingType,
+                type: musicType,
                 artist: item.subtitle || existingArtist,
                 albumTitle: existingAlbumTitle,
                 genre: existingGenre,
@@ -573,6 +572,66 @@ export function EntryDialog({
                   onChange={setBookCategories}
                   placeholder={t("entry.categoryPlaceholder")}
                 />
+              </div>
+            </>
+          ) : mediaType === "music" ? (
+            <>
+              {/* Music Type - Locked for external sources (Spotify/MusicBrainz), editable for manual entries */}
+              <div>
+                <label className="mb-2 block text-xs font-medium text-muted-foreground">
+                  类型
+                </label>
+                <Select
+                  value={musicType}
+                  onValueChange={(value: "track" | "album") => setMusicType(value)}
+                  disabled={
+                    // Lock type for external sources to maintain data consistency
+                    (item.meta as Record<string, unknown>).source === "spotify" ||
+                    (item.meta as Record<string, unknown>).source === "musicbrainz" ||
+                    (item.meta as Record<string, unknown>).source === "external"
+                  }
+                >
+                  <SelectTrigger className="border-border bg-card text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="border-border bg-popover">
+                    <SelectItem value="album">专辑 (Album)</SelectItem>
+                    <SelectItem value="track">单曲 (Track)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  {(item.meta as Record<string, unknown>).source === "spotify" ||
+                    (item.meta as Record<string, unknown>).source === "musicbrainz" ||
+                    (item.meta as Record<string, unknown>).source === "external"
+                    ? "外部数据源，类型已锁定"
+                    : "手动输入时请选择类型"}
+                </p>
+              </div>
+              {/* Date Picker */}
+              <div>
+                <label className="mb-2 block text-xs font-medium text-muted-foreground">
+                  {t("entry.date")}
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start border-border bg-card text-left text-foreground hover:bg-accent"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {format(date, dateFormat, { locale: dateLocale })}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto border-border bg-popover p-0">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={(d) => d && setDate(d)}
+                      initialFocus
+                      locale={dateLocale}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </>
           ) : (

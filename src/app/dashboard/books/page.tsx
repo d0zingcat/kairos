@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/dashboard/media-card"
 import { BooksGrid } from "@/components/dashboard/books-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BookOpen } from "lucide-react"
-import { verifyAdminSession } from "@/lib/auth"
+import { getCurrentUser } from "@/lib/auth"
 import { getI18n } from "@/lib/i18n"
 
 interface PageProps {
@@ -44,7 +44,7 @@ async function BookGrid({
   sort?: string
   search?: string
 }) {
-  const canEdit = await verifyAdminSession()
+  const canEdit = await getCurrentUser() !== null
   const books = await getBooks({ status, sort, search })
 
   if (books.length === 0) {
