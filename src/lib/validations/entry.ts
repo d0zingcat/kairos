@@ -28,6 +28,7 @@ export const musicSchema = createInsertSchema(music, {
 export const watchSchema = createInsertSchema(watches, {
     title: (s) => s.min(1, "名称不能为空"),
     posterUrl: (s) => s.url().nullable().or(z.literal("")).optional(),
+    seasonNumber: () => z.number().int().positive("季数必须大于 0").nullable().optional(),
     watchDate: (s) => s.regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
 }).omit({
     id: true,

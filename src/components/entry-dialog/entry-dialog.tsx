@@ -57,6 +57,12 @@ interface EntryDialogProps {
   canEdit?: boolean
 }
 
+interface WatchSeasonOption {
+  id: number | string
+  label: string
+  value: string
+}
+
 export function EntryDialog({
   open,
   onOpenChange,
@@ -83,6 +89,9 @@ export function EntryDialog({
   const [bookCategories, setBookCategories] = useState<string[]>([])
   const [bookStartDate, setBookStartDate] = useState("")
   const [bookFinishDate, setBookFinishDate] = useState("")
+  const [watchSeasonValue, setWatchSeasonValue] = useState("none")
+  const [watchSeasonOptions, setWatchSeasonOptions] = useState<WatchSeasonOption[]>([])
+  const [isLoadingWatchSeasons, setIsLoadingWatchSeasons] = useState(false)
   const [musicType, setMusicType] = useState<"track" | "album">("album")
   const [isPending, startTransition] = useTransition()
 
@@ -104,7 +113,18 @@ export function EntryDialog({
           ? "completed"
           : undefined
 
-  /* eslint-disable react-hooks/set-state-in-effect */
+  const buildWatchSeasonFallbackOptions = (seasonValue: string): WatchSeasonOption[] => {
+    if (seasonValue === "none") {
+      return []
+    }
+
+    return [{
+      id: `local-${seasonValue}`,
+      label: `S${seasonValue}`,
+      value: seasonValue,
+    }]
+  }
+
   useEffect(() => {
     if (!item || !mediaType) return
 
@@ -120,6 +140,7 @@ export function EntryDialog({
     const existingFavorite = typeof meta.favorite === "boolean" ? meta.favorite : false
     const existingStatus = typeof meta.status === "string" ? meta.status : ""
     const existingMusicType = typeof meta.musicType === "string" ? (meta.musicType as "track" | "album") : "album"
+    const existingSeasonNumber = typeof meta.seasonNumber === "number" ? String(meta.seasonNumber) : "none"
 
     const parseDateInput = (value: unknown): Date | null => {
       if (typeof value !== "string" || !value) return null
@@ -141,22 +162,96 @@ export function EntryDialog({
     setRating(existingRating)
     setFavorite(existingFavorite)
     setStatus(existingStatus)
+    setWatchSeasonValue(existingSeasonNumber)
     setMusicType(existingMusicType)
   }, [item, mediaType])
-  /* eslint-enable react-hooks/set-state-in-effect */
 
-  if (!item || !mediaType || !canEdit) return null
+  const itemMeta = item?.meta as Record<string, unknown> | undefined
+  const watchEntryType =
+    mediaType === "watch" && item && itemMeta
+      ? ((typeof itemMeta.type === "string" ? itemMeta.type : item.type === "tv" ? "tv" : "movie") as "movie" | "tv")
+      : null
+  const isWatchTv = watchEntryType === "tv"
+
+  useEffect(() => {
+    if (!item || mediaType !== "watch" || !isWatchTv) {
+      setWatchSeasonOptions([])
+      setIsLoadingWatchSeasons(false)
+      return
+    }
+
+    const meta = item.meta as Record<string, unknown>
+    const existingSeasonValue = typeof meta.seasonNumber === "number" ? String(meta.seasonNumber) : "none"
+    const externalId = typeof meta.externalId === "string"
+      ? meta.externalId
+      : /^\d+$/.test(item.externalId)
+        ? item.externalId
+        : null
+
+    if (!externalId) {
+      setIsLoadingWatchSeasons(false)
+      setWatchSeasonOptions(buildWatchSeasonFallbackOptions(existingSeasonValue))
+      return
+    }
+
+    let isCancelled = false
+
+    const loadWatchSeasons = async () => {
+      setIsLoadingWatchSeasons(true)
+
+      try {
+        const response = await fetch(`/api/tmdb/tv/${externalId}/seasons`)
+        if (!response.ok) {
+          throw new Error("Failed to load seasons")
+        }
+
+        const data = await response.json() as {
+          seasons?: Array<{ id: number; name: string; seasonNumber: number }>
+        }
+
+        if (isCancelled) {
+          return
+        }
+
+        const options = (data.seasons ?? []).map((season) => ({
+          id: season.id,
+          label: season.name || `S${season.seasonNumber}`,
+          value: String(season.seasonNumber),
+        }))
+
+        setWatchSeasonOptions(
+          options.length > 0 ? options : buildWatchSeasonFallbackOptions(existingSeasonValue)
+        )
+      } catch {
+        if (!isCancelled) {
+          setWatchSeasonOptions(buildWatchSeasonFallbackOptions(existingSeasonValue))
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingWatchSeasons(false)
+        }
+      }
+    }
+
+    void loadWatchSeasons()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [item, mediaType, isWatchTv])
+
+  if (!item || !mediaType || !canEdit || !itemMeta) return null
 
   const ensureActionSucceeded = (result: { success: boolean; error?: string } | undefined) => {
     if (!result?.success) {
-      throw new Error(t("entry.saveFailed"))
+      throw new Error(result?.error || t("entry.saveFailed"))
     }
   }
 
   const handleSave = () => {
     startTransition(async () => {
       try {
-        const meta = item.meta as Record<string, unknown>
+        const meta = itemMeta
 
         switch (mediaType) {
           case "book":
@@ -291,22 +386,24 @@ export function EntryDialog({
               const existingGenre = Array.isArray(meta.genre) ? (meta.genre as string[]) : []
               const existingDirector = typeof meta.director === "string" ? meta.director : null
               const existingRuntime = typeof meta.runtime === "number" ? meta.runtime : null
-              const existingSeasonNumber = typeof meta.seasonNumber === "number" ? meta.seasonNumber : null
               const existingEpisodeNumber = typeof meta.episodeNumber === "number" ? meta.episodeNumber : null
               const existingTags = Array.isArray(meta.tags) ? (meta.tags as string[]) : []
               const existingPosterUrl = typeof meta.posterUrl === "string" ? meta.posterUrl : null
               const existingExternalId = typeof meta.externalId === "string" ? meta.externalId : null
+              const seasonNumber = isWatchTv && watchSeasonValue !== "none"
+                ? Number.parseInt(watchSeasonValue, 10)
+                : null
               const payload = {
                 title: item.title,
                 rating: rating > 0 ? rating : null,
                 notes: notes || null,
                 favorite,
-                type: existingType,
+                type: watchEntryType ?? existingType,
                 posterUrl: item.coverUrl || existingPosterUrl,
                 director: existingDirector,
                 genre: existingGenre,
                 runtime: existingRuntime,
-                seasonNumber: existingSeasonNumber,
+                seasonNumber,
                 episodeNumber: existingEpisodeNumber,
                 tags: existingTags,
                 status: (status || defaultStatus) as "want_to_watch" | "watching" | "finished" | "abandoned",
@@ -373,10 +470,13 @@ export function EntryDialog({
         setBookCategories([])
         setBookStartDate("")
         setBookFinishDate("")
+        setWatchSeasonValue("none")
+        setWatchSeasonOptions([])
         onOpenChange(false)
+        // Refresh the page to show updated data
         router.refresh()
-      } catch {
-        toast.error(t("entry.saveFailed"))
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : t("entry.saveFailed"))
       }
     })
   }
@@ -618,6 +718,66 @@ export function EntryDialog({
                 </p>
               </div>
               {/* Date Picker */}
+              <div>
+                <label className="mb-2 block text-xs font-medium text-muted-foreground">
+                  {t("entry.date")}
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start border-border bg-card text-left text-foreground hover:bg-accent"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {format(date, dateFormat, { locale: dateLocale })}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto border-border bg-popover p-0">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={(d) => d && setDate(d)}
+                      initialFocus
+                      locale={dateLocale}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </>
+          ) : mediaType === "watch" ? (
+            <>
+              {isWatchTv ? (
+                <div>
+                  <label className="mb-2 block text-xs font-medium text-muted-foreground">
+                    {t("entry.season")}
+                  </label>
+                  <Select
+                    value={watchSeasonValue}
+                    onValueChange={setWatchSeasonValue}
+                    disabled={isLoadingWatchSeasons}
+                  >
+                    <SelectTrigger className="border-border bg-card text-foreground">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="border-border bg-popover">
+                      <SelectItem value="none">{t("entry.seasonNone")}</SelectItem>
+                      {watchSeasonOptions.map((season) => (
+                        <SelectItem key={season.id} value={season.value}>
+                          {season.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-1 text-[10px] text-muted-foreground">
+                    {isLoadingWatchSeasons
+                      ? t("entry.seasonLoading")
+                      : watchSeasonOptions.length > 0
+                        ? t("entry.seasonHint")
+                        : t("entry.seasonUnavailable")}
+                  </p>
+                </div>
+              ) : null}
+
               <div>
                 <label className="mb-2 block text-xs font-medium text-muted-foreground">
                   {t("entry.date")}

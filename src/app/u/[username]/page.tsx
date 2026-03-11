@@ -10,6 +10,7 @@ import { getPublicUserProfile } from "@/lib/actions/plaza"
 import { getI18n } from "@/lib/i18n"
 import { formatDistanceToNow } from "date-fns"
 import { enUS, zhCN } from "date-fns/locale"
+import { formatPlazaWatchSeasonLabel } from "@/lib/plaza-feed"
 
 function MediaIcon({ type }: { type: "book" | "music" | "watch" | "game" }) {
   if (type === "book") return <BookOpen className="h-4 w-4 text-emerald-400" />
@@ -39,8 +40,6 @@ export default async function PublicUserPage({
 
   // User exists but profile is not public - show friendly message
   if (!userProfile.isPublicProfile) {
-    const dateLocale = locale === "zh" ? zhCN : enUS
-    
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
         <div className="mx-auto max-w-md rounded-2xl border border-border/60 bg-card/50 p-8 text-center">
@@ -87,6 +86,9 @@ export default async function PublicUserPage({
     }
   }
 
+  const getWatchSeasonLabel = (watchType?: "movie" | "tv", seasonNumber?: number | null) =>
+    formatPlazaWatchSeasonLabel(locale, watchType, seasonNumber)
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -131,6 +133,11 @@ export default async function PublicUserPage({
                   <div className="text-sm text-foreground/90">
                     <span className="mx-1 text-muted-foreground">{getMediaAction(item.mediaType)}</span>
                     <span className="font-medium">{item.title}</span>
+                    {getWatchSeasonLabel(item.watchType, item.seasonNumber) ? (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        · {getWatchSeasonLabel(item.watchType, item.seasonNumber)}
+                      </span>
+                    ) : null}
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">

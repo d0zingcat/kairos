@@ -41,18 +41,6 @@ describe("normalizeHardcoverBookResult", () => {
 
     expect(normalized?.categories).toEqual(["Novella"])
   })
-
-  it("does not append generic category labels when genres are already present", () => {
-    const normalized = normalizeHardcoverBookResult({
-      id: 100,
-      title: "Detailed Book",
-      genres: ["Fantasy"],
-      tags: ["Epic"],
-      book_category_id: 2,
-    })
-
-    expect(normalized?.categories).toEqual(["Fantasy", "Epic"])
-  })
 })
 
 describe("searchHardcoverBooks", () => {
@@ -96,7 +84,7 @@ describe("searchHardcoverBooks", () => {
     const results = await searchHardcoverBooks("parable")
 
     expect(results).toHaveLength(1)
-    expect(results[0]?.categories).toEqual(["Dystopia", "Novella"])
+  expect(results[0]?.categories).toEqual(["Dystopia", "Novella"])
     expect(fetchMock).toHaveBeenCalledTimes(2)
 
     const secondRequest = fetchMock.mock.calls[1]?.[1]

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { BookOpen, Music, Film, Gamepad2, ArrowRight } from "lucide-react"
+import { BookOpen, Music, Film, Gamepad2, ArrowRight, ScrollText } from "lucide-react"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { LocaleSwitcher } from "@/components/i18n/locale-switcher"
 import { useTranslation } from "@/components/i18n/i18n-provider"
@@ -68,7 +68,16 @@ export default function Home() {
       </main>
 
       <footer className="py-6 text-center text-xs text-muted-foreground">
-        <p>{t("home.builtWith")}</p>
+        <p>
+          <Link
+            href="/changelog"
+            className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-amber-500/40 hover:bg-accent hover:text-foreground"
+          >
+            <ScrollText className="h-3.5 w-3.5 text-amber-500/80" />
+            {t("nav.changelog")}
+          </Link>
+        </p>
+        <p className="mt-2">{t("home.builtWith")}</p>
         <p className="mt-1">&copy; {new Date().getFullYear()} {process.env.NEXT_PUBLIC_SITE_AUTHOR || "d0zingcat"}. {t("home.allRightsReserved")}</p>
       </footer>
     </div>
