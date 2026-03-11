@@ -1,5 +1,20 @@
 [
   {
+    "version": "1.8.0",
+    "date": "2026-03-11",
+    "summary": "This update enhances the user experience for monitoring seasons and viewing change logs.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Improved the interface for tracking seasons to make it more intuitive."
+      },
+      {
+        "tag": "ux",
+        "text": "Enhanced the changelog display for easier reading and navigation."
+      }
+    ]
+  },
+  {
     "version": "1.7.4",
     "date": "2026-03-11",
     "summary": "This update improves the reliability of saving entries and managing categories to enhance your experience.",
