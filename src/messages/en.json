@@ -68,6 +68,7 @@
     "myRating": "My Review",
     "note": "Note",
     "notePlaceholder": "Write something...",
+    "saveFailed": "Failed to save this record. Please try again.",
     "confirmDelete": "Are you sure you want to delete this record? This action cannot be undone.",
     "dateFormat": "yyyy-MM-dd"
   },

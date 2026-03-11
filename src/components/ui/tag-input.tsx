@@ -37,17 +37,40 @@ interface TagInputProps {
 
 export function TagInput({ value, onChange, placeholder, colored = true }: TagInputProps) {
     const [inputValue, setInputValue] = React.useState("")
+    const isComposingRef = React.useRef(false)
+
+    const commitInputValue = () => {
+        const newTag = inputValue.trim()
+        if (!newTag || value.includes(newTag)) {
+            return false
+        }
+
+        onChange([...value, newTag])
+        return true
+    }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        // Ignore Enter key during IME composition (e.g., Chinese Pinyin input)
+        if (e.nativeEvent.isComposing) {
+            return
+        }
+
         if (e.key === "Enter" || e.key === ",") {
             e.preventDefault()
-            const newTag = inputValue.trim()
-            if (newTag && !value.includes(newTag)) {
-                onChange([...value, newTag])
-            }
+            commitInputValue()
             setInputValue("")
         } else if (e.key === "Backspace" && !inputValue && value.length > 0) {
             onChange(value.slice(0, -1))
+        }
+    }
+
+    const handleBlur = () => {
+        if (isComposingRef.current) {
+            return
+        }
+
+        if (commitInputValue()) {
+            setInputValue("")
         }
     }
 
@@ -89,6 +112,13 @@ export function TagInput({ value, onChange, placeholder, colored = true }: TagIn
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onKeyDownCapture={handleKeyDownCapture}
+                onBlur={handleBlur}
+                onCompositionStart={() => {
+                    isComposingRef.current = true
+                }}
+                onCompositionEnd={() => {
+                    isComposingRef.current = false
+                }}
                 placeholder={value.length === 0 ? placeholder : ""}
                 className="flex-1 bg-transparent placeholder:text-muted-foreground focus:outline-none min-w-[120px] text-foreground"
             />
