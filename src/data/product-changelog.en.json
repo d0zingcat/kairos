@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.8.1",
+    "date": "2026-03-11",
+    "summary": "This update fixes an issue with deployment status verification to ensure accurate version tracking.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Correct deployment version status check for reliable updates."
+      }
+    ]
+  },
+  {
     "version": "1.8.0",
     "date": "2026-03-11",
     "summary": "This update enhances the user experience for monitoring seasons and viewing change logs.",
