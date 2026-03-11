@@ -120,10 +120,13 @@ bun run db:seed
 | `LASTFM_API_KEY` | Last.fm API Key（音乐封面兜底） | 搜索时需要 |
 | `NEXT_PUBLIC_SITE_AUTHOR` | 网站底部显示的作者名称，默认 d0zingcat | 可选 |
 | `NEXT_PUBLIC_GITHUB_URL` | 网站底部 GitHub 图标跳转链接，默认跳转作者仓库 | 可选 |
+| `NEXT_PUBLIC_GITHUB_REPO` | 设置页版本检查使用的 GitHub 仓库，格式 `owner/repo` | 可选 |
+| `GITHUB_TOKEN` | 私有仓库版本检查使用的服务端 GitHub Token | 私有仓库推荐 |
 
 > 搜索 API 会在响应头返回 `x-trace-id`，可用该值串联后端日志排查问题。
 > 访问模式优先读取数据库中的管理设置；若无设置则回退到 `SITE_VISIBILITY`。
 > 首次启动后请访问 `/register` 注册账号；首个账号自动成为管理员。
+> 若 `NEXT_PUBLIC_GITHUB_REPO` 指向私有仓库，请同时配置 `GITHUB_TOKEN`，否则版本检查会显示“无法验证最新版本”而不是误报“已是最新”。
 
 ## 多用户与广场说明
 

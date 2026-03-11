@@ -208,7 +208,8 @@
     "latest": "Latest",
     "goToGithub": "Click to visit GitHub for updates",
     "currentVersion": "Current Version",
-    "upToDate": "Up to date"
+    "upToDate": "Up to date",
+    "unableToCheck": "Unable to verify the latest version"
   },
   "settings": {
     "description": "Manage profile visibility and data backups.",

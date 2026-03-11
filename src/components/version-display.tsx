@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { CheckCircle2, ArrowUpCircle } from "lucide-react"
+import { CheckCircle2, ArrowUpCircle, AlertCircle } from "lucide-react"
 import {
   Tooltip,
   TooltipContent,
@@ -14,6 +14,7 @@ interface VersionInfo {
   current: string
   latest: string
   hasUpdate: boolean
+  status?: "up-to-date" | "update-available" | "unknown"
   releaseUrl: string | null
   publishedAt: string | null
   error?: string
@@ -25,7 +26,7 @@ export function VersionDisplay() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/version")
+    fetch("/api/version", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         setVersionInfo(data)
@@ -53,23 +54,36 @@ export function VersionDisplay() {
     )
   }
 
-  const { current, latest, hasUpdate, releaseUrl, error } = versionInfo
+  const { current, latest, hasUpdate, releaseUrl, error, status } = versionInfo
 
-  // Error state - only show for actual errors (not 404)
   if (error && error !== "GITHUB_REPO not configured") {
     return (
-      <div
-        className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground"
-        role="status"
-        aria-label="Version check failed"
-      >
-        <CheckCircle2 className="h-3.5 w-3.5" />
-        <span className="font-mono">v{current}</span>
-      </div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground"
+              role="status"
+              aria-label="Version check failed"
+            >
+              <AlertCircle className="h-3.5 w-3.5" />
+              <span className="font-mono">v{current}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-xs" sideOffset={8}>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-3.5 w-3.5" />
+                <span className="font-medium">{t("version.unableToCheck")}</span>
+              </div>
+              <div className="text-muted-foreground">{error}</div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     )
   }
 
-  // Config error - hide version display
   if (error === "GITHUB_REPO not configured") {
     return (
       <div className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground">
@@ -121,7 +135,33 @@ export function VersionDisplay() {
     )
   }
 
-  // No update - show normal version with check icon
+  if (status === "unknown") {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors"
+              role="status"
+              aria-label={`Current version ${current} could not be verified`}
+            >
+              <AlertCircle className="h-3.5 w-3.5" />
+              <span className="font-mono">v{current}</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-xs" sideOffset={8}>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-3.5 w-3.5" />
+                <span className="font-medium">{t("version.unableToCheck")}</span>
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+
   return (
     <TooltipProvider>
       <Tooltip>
