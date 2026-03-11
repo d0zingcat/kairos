@@ -1,6 +1,5 @@
-import { createLogger } from "@/lib/logger"
-
 const HARDCOVER_API_BASE = "https://api.hardcover.app/v1/graphql"
+import { createLogger } from "@/lib/logger"
 
 const logger = createLogger("api/hardcover")
 
@@ -87,13 +86,7 @@ function extractHardcoverNumericId(item: Record<string, unknown>): number | null
 }
 
 function uniqueStrings(values: Array<string | null | undefined>): string[] {
-  return Array.from(
-    new Set(
-      values
-        .filter((value): value is string => Boolean(value && value.trim()))
-        .map((value) => value.trim()),
-    ),
-  )
+  return Array.from(new Set(values.filter((value): value is string => Boolean(value && value.trim())).map((value) => value.trim())))
 }
 
 function extractHardcoverCategories(item: Record<string, unknown>): string[] {
@@ -110,11 +103,7 @@ function extractHardcoverCategories(item: Record<string, unknown>): string[] {
       ? HARDCOVER_BOOK_CATEGORY_LABELS[bookCategoryId] ?? null
       : null
 
-  if (genres.length > 0) {
-    return uniqueStrings([...genres, ...tags])
-  }
-
-  return uniqueStrings([...tags, bookCategoryLabel])
+  return uniqueStrings([...genres, ...tags, bookCategoryLabel])
 }
 
 async function fetchHardcoverBookCategories(
@@ -138,10 +127,7 @@ async function fetchHardcoverBookCategories(
   }
 
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
-  logger.debug("hardcover details lookup started", {
-    bookCount: bookIds.length,
-    ...traceMeta,
-  })
+  logger.debugApi("request", HARDCOVER_API_BASE, requestBody, traceMeta)
 
   try {
     const res = await fetch(HARDCOVER_API_BASE, {
@@ -155,15 +141,12 @@ async function fetchHardcoverBookCategories(
     })
 
     if (!res.ok) {
-      logger.warn("hardcover details lookup returned non-200", {
-        status: res.status,
-        bookIds,
-        ...traceMeta,
-      })
+      logger.warn("hardcover details lookup returned non-200", { status: res.status, bookIds, ...traceMeta })
       return new Map()
     }
 
     const data = (await res.json()) as HardcoverBooksDetailsResponse
+    logger.debugApi("response", HARDCOVER_API_BASE, data, traceMeta)
 
     if (Array.isArray(data.errors) && data.errors.length > 0) {
       logger.warn("hardcover details lookup returned graphql errors", {
@@ -260,10 +243,7 @@ export async function searchHardcoverBooks(query: string, context?: SearchLogCon
     },
   }
 
-  logger.debug("hardcover search started", {
-    queryLength: query.length,
-    ...traceMeta,
-  })
+  logger.debugApi("request", HARDCOVER_API_BASE, requestBody, traceMeta)
 
   try {
     const res = await fetch(HARDCOVER_API_BASE, {
@@ -277,11 +257,12 @@ export async function searchHardcoverBooks(query: string, context?: SearchLogCon
     })
 
     if (!res.ok) {
-      logger.warn("hardcover search returned non-200", { status: res.status, ...traceMeta })
+      logger.warn("hardcover search returned non-200", { status: res.status, query, ...traceMeta })
       return []
     }
 
     const data = (await res.json()) as HardcoverSearchResponse
+    logger.debugApi("response", HARDCOVER_API_BASE, data, traceMeta)
 
     const rawResults = data.data?.search?.results
 
@@ -327,19 +308,15 @@ export async function searchHardcoverBooks(query: string, context?: SearchLogCon
     })
 
     logger.debug("hardcover search completed", {
+      query,
       rawCount: documents.length,
       normalizedCount: normalized.length,
-      queryLength: query.length,
       ...traceMeta,
     })
 
     return normalized
   } catch (error) {
-    logger.error("hardcover search failed unexpectedly", {
-      error: error instanceof Error ? error.message : "unknown",
-      queryLength: query.length,
-      ...traceMeta,
-    })
+    logger.error("hardcover search failed unexpectedly", { query, error: error instanceof Error ? error.message : "unknown", ...traceMeta })
     return []
   }
 }

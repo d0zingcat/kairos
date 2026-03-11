@@ -7,6 +7,7 @@ import { eq, desc, sql, and, ilike, count, inArray } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
+import { getTVDetail } from "@/lib/api/tmdb"
 import { bookSchema, musicSchema, watchSchema, gameSchema } from "@/lib/validations/entry"
 
 type BookInput = Omit<NewBook, "userId">
@@ -20,6 +21,39 @@ async function requireCurrentUser() {
     redirect("/login?next=%2Fdashboard")
   }
   return user
+}
+
+async function validateTmdbTvSeasonSelection(input: {
+  externalId: string | null
+  seasonNumber: number | null
+  type: "movie" | "tv"
+}): Promise<string | null> {
+  if (input.type !== "tv" || input.seasonNumber == null) {
+    return null
+  }
+
+  if (!input.externalId || !/^\d+$/.test(input.externalId)) {
+    return "缺少有效的 TMDB 剧集信息，无法保存季数"
+  }
+
+  try {
+    const detail = await getTVDetail(Number(input.externalId))
+    const validSeasonNumbers = detail.seasons?.length
+      ? detail.seasons
+          .map((season) => season.season_number)
+          .filter((seasonNumber) => seasonNumber > 0)
+      : Array.from({ length: detail.number_of_seasons ?? 0 }, (_, index) => index + 1)
+
+    if (validSeasonNumbers.length === 0) {
+      return null
+    }
+
+    return validSeasonNumbers.includes(input.seasonNumber)
+      ? null
+      : "请选择有效的季数"
+  } catch {
+    return "季信息校验失败，请稍后重试"
+  }
 }
 
 // ── Books ────────────────────────────────────────────────
@@ -154,6 +188,16 @@ export async function createWatch(data: WatchInput) {
   if (!result.success) {
     return { success: false, error: result.error.issues[0].message }
   }
+
+  const seasonValidationError = await validateTmdbTvSeasonSelection({
+    externalId: result.data.externalId ?? null,
+    seasonNumber: result.data.seasonNumber ?? null,
+    type: result.data.type ?? "movie",
+  })
+  if (seasonValidationError) {
+    return { success: false, error: seasonValidationError }
+  }
+
   const [item] = await db.insert(watches).values({ ...result.data, userId: user.id }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
@@ -166,6 +210,23 @@ export async function updateWatch(id: string, data: Partial<WatchInput>) {
   if (!result.success) {
     return { success: false, error: result.error.issues[0].message }
   }
+
+  const currentWatch = await db.query.watches.findFirst({
+    where: and(eq(watches.id, id), eq(watches.userId, user.id)),
+  })
+  if (!currentWatch) {
+    return { success: false, error: "记录不存在" }
+  }
+
+  const seasonValidationError = await validateTmdbTvSeasonSelection({
+    externalId: result.data.externalId ?? currentWatch.externalId,
+    seasonNumber: result.data.seasonNumber ?? currentWatch.seasonNumber,
+    type: result.data.type ?? currentWatch.type,
+  })
+  if (seasonValidationError) {
+    return { success: false, error: seasonValidationError }
+  }
+
   const [item] = await db.update(watches).set(result.data).where(and(eq(watches.id, id), eq(watches.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
