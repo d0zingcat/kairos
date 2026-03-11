@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/d0zingcat/kairos/compare/v1.8.0...v1.8.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* correct deployment version status check ([#47](https://github.com/d0zingcat/kairos/issues/47)) ([6b8a655](https://github.com/d0zingcat/kairos/commit/6b8a65554c6a4373ae17f37889589e25ca4ab482))
+
 # [1.8.0](https://github.com/d0zingcat/kairos/compare/v1.7.4...v1.8.0) (2026-03-11)
 
 
