@@ -1,3 +1,10 @@
+## [1.7.4](https://github.com/d0zingcat/kairos/compare/v1.7.3...v1.7.4) (2026-03-11)
+
+
+### Bug Fixes
+
+* harden entry saves and hardcover categories ([#46](https://github.com/d0zingcat/kairos/issues/46)) ([eab21ca](https://github.com/d0zingcat/kairos/commit/eab21ca8a5d0fa821cd2a9929ebd258f7f44126b))
+
 ## [1.7.3](https://github.com/d0zingcat/kairos/compare/v1.7.2...v1.7.3) (2026-03-07)
 
 
