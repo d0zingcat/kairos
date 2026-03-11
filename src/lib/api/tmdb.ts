@@ -26,6 +26,14 @@ export interface TMDBDetail {
   overview: string
   runtime?: number
   episode_run_time?: number[]
+  number_of_seasons?: number
+  seasons?: {
+    id: number
+    name: string
+    season_number: number
+    episode_count?: number
+    poster_path: string | null
+  }[]
   genres: { id: number; name: string }[]
   release_date?: string
   first_air_date?: string

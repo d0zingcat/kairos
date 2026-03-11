@@ -37,9 +37,8 @@ interface TagInputProps {
 
 export function TagInput({ value, onChange, placeholder, colored = true }: TagInputProps) {
     const [inputValue, setInputValue] = React.useState("")
-    const isComposingRef = React.useRef(false)
 
-    const commitInputValue = () => {
+    const commitInputValue = React.useCallback(() => {
         const newTag = inputValue.trim()
         if (!newTag || value.includes(newTag)) {
             return false
@@ -47,7 +46,7 @@ export function TagInput({ value, onChange, placeholder, colored = true }: TagIn
 
         onChange([...value, newTag])
         return true
-    }
+    }, [inputValue, onChange, value])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         // Ignore Enter key during IME composition (e.g., Chinese Pinyin input)
@@ -65,10 +64,6 @@ export function TagInput({ value, onChange, placeholder, colored = true }: TagIn
     }
 
     const handleBlur = () => {
-        if (isComposingRef.current) {
-            return
-        }
-
         if (commitInputValue()) {
             setInputValue("")
         }
@@ -113,12 +108,6 @@ export function TagInput({ value, onChange, placeholder, colored = true }: TagIn
                 onKeyDown={handleKeyDown}
                 onKeyDownCapture={handleKeyDownCapture}
                 onBlur={handleBlur}
-                onCompositionStart={() => {
-                    isComposingRef.current = true
-                }}
-                onCompositionEnd={() => {
-                    isComposingRef.current = false
-                }}
                 placeholder={value.length === 0 ? placeholder : ""}
                 className="flex-1 bg-transparent placeholder:text-muted-foreground focus:outline-none min-w-[120px] text-foreground"
             />
