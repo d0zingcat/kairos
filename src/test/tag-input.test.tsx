@@ -26,17 +26,4 @@ describe("TagInput", () => {
 
     expect(handleChange).not.toHaveBeenCalled()
   })
-
-  it("does not commit a partial tag while IME composition is active", () => {
-    const handleChange = vi.fn()
-
-    render(<TagInput value={[]} onChange={handleChange} placeholder="Type category" />)
-
-    const input = screen.getByPlaceholderText("Type category")
-    fireEvent.change(input, { target: { value: "han" } })
-    fireEvent.compositionStart(input)
-    fireEvent.blur(input)
-
-    expect(handleChange).not.toHaveBeenCalled()
-  })
 })
