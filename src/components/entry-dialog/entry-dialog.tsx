@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,7 @@ import { CalendarIcon, Star, Loader2, Trash2, Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { zhCN, enUS } from "date-fns/locale"
+import { toast } from "sonner"
 import { useI18n } from "@/components/i18n/i18n-provider"
 import {
   BOOK_STATUSES,
@@ -63,6 +65,7 @@ export function EntryDialog({
   canEdit = true,
 }: EntryDialogProps) {
   const { t, locale } = useI18n()
+  const router = useRouter()
   const dateLocale = locale === "zh" ? zhCN : enUS
   const dateFormat = t("entry.dateFormat")
   const toDateString = (value: unknown): string => {
@@ -143,6 +146,12 @@ export function EntryDialog({
   /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!item || !mediaType || !canEdit) return null
+
+  const ensureActionSucceeded = (result: { success: boolean; error?: string } | undefined) => {
+    if (!result?.success) {
+      throw new Error(t("entry.saveFailed"))
+    }
+  }
 
   const handleSave = () => {
     startTransition(async () => {
@@ -230,12 +239,12 @@ export function EntryDialog({
               }
 
               if (localId) {
-                await updateBook(localId, payload)
+                ensureActionSucceeded(await updateBook(localId, payload))
               } else {
-                await createBook({
+                ensureActionSucceeded(await createBook({
                   ...payload,
                   externalId: item.externalId,
-                })
+                }))
               }
             }
             break
@@ -264,12 +273,12 @@ export function EntryDialog({
               }
 
               if (localId) {
-                await updateMusic(localId, payload)
+                ensureActionSucceeded(await updateMusic(localId, payload))
               } else {
-                await createMusic({
+                ensureActionSucceeded(await createMusic({
                   ...payload,
                   externalId: item.externalId || existingExternalId,
-                })
+                }))
               }
             }
             break
@@ -305,12 +314,12 @@ export function EntryDialog({
               }
 
               if (localId) {
-                await updateWatch(localId, payload)
+                ensureActionSucceeded(await updateWatch(localId, payload))
               } else {
-                await createWatch({
+                ensureActionSucceeded(await createWatch({
                   ...payload,
                   externalId: item.externalId || existingExternalId,
-                })
+                }))
               }
             }
             break
@@ -343,12 +352,12 @@ export function EntryDialog({
               }
 
               if (localId) {
-                await updateGame(localId, payload)
+                ensureActionSucceeded(await updateGame(localId, payload))
               } else {
-                await createGame({
+                ensureActionSucceeded(await createGame({
                   ...payload,
                   externalId: item.externalId || existingExternalId,
-                })
+                }))
               }
             }
             break
@@ -365,8 +374,9 @@ export function EntryDialog({
         setBookStartDate("")
         setBookFinishDate("")
         onOpenChange(false)
+        router.refresh()
       } catch {
-        // Error is handled silently; could add toast notification later
+        toast.error(t("entry.saveFailed"))
       }
     })
   }
