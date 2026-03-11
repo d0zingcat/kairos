@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/d0zingcat/kairos/compare/v1.7.4...v1.8.0) (2026-03-11)
+
+
+### Features
+
+* improve watch seasons and changelog UX ([#48](https://github.com/d0zingcat/kairos/issues/48)) ([a8cec61](https://github.com/d0zingcat/kairos/commit/a8cec61bd0b787f95042967da0065202a29e2847))
+
 ## [1.7.4](https://github.com/d0zingcat/kairos/compare/v1.7.3...v1.7.4) (2026-03-11)
 
 
