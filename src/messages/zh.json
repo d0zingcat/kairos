@@ -68,6 +68,7 @@
     "myRating": "我的评价",
     "note": "笔记",
     "notePlaceholder": "写点什么...",
+    "saveFailed": "保存记录失败，请重试。",
     "confirmDelete": "确定要删除这条记录吗？此操作不可撤销。",
     "dateFormat": "yyyy年MM月dd日"
   },
