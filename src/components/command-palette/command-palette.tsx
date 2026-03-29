@@ -24,6 +24,21 @@ interface CommandPaletteProps {
 
 type SearchType = "book" | "music" | "movie" | "tv" | "game" | "isbn" | null
 
+interface SlashCommandOption {
+  type: Exclude<SearchType, null>
+  shortcut: string
+  labelKey: string
+}
+
+const SLASH_COMMANDS: SlashCommandOption[] = [
+  { type: "book", shortcut: "/book", labelKey: "search.searchBook" },
+  { type: "isbn", shortcut: "/isbn", labelKey: "search.searchIsbn" },
+  { type: "music", shortcut: "/music", labelKey: "search.searchMusic" },
+  { type: "movie", shortcut: "/movie", labelKey: "search.searchMovie" },
+  { type: "tv", shortcut: "/tv", labelKey: "search.searchTv" },
+  { type: "game", shortcut: "/game", labelKey: "search.searchGame" },
+]
+
 function getSearchTypeLabel(type: SearchType, t: (key: string) => string): string {
   switch (type) {
     case "book": return t("search.book")
@@ -38,12 +53,12 @@ function getSearchTypeLabel(type: SearchType, t: (key: string) => string): strin
 
 function parseSlashCommand(value: string): { searchType: SearchType; query: string } {
   const lowerInput = value.toLowerCase()
-  if (lowerInput.startsWith("/book ")) return { searchType: "book", query: value.slice(6) }
-  if (lowerInput.startsWith("/isbn ")) return { searchType: "isbn", query: value.slice(6) }
-  if (lowerInput.startsWith("/music ")) return { searchType: "music", query: value.slice(7) }
-  if (lowerInput.startsWith("/movie ")) return { searchType: "movie", query: value.slice(7) }
-  if (lowerInput.startsWith("/tv ")) return { searchType: "tv", query: value.slice(4) }
-  if (lowerInput.startsWith("/game ")) return { searchType: "game", query: value.slice(6) }
+  if (lowerInput === "/book" || lowerInput.startsWith("/book ")) return { searchType: "book", query: value.slice(5).trimStart() }
+  if (lowerInput === "/isbn" || lowerInput.startsWith("/isbn ")) return { searchType: "isbn", query: value.slice(5).trimStart() }
+  if (lowerInput === "/music" || lowerInput.startsWith("/music ")) return { searchType: "music", query: value.slice(6).trimStart() }
+  if (lowerInput === "/movie" || lowerInput.startsWith("/movie ")) return { searchType: "movie", query: value.slice(6).trimStart() }
+  if (lowerInput === "/tv" || lowerInput.startsWith("/tv ")) return { searchType: "tv", query: value.slice(3).trimStart() }
+  if (lowerInput === "/game" || lowerInput.startsWith("/game ")) return { searchType: "game", query: value.slice(5).trimStart() }
   return { searchType: null, query: value }
 }
 
@@ -60,6 +75,12 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   const query = input.trim()
   const isIsbnSearch = searchType === "isbn"
+  const slashQuery = input.trim().toLowerCase()
+  const showSlashCommands = !searchType && (slashQuery.length === 0 || slashQuery.startsWith("/"))
+  const visibleSlashCommands = SLASH_COMMANDS.filter((command) => {
+    if (!slashQuery.startsWith("/")) return true
+    return command.shortcut.startsWith(slashQuery)
+  })
 
   const handleInputChange = useCallback((value: string) => {
     const parsed = parseSlashCommand(value)
@@ -191,38 +212,25 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           </div>
         )}
         <CommandList>
-          {!searchType && (
+          {showSlashCommands && (
             <CommandGroup heading={t("search.shortcuts")}>
-              <CommandItem onSelect={() => setSearchType("book")}>
-                <MEDIA_TYPES.book.icon className="mr-2 h-4 w-4" />
-                <span>{t("search.searchBook")}</span>
-                <kbd className="ml-auto text-xs text-muted-foreground">/book</kbd>
-              </CommandItem>
-              <CommandItem onSelect={() => setSearchType("isbn")}>
-                <MEDIA_TYPES.book.icon className="mr-2 h-4 w-4" />
-                <span>{t("search.searchIsbn")}</span>
-                <kbd className="ml-auto text-xs text-muted-foreground">/isbn</kbd>
-              </CommandItem>
-              <CommandItem onSelect={() => setSearchType("music")}>
-                <MEDIA_TYPES.music.icon className="mr-2 h-4 w-4" />
-                <span>{t("search.searchMusic")}</span>
-                <kbd className="ml-auto text-xs text-muted-foreground">/music</kbd>
-              </CommandItem>
-              <CommandItem onSelect={() => setSearchType("movie")}>
-                <MEDIA_TYPES.watch.icon className="mr-2 h-4 w-4" />
-                <span>{t("search.searchMovie")}</span>
-                <kbd className="ml-auto text-xs text-muted-foreground">/movie</kbd>
-              </CommandItem>
-              <CommandItem onSelect={() => setSearchType("tv")}>
-                <MEDIA_TYPES.watch.icon className="mr-2 h-4 w-4" />
-                <span>{t("search.searchTv")}</span>
-                <kbd className="ml-auto text-xs text-muted-foreground">/tv</kbd>
-              </CommandItem>
-              <CommandItem onSelect={() => setSearchType("game")}>
-                <MEDIA_TYPES.game.icon className="mr-2 h-4 w-4" />
-                <span>{t("search.searchGame")}</span>
-                <kbd className="ml-auto text-xs text-muted-foreground">/game</kbd>
-              </CommandItem>
+              {visibleSlashCommands.map((command) => {
+                const Icon = command.type === "music"
+                  ? MEDIA_TYPES.music.icon
+                  : command.type === "game"
+                    ? MEDIA_TYPES.game.icon
+                    : command.type === "movie" || command.type === "tv"
+                      ? MEDIA_TYPES.watch.icon
+                      : MEDIA_TYPES.book.icon
+
+                return (
+                  <CommandItem key={command.shortcut} onSelect={() => setSearchType(command.type)}>
+                    <Icon className="mr-2 h-4 w-4" />
+                    <span>{t(command.labelKey)}</span>
+                    <kbd className="ml-auto text-xs text-muted-foreground">{command.shortcut}</kbd>
+                  </CommandItem>
+                )
+              })}
             </CommandGroup>
           )}
 
