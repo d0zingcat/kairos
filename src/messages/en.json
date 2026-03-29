@@ -39,19 +39,22 @@
     "enterKeyword": "Enter keywords to start searching",
     "clearMode": "Clear Mode",
     "noResults": "No results found",
+    "noIsbnResults": "No book found for that ISBN. Check the number and try again.",
     "shortcuts": "Shortcuts",
     "book": "Books",
+    "isbn": "ISBN",
     "music": "Music",
     "movie": "Movies",
     "tv": "TV Shows",
     "game": "Games",
     "searchBook": "Search Books",
+    "searchIsbn": "Import Book by ISBN",
     "searchMusic": "Search Music",
     "searchMovie": "Search Movies",
     "searchTv": "Search TV Shows",
     "searchGame": "Search Games",
     "searchWithType": "Search {type}...",
-    "searchTip": "Type /book, /music, /movie, /tv, /game to search..."
+    "searchTip": "Type /book, /isbn, /music, /movie, /tv, /game to search..."
   },
   "entry": {
     "title": "Entry Detail",
