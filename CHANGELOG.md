@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/d0zingcat/kairos/compare/v1.8.1...v1.9.0) (2026-03-29)
+
+
+### Features
+
+* add back button to changelog pages ([#50](https://github.com/d0zingcat/kairos/issues/50)) ([dfc45a2](https://github.com/d0zingcat/kairos/commit/dfc45a2fe495bbc16ce5b3e3212d249b5ae6306e))
+
 ## [1.8.1](https://github.com/d0zingcat/kairos/compare/v1.8.0...v1.8.1) (2026-03-11)
 
 
