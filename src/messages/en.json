@@ -13,7 +13,8 @@
     "search": "Search",
     "loading": "Loading...",
     "retry": "Click to retry",
-    "noMore": "No more"
+    "noMore": "No more",
+    "back": "Back"
   },
   "nav": {
     "quickEntry": "Quick Entry",
