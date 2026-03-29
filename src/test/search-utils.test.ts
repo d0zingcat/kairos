@@ -38,5 +38,17 @@ describe("Search Utils", () => {
             const merged = mergeUniqueResults(items)
             expect(merged).toHaveLength(1)
         })
+
+        it("should deduplicate books by isbn before title", () => {
+            const items: SearchResultItem[] = [
+                { externalId: "1", title: "Three-Body", subtitle: "Liu Cixin", type: "book", coverUrl: null, meta: { isbn: "9780765377067" } },
+                { externalId: "2", title: "The Three-Body Problem", subtitle: "Cixin Liu", type: "book", coverUrl: "https://covers.example/three-body.jpg", meta: { isbn: "9780765377067" } },
+            ]
+
+            const merged = mergeUniqueResults(items)
+
+            expect(merged).toHaveLength(1)
+            expect(merged[0]?.externalId).toBe("2")
+        })
     })
 })
