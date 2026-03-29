@@ -22,11 +22,12 @@ interface CommandPaletteProps {
   onOpenChange: (open: boolean) => void
 }
 
-type SearchType = "book" | "music" | "movie" | "tv" | "game" | null
+type SearchType = "book" | "music" | "movie" | "tv" | "game" | "isbn" | null
 
 function getSearchTypeLabel(type: SearchType, t: (key: string) => string): string {
   switch (type) {
     case "book": return t("search.book")
+    case "isbn": return t("search.isbn")
     case "music": return t("search.music")
     case "movie": return t("search.movie")
     case "tv": return t("search.tv")
@@ -38,6 +39,7 @@ function getSearchTypeLabel(type: SearchType, t: (key: string) => string): strin
 function parseSlashCommand(value: string): { searchType: SearchType; query: string } {
   const lowerInput = value.toLowerCase()
   if (lowerInput.startsWith("/book ")) return { searchType: "book", query: value.slice(6) }
+  if (lowerInput.startsWith("/isbn ")) return { searchType: "isbn", query: value.slice(6) }
   if (lowerInput.startsWith("/music ")) return { searchType: "music", query: value.slice(7) }
   if (lowerInput.startsWith("/movie ")) return { searchType: "movie", query: value.slice(7) }
   if (lowerInput.startsWith("/tv ")) return { searchType: "tv", query: value.slice(4) }
@@ -57,6 +59,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const query = input.trim()
+  const isIsbnSearch = searchType === "isbn"
 
   const handleInputChange = useCallback((value: string) => {
     const parsed = parseSlashCommand(value)
@@ -107,8 +110,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     setLoading(true)
     debounceRef.current = setTimeout(async () => {
       try {
+        const searchPath = isIsbnSearch ? "/api/search/book" : `/api/search/${searchType}`
+        const searchParams = new URLSearchParams({ q: query })
+        if (isIsbnSearch) {
+          searchParams.set("mode", "isbn")
+        }
         const res = await fetch(
-          `/api/search/${searchType}?q=${encodeURIComponent(query)}`
+          `${searchPath}?${searchParams.toString()}`
         )
         const data = await res.json()
         setResults(data.results ?? [])
@@ -122,7 +130,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [searchType, query])
+  }, [isIsbnSearch, query, searchType])
 
   const handleSelect = useCallback(
     (item: SearchResultItem) => {
@@ -149,6 +157,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const activeMediaType: MediaType | null =
     searchType === "movie" || searchType === "tv"
       ? "watch"
+      : searchType === "isbn"
+        ? "book"
       : searchType
 
   return (
@@ -188,6 +198,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 <span>{t("search.searchBook")}</span>
                 <kbd className="ml-auto text-xs text-muted-foreground">/book</kbd>
               </CommandItem>
+              <CommandItem onSelect={() => setSearchType("isbn")}>
+                <MEDIA_TYPES.book.icon className="mr-2 h-4 w-4" />
+                <span>{t("search.searchIsbn")}</span>
+                <kbd className="ml-auto text-xs text-muted-foreground">/isbn</kbd>
+              </CommandItem>
               <CommandItem onSelect={() => setSearchType("music")}>
                 <MEDIA_TYPES.music.icon className="mr-2 h-4 w-4" />
                 <span>{t("search.searchMusic")}</span>
@@ -219,7 +234,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 </div>
               )}
               {!loading && results.length === 0 && (
-                <CommandEmpty>{t("search.noResults")}</CommandEmpty>
+                <CommandEmpty>{isIsbnSearch ? t("search.noIsbnResults") : t("search.noResults")}</CommandEmpty>
               )}
               {!loading && results.length > 0 && (
                 <CommandGroup heading={t("search.searchType", { type: getSearchTypeLabel(searchType, t) })}>

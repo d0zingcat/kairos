@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { searchMovies, searchTV, posterUrl } from "@/lib/api/tmdb"
-import { searchHardcoverBooks } from "@/lib/api/hardcover"
+import { lookupHardcoverBookByIsbn, searchHardcoverBooks } from "@/lib/api/hardcover"
 import { searchGames, normalizeGameResult } from "@/lib/api/rawg"
 import { searchSpotify, normalizeSpotifyResult } from "@/lib/api/spotify"
 import { searchAlbums, searchTracks } from "@/lib/api/musicbrainz"
@@ -44,6 +44,7 @@ export async function GET(
   const traceId = request.headers.get("x-trace-id") || crypto.randomUUID()
   const { type } = await params
   const query = request.nextUrl.searchParams.get("q")?.trim()
+  const mode = request.nextUrl.searchParams.get("mode")?.trim()
 
   const withTrace = (payload: Record<string, unknown>) => ({
     ...payload,
@@ -61,13 +62,52 @@ export async function GET(
     return jsonWithTrace({ results: [] })
   }
 
-  logger.debug("search request received", withTrace({ type, query }))
+  logger.debug("search request received", withTrace({ type, query, mode }))
 
   try {
     let results: SearchResultItem[] = []
 
     switch (type) {
       case "book": {
+        if (mode === "isbn") {
+          const hardcoverBook = await lookupHardcoverBookByIsbn(query, { traceId }).catch((error) => {
+            logger.warn("hardcover isbn lookup failed", {
+              query,
+              error: error instanceof Error ? error.message : "unknown",
+              traceId,
+            })
+            return null
+          })
+
+          results = hardcoverBook
+            ? [{
+                externalId: hardcoverBook.externalId,
+                title: hardcoverBook.title,
+                subtitle: hardcoverBook.authors.join(", ") || null,
+                coverUrl: hardcoverBook.coverUrl,
+                type: "book",
+                meta: {
+                  source: "hardcover",
+                  searchMode: "isbn",
+                  subtitle: hardcoverBook.subtitle,
+                  authors: hardcoverBook.authors,
+                  categories: hardcoverBook.categories,
+                  isbn: hardcoverBook.isbn,
+                  pageCount: hardcoverBook.pageCount,
+                  coverUrl: hardcoverBook.coverUrl,
+                  externalId: hardcoverBook.externalId,
+                },
+              }]
+            : []
+
+          logger.debug("book isbn lookup completed", {
+            query,
+            resultCount: results.length,
+            traceId,
+          })
+          break
+        }
+
         const localBooks = await db.query.books.findMany({
           where: and(
             eq(books.userId, currentUser.id),
