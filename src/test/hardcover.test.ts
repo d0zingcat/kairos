@@ -1,11 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { normalizeHardcoverBookResult, searchHardcoverBooks } from "@/lib/api/hardcover"
+import {
+  lookupHardcoverBookByIsbn,
+  normalizeHardcoverBookResult,
+  normalizeIsbn,
+  searchHardcoverBooks,
+} from "@/lib/api/hardcover"
 
 const originalHardcoverApiToken = process.env.HARDCOVER_API_TOKEN
+const originalFetch = globalThis.fetch
 
 beforeEach(() => {
   process.env.HARDCOVER_API_TOKEN = "test-token"
-  vi.stubGlobal("fetch", vi.fn())
+  globalThis.fetch = vi.fn() as unknown as typeof fetch
 })
 
 afterEach(() => {
@@ -15,7 +21,7 @@ afterEach(() => {
     process.env.HARDCOVER_API_TOKEN = originalHardcoverApiToken
   }
 
-  vi.unstubAllGlobals()
+  globalThis.fetch = originalFetch
   vi.restoreAllMocks()
 })
 
@@ -43,9 +49,23 @@ describe("normalizeHardcoverBookResult", () => {
   })
 })
 
+describe("normalizeIsbn", () => {
+  it("normalizes ISBN-13 values with separators", () => {
+    expect(normalizeIsbn("978-7-115-54608-1")).toBe("9787115546081")
+  })
+
+  it("keeps a valid ISBN-10 check digit", () => {
+    expect(normalizeIsbn("0-8044-2957-X")).toBe("080442957X")
+  })
+
+  it("returns null for invalid ISBN values", () => {
+    expect(normalizeIsbn("12345")).toBeNull()
+  })
+})
+
 describe("searchHardcoverBooks", () => {
   it("fetches book details when search results do not include categories", async () => {
-    const fetchMock = vi.mocked(fetch)
+    const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>
 
     fetchMock
       .mockResolvedValueOnce({
@@ -95,7 +115,7 @@ describe("searchHardcoverBooks", () => {
   })
 
   it("does not fetch book details when search results already include categories", async () => {
-    const fetchMock = vi.mocked(fetch)
+    const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>
 
     fetchMock.mockResolvedValueOnce({
       ok: true,
@@ -124,7 +144,7 @@ describe("searchHardcoverBooks", () => {
   })
 
   it("gracefully ignores graphql validation errors from the details lookup", async () => {
-    const fetchMock = vi.mocked(fetch)
+    const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>
 
     fetchMock
       .mockResolvedValueOnce({
@@ -160,5 +180,70 @@ describe("searchHardcoverBooks", () => {
     expect(results).toHaveLength(1)
     expect(results[0]?.categories).toEqual([])
     expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe("lookupHardcoverBookByIsbn", () => {
+  it("returns a normalized book from an edition lookup", async () => {
+    const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: {
+          editions: [
+            {
+              id: 777,
+              isbn_13: "9787115546081",
+              pages: 320,
+              image: { url: "https://images.hardcover.app/test-cover.jpg" },
+              cached_tags: [{ tag: "Technology" }],
+              cached_contributors: [{ author: { name: "阮一峰" } }],
+              book: {
+                title: "ECMAScript 6 入门",
+                subtitle: "第 3 版",
+                tags: ["Programming"],
+              },
+            },
+          ],
+        },
+      }),
+    } as Response)
+
+    const result = await lookupHardcoverBookByIsbn("978-7-115-54608-1")
+
+    expect(result).toMatchObject({
+      externalId: "777",
+      title: "ECMAScript 6 入门",
+      subtitle: "第 3 版",
+      isbn: "9787115546081",
+      pageCount: 320,
+      authors: ["阮一峰"],
+      categories: ["Technology", "Programming"],
+      coverUrl: "https://images.hardcover.app/test-cover.jpg",
+    })
+
+    const request = fetchMock.mock.calls[0]?.[1]
+    expect(request).toBeDefined()
+    expect(JSON.parse(String(request?.body))).toMatchObject({
+      variables: { isbn: "9787115546081" },
+    })
+  })
+
+  it("returns null when no edition matches the ISBN", async () => {
+    const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>
+
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: {
+          editions: [],
+        },
+      }),
+    } as Response)
+
+    await expect(lookupHardcoverBookByIsbn("9787115546081")).resolves.toBeNull()
   })
 })

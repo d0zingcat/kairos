@@ -48,6 +48,15 @@ export interface HardcoverBookNormalized {
   pageCount: number | null
 }
 
+interface HardcoverEditionLookupResponse {
+  data?: {
+    editions?: Array<Record<string, unknown>>
+  }
+  errors?: Array<{
+    message?: string
+  }>
+}
+
 interface SearchLogContext {
   traceId?: string
 }
@@ -60,6 +69,31 @@ function getApiToken(): string | null {
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return []
   return value.filter((item): item is string => typeof item === "string")
+}
+
+function toRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null
+}
+
+function toRecordArray(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .map((item) => toRecord(item))
+    .filter((item): item is Record<string, unknown> => item !== null)
+}
+
+function extractStringFromRecord(value: Record<string, unknown>, keys: string[]): string | null {
+  for (const key of keys) {
+    const candidate = value[key]
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim()
+    }
+  }
+
+  return null
 }
 
 function toCoverUrl(value: unknown): string | null {
@@ -87,6 +121,43 @@ function extractHardcoverNumericId(item: Record<string, unknown>): number | null
 
 function uniqueStrings(values: Array<string | null | undefined>): string[] {
   return Array.from(new Set(values.filter((value): value is string => Boolean(value && value.trim())).map((value) => value.trim())))
+}
+
+function extractCachedContributorNames(value: unknown): string[] {
+  return uniqueStrings(
+    toRecordArray(value).flatMap((entry) => {
+      const author = toRecord(entry.author)
+      return [
+        extractStringFromRecord(entry, ["name"]),
+        extractStringFromRecord(author ?? {}, ["name"]),
+      ]
+    }),
+  )
+}
+
+function extractCachedTagNames(value: unknown): string[] {
+  return uniqueStrings(
+    toRecordArray(value).flatMap((entry) => [
+      extractStringFromRecord(entry, ["tag", "name", "label"]),
+    ]),
+  )
+}
+
+export function normalizeIsbn(input: string): string | null {
+  const normalized = input
+    .trim()
+    .toUpperCase()
+    .replace(/[^0-9X]/g, "")
+
+  if (normalized.length === 10 && /^\d{9}[\dX]$/.test(normalized)) {
+    return normalized
+  }
+
+  if (normalized.length === 13 && /^\d{13}$/.test(normalized)) {
+    return normalized
+  }
+
+  return null
 }
 
 function extractHardcoverCategories(item: Record<string, unknown>): string[] {
@@ -216,6 +287,140 @@ export function normalizeHardcoverBookResult(item: Record<string, unknown>): Har
     coverUrl,
     isbn: isbns[0] ?? null,
     pageCount,
+  }
+}
+
+function normalizeHardcoverEditionResult(item: Record<string, unknown>): HardcoverBookNormalized | null {
+  const editionTitle = typeof item.title === "string" ? item.title : null
+  const editionSubtitle = typeof item.subtitle === "string" ? item.subtitle : null
+  const editionPages = typeof item.pages === "number" ? item.pages : null
+  const editionIsbn13 = typeof item.isbn_13 === "string" ? item.isbn_13 : null
+  const editionIsbn10 = typeof item.isbn_10 === "string" ? item.isbn_10 : null
+  const book = toRecord(item.book)
+  const bookTitle = typeof book?.title === "string" ? book.title : null
+  const bookSubtitle = typeof book?.subtitle === "string" ? book.subtitle : null
+  const title = editionTitle ?? bookTitle
+
+  if (!title) return null
+
+  const categories = uniqueStrings([
+    ...extractCachedTagNames(item.cached_tags),
+    ...extractHardcoverCategories(book ?? {}),
+  ])
+
+  const authors = uniqueStrings([
+    ...extractCachedContributorNames(item.cached_contributors),
+  ])
+
+  const coverUrl =
+    toCoverUrl(item.image) ??
+    toCoverUrl(item.cached_image) ??
+    toCoverUrl(book?.image)
+
+  const idRaw = item.id
+  const externalId =
+    typeof idRaw === "number" || typeof idRaw === "string"
+      ? String(idRaw)
+      : title
+
+  return {
+    externalId,
+    title,
+    subtitle: editionSubtitle ?? bookSubtitle,
+    authors,
+    categories,
+    coverUrl,
+    isbn: editionIsbn13 ?? editionIsbn10,
+    pageCount: editionPages,
+  }
+}
+
+export async function lookupHardcoverBookByIsbn(
+  isbnInput: string,
+  context?: SearchLogContext,
+): Promise<HardcoverBookNormalized | null> {
+  const token = getApiToken()
+  const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
+  if (!token) {
+    logger.debug("hardcover token missing, skipping hardcover isbn lookup", traceMeta)
+    return null
+  }
+
+  const normalizedIsbn = normalizeIsbn(isbnInput)
+  if (!normalizedIsbn) {
+    logger.debug("hardcover isbn lookup skipped due to invalid isbn", { isbnInput, ...traceMeta })
+    return null
+  }
+
+  const isbnField = normalizedIsbn.length === 13 ? "isbn_13" : "isbn_10"
+  const requestBody = {
+    query: `query GetEditionByIsbn($isbn: String!) {
+      editions(where: { ${isbnField}: { _eq: $isbn } }, limit: 5) {
+        id
+        title
+        subtitle
+        isbn_10
+        isbn_13
+        pages
+        image {
+          url
+        }
+        cached_image
+        cached_tags
+        cached_contributors
+        book {
+          id
+          title
+          subtitle
+          tags
+          book_category_id
+        }
+      }
+    }`,
+    variables: { isbn: normalizedIsbn },
+  }
+
+  logger.debugApi("request", HARDCOVER_API_BASE, requestBody, traceMeta)
+
+  try {
+    const res = await fetch(HARDCOVER_API_BASE, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: token,
+        "user-agent": "kairos/0.1.0 (book-isbn-lookup)",
+      },
+      body: JSON.stringify(requestBody),
+    })
+
+    if (!res.ok) {
+      logger.warn("hardcover isbn lookup returned non-200", { status: res.status, isbn: normalizedIsbn, ...traceMeta })
+      return null
+    }
+
+    const data = (await res.json()) as HardcoverEditionLookupResponse
+    logger.debugApi("response", HARDCOVER_API_BASE, data, traceMeta)
+
+    if (Array.isArray(data.errors) && data.errors.length > 0) {
+      logger.warn("hardcover isbn lookup returned graphql errors", {
+        isbn: normalizedIsbn,
+        errors: data.errors.map((error) => error.message ?? "unknown"),
+        ...traceMeta,
+      })
+      return null
+    }
+
+    const editions = Array.isArray(data.data?.editions) ? data.data.editions : []
+    return editions
+      .map((edition) => normalizeHardcoverEditionResult(edition))
+      .find((edition): edition is HardcoverBookNormalized => edition !== null) ?? null
+  } catch (error) {
+    logger.error("hardcover isbn lookup failed unexpectedly", {
+      isbn: normalizedIsbn,
+      error: error instanceof Error ? error.message : "unknown",
+      ...traceMeta,
+    })
+    return null
   }
 }
 

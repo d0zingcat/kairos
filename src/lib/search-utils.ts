@@ -7,6 +7,19 @@ export interface SearchResultItem {
     meta: Record<string, unknown>
 }
 
+function normalizeKeyPart(value: string | null | undefined): string {
+    return (value ?? "").toLowerCase().trim()
+}
+
+function getBookIsbn(item: SearchResultItem): string | null {
+    if (item.type !== "book") return null
+
+    const isbn = item.meta.isbn
+    return typeof isbn === "string" && isbn.trim()
+        ? normalizeKeyPart(isbn)
+        : null
+}
+
 /**
  * Deduplicates search results based on type, title, and subtitle to provide a cleaner UI.
  * Prefers items with cover URLs (typically from Spotify) over those without.
@@ -15,8 +28,10 @@ export function mergeUniqueResults(items: SearchResultItem[]): SearchResultItem[
     const seen = new Map<string, SearchResultItem>()
 
     for (const item of items) {
-        // We normalize the key to be case-insensitive for better deduplication
-        const key = `${item.type}::${item.title.toLowerCase().trim()}::${(item.subtitle ?? "").toLowerCase().trim()}`
+        const bookIsbn = getBookIsbn(item)
+        const key = bookIsbn
+            ? `${item.type}::isbn::${bookIsbn}`
+            : `${item.type}::${normalizeKeyPart(item.title)}::${normalizeKeyPart(item.subtitle)}`
 
         const existing = seen.get(key)
         if (!existing) {
