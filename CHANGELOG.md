@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/d0zingcat/kairos/compare/v1.9.0...v1.10.0) (2026-03-29)
+
+
+### Features
+
+* add ISBN shortcut for book imports ([#51](https://github.com/d0zingcat/kairos/issues/51)) ([1dd5a20](https://github.com/d0zingcat/kairos/commit/1dd5a208a3011069e2d7c554dbabaef46de82b17))
+
 # [1.9.0](https://github.com/d0zingcat/kairos/compare/v1.8.1...v1.9.0) (2026-03-29)
 
 
