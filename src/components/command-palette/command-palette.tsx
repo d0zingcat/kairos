@@ -241,8 +241,23 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
               )}
-              {!loading && results.length === 0 && (
-                <CommandEmpty>{isIsbnSearch ? t("search.noIsbnResults") : t("search.noResults")}</CommandEmpty>
+              {!loading && results.length === 0 && !isIsbnSearch && (
+                <CommandEmpty>{t("search.noResults")}</CommandEmpty>
+              )}
+              {!loading && results.length === 0 && isIsbnSearch && query.length >= 2 && (
+                <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+                  <p>{t("search.noIsbnResults")}</p>
+                  <p className="mt-1">{t("search.noIsbnResultsHint")}</p>
+                  <a
+                    href={`https://hardcover.app/books/new`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-block text-primary underline underline-offset-2 hover:opacity-80"
+                    onClick={() => onOpenChange(false)}
+                  >
+                    {t("search.noIsbnResultsLink")}
+                  </a>
+                </div>
               )}
               {!loading && results.length > 0 && (
                 <CommandGroup heading={t("search.searchType", { type: getSearchTypeLabel(searchType, t) })}>
