@@ -13,7 +13,8 @@
     "search": "搜索",
     "loading": "加载中...",
     "retry": "点击重试",
-    "noMore": "没有更多了"
+    "noMore": "没有更多了",
+    "back": "返回"
   },
   "nav": {
     "quickEntry": "快速录入",
