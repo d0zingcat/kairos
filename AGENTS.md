@@ -125,70 +125,69 @@ bun run release          # semantic-release (versioning + changelog)
 
 # Agent Workflow Instructions
 
-## Agent Git Workflow (MANDATORY)
+## Agent Git Workflow
 
-**All agents MUST use `git worktree` to create new branches from `main` for ANY new feature or task.**
+**Policy:** NEVER commit or push directly to `main`. Always create a dedicated branch from `main` for each task.
 
-**Policy:** NEVER work on the current branch. ALWAYS create a fresh worktree from main for each new task.
+**Worktrees are recommended, not required.** Use them when you want isolation, parallel feature work, or need to avoid disturbing an in-progress tree. If local env or testing setup is simpler in the current checkout, it is acceptable to create a normal branch in place.
 
-### Standard Workflow (Always Use Worktree)
+### Standard Workflow
 
-For ANY new feature, bug fix, or task:
+Choose one of these approaches for any new feature, bug fix, or task.
+
+**Option A: Current checkout (simple default)**
+
+```bash
+# 1. Fetch latest main
+git fetch origin main
+
+# 2. Create a branch from main
+git checkout -b <branch-name> origin/main
+
+# Now work in the current directory
+```
+
+**Option B: Worktree (recommended for isolation)**
 
 ```bash
 # 1. Fetch latest main
 git fetch origin main
 
 # 2. Create a new worktree in a sibling directory
-git worktree add ../kairos-<branch-name> main
+git worktree add ../kairos-<branch-name> origin/main -b <branch-name>
 
 # 3. Navigate to the new worktree
 cd ../kairos-<branch-name>
-
-# 4. Create your branch from main
-git checkout -b <branch-name>
-
-# Now you have a clean workspace isolated from other work
 ```
 
-**Example:**
-```bash
-# Starting from /workspace/kairos on ANY branch
-git fetch origin main
-git worktree add ../kairos-feat/new-feature main
-cd ../kairos-feat/new-feature
-git checkout -b feat/new-feature
-# Now working on feat/new-feature from main in complete isolation
-```
-
-### Why Always Use Worktree
+### When To Prefer Worktrees
 
 **Benefits:**
 - ✅ Complete isolation between tasks
 - ✅ No need to stash or commit incomplete work
 - ✅ No risk of mixing changes between features
-- ✅ Each worktree has its own git state and node_modules
 - ✅ Can work on multiple branches in parallel
-- ✅ Original branch always remains clean
 - ✅ Easy cleanup after completion
 
-**Worktree Structure:**
+**Tradeoff:** worktrees use a separate directory, so local `.env` / `.env.local`, ports, and install state may need extra setup.
+
+**Example structure:**
 ```
 /workspace/
 ├── kairos/                    # Original repository
 │   └── .git/
-├── kairos-feat/feature-a/     # Worktree for feature A
-├── kairos-feat/feature-b/     # Worktree for feature B
-└── kairos-fix/bug-fix/        # Worktree for bug fix
+├── kairos-feat/feature-a/     # Optional worktree for feature A
+├── kairos-feat/feature-b/     # Optional worktree for feature B
+└── kairos-fix/bug-fix/        # Optional worktree for bug fix
 ```
 
-### Cleanup After Completion
+### Worktree Cleanup
 
 ```bash
 # When done with a worktree, remove it
 git -C /workspace/kairos worktree remove ../kairos-<branch-name>
 
-# Or from within the worktree:
+# Or from within the main repo:
 cd /workspace/kairos
 git worktree remove ../kairos-<branch-name>
 ```
@@ -322,7 +321,7 @@ git checkout -b feat/your-feature origin/main
 
 - Pre-commit hook runs `bun run lint` to ensure code quality
 - Branch protection rules on GitHub prevent direct pushes to `main`
-- **This AGENTS.md file instructs all agents to always branch from main**
+- **This AGENTS.md file instructs all agents to branch from `main` for every task**
 
 ---
 
