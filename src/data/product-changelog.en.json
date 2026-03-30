@@ -1,5 +1,20 @@
 [
   {
+    "version": "1.11.0",
+    "date": "2026-03-30",
+    "summary": "This update introduces support for community-curated TV show groups and enhances the command panel for a better user experience.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Add support for community-curated TV show groups to enrich content discovery."
+      },
+      {
+        "tag": "ux",
+        "text": "Redesign the command panel to improve navigation and usability."
+      }
+    ]
+  },
+  {
     "version": "1.10.0",
     "date": "2026-03-29",
     "summary": "This release introduces a convenient shortcut for importing books using ISBNs, enhancing the ease of adding new book entries.",
