@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/d0zingcat/kairos/compare/v1.10.0...v1.11.0) (2026-03-30)
+
+
+### Features
+
+* 支持 TMDB 社区剧集组 API 并重构命令面板 UX ([#54](https://github.com/d0zingcat/kairos/issues/54)) ([5661f93](https://github.com/d0zingcat/kairos/commit/5661f9389a8ea978b52b791a098cf9f5bc410b9a))
+
 # [1.10.0](https://github.com/d0zingcat/kairos/compare/v1.9.0...v1.10.0) (2026-03-29)
 
 
