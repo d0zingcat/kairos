@@ -7,7 +7,7 @@ import { eq, desc, sql, and, ilike, count, inArray } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
-import { getTVDetail } from "@/lib/api/tmdb"
+import { getTVDetail, getTVEpisodeGroups } from "@/lib/api/tmdb"
 import { bookSchema, musicSchema, watchSchema, gameSchema } from "@/lib/validations/entry"
 
 type BookInput = Omit<NewBook, "userId">
@@ -48,9 +48,18 @@ async function validateTmdbTvSeasonSelection(input: {
       return null
     }
 
-    return validSeasonNumbers.includes(input.seasonNumber)
-      ? null
-      : "请选择有效的季数"
+    if (validSeasonNumbers.includes(input.seasonNumber)) {
+      return null
+    }
+
+    // Fall back: check community episode groups (type=7) which can define additional seasons
+    const episodeGroups = await getTVEpisodeGroups(Number(input.externalId)).catch(() => [])
+    const tvGroup = episodeGroups.find((g) => g.type === 7)
+    if (tvGroup && input.seasonNumber >= 1 && input.seasonNumber <= tvGroup.group_count) {
+      return null
+    }
+
+    return "请选择有效的季数"
   } catch {
     return "季信息校验失败，请稍后重试"
   }
