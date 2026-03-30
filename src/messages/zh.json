@@ -54,7 +54,8 @@
     "searchTv": "搜索电视剧",
     "searchGame": "搜索游戏",
     "searchWithType": "搜索{type}...",
-    "searchTip": "输入 /book, /isbn, /music, /movie, /tv, /game 后搜索..."
+    "searchTip": "输入内容，将下方选择分类...",
+    "selectCategory": "选择分类"
   },
   "entry": {
     "title": "录入记录",
