@@ -6,6 +6,7 @@
 
 详细更新记录请见 [CHANGELOG.md](CHANGELOG.md)。
 面向用户的版本摘要数据维护在 `src/data/product-changelog.{zh,en}.json`，用于产品更新日志页面（入口位于 `/dashboard/settings`）。
+产品方向与执行优先级请见 [docs/product-roadmap.md](docs/product-roadmap.md)。
 
 可选：使用 OpenAI 自动从 `CHANGELOG.md` 生成用户向版本摘要（支持中英文，自动处理技术术语）。脚本只会读取最新一个 release，并将新版本追加到 `src/data/product-changelog.{zh,en}.json` 顶部，不会改写历史版本描述：
 
