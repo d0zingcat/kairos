@@ -1,6 +1,6 @@
 import { db } from "@/db"
 import { books, games, music, users, watches } from "@/db/schema"
-import { and, count, desc, eq, inArray, lt } from "drizzle-orm"
+import { and, count, desc, eq, inArray, lt, ne } from "drizzle-orm"
 
 export type FeedItem = {
   id: string
@@ -123,17 +123,17 @@ export async function getPublicPlazaFeed(options?: {
   const usernameMap = new Map(publicUsers.map((user) => [user.id, user.username]))
 
   const booksWhere = cursorDate
-    ? and(inArray(books.userId, userIds), lt(books.createdAt, cursorDate))
-    : inArray(books.userId, userIds)
+    ? and(inArray(books.userId, userIds), lt(books.createdAt, cursorDate), ne(books.moderationStatus, "rejected"))
+    : and(inArray(books.userId, userIds), ne(books.moderationStatus, "rejected"))
   const musicWhere = cursorDate
-    ? and(inArray(music.userId, userIds), lt(music.createdAt, cursorDate))
-    : inArray(music.userId, userIds)
+    ? and(inArray(music.userId, userIds), lt(music.createdAt, cursorDate), ne(music.moderationStatus, "rejected"))
+    : and(inArray(music.userId, userIds), ne(music.moderationStatus, "rejected"))
   const watchesWhere = cursorDate
-    ? and(inArray(watches.userId, userIds), lt(watches.createdAt, cursorDate))
-    : inArray(watches.userId, userIds)
+    ? and(inArray(watches.userId, userIds), lt(watches.createdAt, cursorDate), ne(watches.moderationStatus, "rejected"))
+    : and(inArray(watches.userId, userIds), ne(watches.moderationStatus, "rejected"))
   const gamesWhere = cursorDate
-    ? and(inArray(games.userId, userIds), lt(games.createdAt, cursorDate))
-    : inArray(games.userId, userIds)
+    ? and(inArray(games.userId, userIds), lt(games.createdAt, cursorDate), ne(games.moderationStatus, "rejected"))
+    : and(inArray(games.userId, userIds), ne(games.moderationStatus, "rejected"))
 
   const queryLimit = feedLimit + 1
   const [recentBooks, recentMusic, recentWatches, recentGames] = await Promise.all([
