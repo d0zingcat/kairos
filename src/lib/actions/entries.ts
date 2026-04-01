@@ -9,6 +9,7 @@ import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
 import { getTVDetail, getTVEpisodeGroups } from "@/lib/api/tmdb"
 import { bookSchema, musicSchema, watchSchema, gameSchema } from "@/lib/validations/entry"
+import { moderateText } from "@/lib/moderation"
 
 type BookInput = Omit<NewBook, "userId">
 type MusicInput = Omit<NewMusic, "userId">
@@ -72,7 +73,14 @@ export async function createBook(data: BookInput) {
   if (!result.success) {
     return { success: false, error: result.error.issues[0].message }
   }
-  const [book] = await db.insert(books).values({ ...result.data, userId: user.id }).returning()
+  let moderationStatus: "approved" | "rejected" = "approved"
+  if (user.publishToPlaza && result.data.notes) {
+    const modResult = await moderateText(result.data.notes)
+    if (modResult.flagged) {
+      moderationStatus = "rejected"
+    }
+  }
+  const [book] = await db.insert(books).values({ ...result.data, userId: user.id, moderationStatus }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
   return { success: true, data: book }
@@ -84,7 +92,12 @@ export async function updateBook(id: string, data: Partial<BookInput>) {
   if (!result.success) {
     return { success: false, error: result.error.issues[0].message }
   }
-  const [book] = await db.update(books).set(result.data).where(and(eq(books.id, id), eq(books.userId, user.id))).returning()
+  const updateData: typeof result.data & { moderationStatus?: "approved" | "rejected" } = { ...result.data }
+  if (user.publishToPlaza && result.data.notes !== undefined) {
+    const modResult = await moderateText(result.data.notes ?? "")
+    updateData.moderationStatus = modResult.flagged ? "rejected" : "approved"
+  }
+  const [book] = await db.update(books).set(updateData).where(and(eq(books.id, id), eq(books.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/books")
   return { success: true, data: book }
@@ -139,7 +152,14 @@ export async function createMusic(data: MusicInput) {
   if (!result.success) {
     return { success: false, error: result.error.issues[0].message }
   }
-  const [item] = await db.insert(music).values({ ...result.data, userId: user.id }).returning()
+  let moderationStatus: "approved" | "rejected" = "approved"
+  if (user.publishToPlaza && result.data.notes) {
+    const modResult = await moderateText(result.data.notes)
+    if (modResult.flagged) {
+      moderationStatus = "rejected"
+    }
+  }
+  const [item] = await db.insert(music).values({ ...result.data, userId: user.id, moderationStatus }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
   return { success: true, data: item }
@@ -151,7 +171,12 @@ export async function updateMusic(id: string, data: Partial<MusicInput>) {
   if (!result.success) {
     return { success: false, error: result.error.issues[0].message }
   }
-  const [item] = await db.update(music).set(result.data).where(and(eq(music.id, id), eq(music.userId, user.id))).returning()
+  const updateData: typeof result.data & { moderationStatus?: "approved" | "rejected" } = { ...result.data }
+  if (user.publishToPlaza && result.data.notes !== undefined) {
+    const modResult = await moderateText(result.data.notes ?? "")
+    updateData.moderationStatus = modResult.flagged ? "rejected" : "approved"
+  }
+  const [item] = await db.update(music).set(updateData).where(and(eq(music.id, id), eq(music.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/music")
   return { success: true, data: item }
@@ -207,7 +232,15 @@ export async function createWatch(data: WatchInput) {
     return { success: false, error: seasonValidationError }
   }
 
-  const [item] = await db.insert(watches).values({ ...result.data, userId: user.id }).returning()
+  let moderationStatus: "approved" | "rejected" = "approved"
+  if (user.publishToPlaza && result.data.notes) {
+    const modResult = await moderateText(result.data.notes)
+    if (modResult.flagged) {
+      moderationStatus = "rejected"
+    }
+  }
+
+  const [item] = await db.insert(watches).values({ ...result.data, userId: user.id, moderationStatus }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
   return { success: true, data: item }
@@ -236,7 +269,13 @@ export async function updateWatch(id: string, data: Partial<WatchInput>) {
     return { success: false, error: seasonValidationError }
   }
 
-  const [item] = await db.update(watches).set(result.data).where(and(eq(watches.id, id), eq(watches.userId, user.id))).returning()
+  const updateData: typeof result.data & { moderationStatus?: "approved" | "rejected" } = { ...result.data }
+  if (user.publishToPlaza && result.data.notes !== undefined) {
+    const modResult = await moderateText(result.data.notes ?? "")
+    updateData.moderationStatus = modResult.flagged ? "rejected" : "approved"
+  }
+
+  const [item] = await db.update(watches).set(updateData).where(and(eq(watches.id, id), eq(watches.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/watches")
   return { success: true, data: item }
@@ -290,7 +329,14 @@ export async function createGame(data: GameInput) {
   if (!result.success) {
     return { success: false, error: result.error.issues[0].message }
   }
-  const [item] = await db.insert(games).values({ ...result.data, userId: user.id }).returning()
+  let moderationStatus: "approved" | "rejected" = "approved"
+  if (user.publishToPlaza && result.data.notes) {
+    const modResult = await moderateText(result.data.notes)
+    if (modResult.flagged) {
+      moderationStatus = "rejected"
+    }
+  }
+  const [item] = await db.insert(games).values({ ...result.data, userId: user.id, moderationStatus }).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
   return { success: true, data: item }
@@ -302,7 +348,12 @@ export async function updateGame(id: string, data: Partial<GameInput>) {
   if (!result.success) {
     return { success: false, error: result.error.issues[0].message }
   }
-  const [item] = await db.update(games).set(result.data).where(and(eq(games.id, id), eq(games.userId, user.id))).returning()
+  const updateData: typeof result.data & { moderationStatus?: "approved" | "rejected" } = { ...result.data }
+  if (user.publishToPlaza && result.data.notes !== undefined) {
+    const modResult = await moderateText(result.data.notes ?? "")
+    updateData.moderationStatus = modResult.flagged ? "rejected" : "approved"
+  }
+  const [item] = await db.update(games).set(updateData).where(and(eq(games.id, id), eq(games.userId, user.id))).returning()
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/games")
   return { success: true, data: item }
