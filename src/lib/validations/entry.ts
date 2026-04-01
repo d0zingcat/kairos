@@ -12,6 +12,7 @@ export const bookSchema = createInsertSchema(books, {
     userId: true,
     createdAt: true,
     updatedAt: true,
+    moderationStatus: true,
 })
 
 export const musicSchema = createInsertSchema(music, {
@@ -23,6 +24,7 @@ export const musicSchema = createInsertSchema(music, {
     userId: true,
     createdAt: true,
     updatedAt: true,
+    moderationStatus: true,
 })
 
 export const watchSchema = createInsertSchema(watches, {
@@ -35,6 +37,7 @@ export const watchSchema = createInsertSchema(watches, {
     userId: true,
     createdAt: true,
     updatedAt: true,
+    moderationStatus: true,
 })
 
 export const gameSchema = createInsertSchema(games, {
@@ -47,4 +50,5 @@ export const gameSchema = createInsertSchema(games, {
     userId: true,
     createdAt: true,
     updatedAt: true,
+    moderationStatus: true,
 })

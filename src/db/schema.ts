@@ -40,6 +40,12 @@ export const gameStatusEnum = pgEnum("game_status", [
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "member"])
 
+export const moderationStatusEnum = pgEnum("moderation_status", [
+  "approved",
+  "rejected",
+  "pending",
+])
+
 // ── Shared timestamps ────────────────────────────────────
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -86,6 +92,7 @@ export const books = pgTable("books", {
   notes: text("notes"),
   favorite: boolean("favorite").notNull().default(false),
   tags: text("tags").array(),
+  moderationStatus: moderationStatusEnum("moderation_status").notNull().default("approved"),
   ...timestamps,
 }, (table) => ({
   userIdx: index("books_user_idx").on(table.userId),
@@ -95,6 +102,7 @@ export const books = pgTable("books", {
   booksFinishDateIdx: index("books_finish_date_idx").on(table.finishDate),
   booksCreatedAtIdx: index("books_created_at_idx").on(table.createdAt),
   booksUpdatedAtIdx: index("books_updated_at_idx").on(table.updatedAt),
+  booksModerationIdx: index("books_moderation_idx").on(table.moderationStatus),
 }))
 
 // ── Music ────────────────────────────────────────────────
@@ -113,6 +121,7 @@ export const music = pgTable("music", {
   favorite: boolean("favorite").notNull().default(false),
   notes: text("notes"),
   tags: text("tags").array(),
+  moderationStatus: moderationStatusEnum("moderation_status").notNull().default("approved"),
   ...timestamps,
 }, (table) => ({
   userIdx: index("music_user_idx").on(table.userId),
@@ -122,6 +131,7 @@ export const music = pgTable("music", {
   musicListenDateIdx: index("music_listen_date_idx").on(table.listenDate),
   musicCreatedAtIdx: index("music_created_at_idx").on(table.createdAt),
   musicUpdatedAtIdx: index("music_updated_at_idx").on(table.updatedAt),
+  musicModerationIdx: index("music_moderation_idx").on(table.moderationStatus),
 }))
 
 // ── Watches (Movies / TV) ────────────────────────────────
@@ -143,6 +153,7 @@ export const watches = pgTable("watches", {
   favorite: boolean("favorite").notNull().default(false),
   notes: text("notes"),
   tags: text("tags").array(),
+  moderationStatus: moderationStatusEnum("moderation_status").notNull().default("approved"),
   ...timestamps,
 }, (table) => ({
   userIdx: index("watches_user_idx").on(table.userId),
@@ -153,6 +164,7 @@ export const watches = pgTable("watches", {
   watchesWatchDateIdx: index("watches_watch_date_idx").on(table.watchDate),
   watchesCreatedAtIdx: index("watches_created_at_idx").on(table.createdAt),
   watchesUpdatedAtIdx: index("watches_updated_at_idx").on(table.updatedAt),
+  watchesModerationIdx: index("watches_moderation_idx").on(table.moderationStatus),
 }))
 
 // ── Games ────────────────────────────────────────────────
@@ -173,6 +185,7 @@ export const games = pgTable("games", {
   favorite: boolean("favorite").notNull().default(false),
   notes: text("notes"),
   tags: text("tags").array(),
+  moderationStatus: moderationStatusEnum("moderation_status").notNull().default("approved"),
   ...timestamps,
 }, (table) => ({
   userIdx: index("games_user_idx").on(table.userId),
@@ -182,6 +195,7 @@ export const games = pgTable("games", {
   gamesFinishDateIdx: index("games_finish_date_idx").on(table.finishDate),
   gamesCreatedAtIdx: index("games_created_at_idx").on(table.createdAt),
   gamesUpdatedAtIdx: index("games_updated_at_idx").on(table.updatedAt),
+  gamesModerationIdx: index("games_moderation_idx").on(table.moderationStatus),
 }))
 
 // ── Type exports ─────────────────────────────────────────
