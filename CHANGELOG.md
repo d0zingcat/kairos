@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/d0zingcat/kairos/compare/v1.11.0...v1.12.0) (2026-04-01)
+
+
+### Features
+
+* add OpenAI content moderation for plaza entries ([#55](https://github.com/d0zingcat/kairos/issues/55)) ([a7b447e](https://github.com/d0zingcat/kairos/commit/a7b447e3d6bcabe43c3bfa9658f68b7cea416943))
+
 # [1.11.0](https://github.com/d0zingcat/kairos/compare/v1.10.0...v1.11.0) (2026-03-30)
 
 
