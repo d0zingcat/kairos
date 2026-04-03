@@ -6,13 +6,15 @@ import { ActivityHeatmap } from "@/components/heatmap/activity-heatmap"
 import { RecentTimeline } from "@/components/dashboard/recent-timeline"
 import { FavoritesGrid } from "@/components/dashboard/favorites-grid"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { getCurrentUser } from "@/lib/auth"
 
 export default async function DashboardPage() {
-  const [stats, activity, recent, favorites] = await Promise.all([
+  const [stats, activity, recent, favorites, currentUser] = await Promise.all([
     getStats(),
     getActivityData(365),
     getRecentActivity(15),
     getFavorites(),
+    getCurrentUser(),
   ])
 
   return (
@@ -29,7 +31,15 @@ export default async function DashboardPage() {
       {/* Recent + Favorites */}
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <RecentTimeline items={recent} />
+          <RecentTimeline
+            items={recent}
+            shareUser={currentUser
+              ? {
+                  username: currentUser.username,
+                  isPublicProfile: currentUser.isPublicProfile,
+                }
+              : null}
+          />
         </div>
         <div>
           <FavoritesGrid items={favorites} />

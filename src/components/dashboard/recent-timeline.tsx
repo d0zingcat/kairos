@@ -8,8 +8,10 @@ import { enUS, zhCN } from "date-fns/locale"
 import { MEDIA_TYPES, type MediaType } from "@/lib/constants"
 import { Star } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { RecentShareDialog } from "@/components/dashboard/recent-share-dialog"
+import { canShareRecentActivity, type ShareProfileUser } from "@/lib/share"
 
-interface TimelineItem {
+export interface TimelineItem {
   id: string
   title: string
   mediaType: MediaType
@@ -22,9 +24,10 @@ interface TimelineItem {
 
 interface RecentTimelineProps {
   items: TimelineItem[]
+  shareUser?: ShareProfileUser | null
 }
 
-export function RecentTimeline({ items }: RecentTimelineProps) {
+export function RecentTimeline({ items, shareUser = null }: RecentTimelineProps) {
   const { t, locale } = useTranslation()
   const dateLocale = locale === "zh" ? zhCN : enUS
 
@@ -77,16 +80,21 @@ export function RecentTimeline({ items }: RecentTimelineProps) {
               )}
 
               <div className="flex-1 overflow-hidden">
-                <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-medium text-foreground/90">
-                    {item.title}
-                  </p>
-                  <Badge
-                    variant="outline"
-                    className={`shrink-0 border-none text-[10px] ${config.color}`}
-                  >
-                    {t(`media.${item.mediaType}`)}
-                  </Badge>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="truncate text-sm font-medium text-foreground/90">
+                      {item.title}
+                    </p>
+                    <Badge
+                      variant="outline"
+                      className={`shrink-0 border-none text-[10px] ${config.color}`}
+                    >
+                      {t(`media.${item.mediaType}`)}
+                    </Badge>
+                  </div>
+                  {i === 0 && canShareRecentActivity(shareUser) ? (
+                    <RecentShareDialog item={item} shareUser={shareUser} />
+                  ) : null}
                 </div>
                 <div className="mt-0.5 flex items-center gap-2">
                   {item.rating && item.rating > 0 && (

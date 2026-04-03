@@ -42,6 +42,7 @@ OPENAI_API_KEY=your_key bun run changelog:generate:product
 - 📝 **预留用户名保护** — 注册时自动保留 admin、official、system 等官方用户名，防止被占用
 - 👥 **多用户账号体系** — 支持注册账号，每位用户默认仅查看自己的时间线
 - 🌐 **公开广场 (Plaza)** — 用户可切换“是否公开摘要动态”，并在广场（`/plaza`）展示最近活动
+- 📱 **最近记录分享卡** — 可从仪表盘最近活动直接打开竖版分享卡，自行截图，二维码跳转公开主页
 - 📥 **Goodreads 一键导入** — 在「管理设置」页上传 CSV，自动追加导入并跳过重复
 - 🐳 **Docker 一键部署** — PostgreSQL + App 容器化
 - 🗄️ **镜像内可执行迁移** — `latest` 镜像内置 `dist/migrate.js`，支持无源码环境初始化数据库
