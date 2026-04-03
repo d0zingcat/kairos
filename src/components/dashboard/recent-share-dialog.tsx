@@ -68,7 +68,7 @@ export function RecentShareDialog({ item, shareUser }: RecentShareDialogProps) {
       type: "svg",
       width: 180,
     })
-      .then((svg) => {
+      .then((svg: string) => {
         if (!cancelled) {
           setQrSvg(svg)
         }

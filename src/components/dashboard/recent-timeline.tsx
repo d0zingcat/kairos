@@ -92,7 +92,7 @@ export function RecentTimeline({ items, shareUser = null }: RecentTimelineProps)
                       {t(`media.${item.mediaType}`)}
                     </Badge>
                   </div>
-                  {i === 0 && canShareRecentActivity(shareUser) ? (
+                  {i === 0 && shareUser && canShareRecentActivity(shareUser) ? (
                     <RecentShareDialog item={item} shareUser={shareUser} />
                   ) : null}
                 </div>
