@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/d0zingcat/kairos/compare/v1.12.0...v1.12.1) (2026-04-03)
+
+
+### Bug Fixes
+
+* backfill moderation status migration ([#56](https://github.com/d0zingcat/kairos/issues/56)) ([204a55f](https://github.com/d0zingcat/kairos/commit/204a55f97efc41d33e8e347e4d3fdb308f36f886))
+
 # [1.12.0](https://github.com/d0zingcat/kairos/compare/v1.11.0...v1.12.0) (2026-04-01)
 
 
