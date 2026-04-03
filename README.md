@@ -173,6 +173,7 @@ bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId> --
 - 当前仓库已重置为新的 Drizzle 基线迁移：`drizzle/0000_init.sql`。
 - 启动时自动迁移仅调用 Drizzle 官方 migrator，不会手动修改 Drizzle metadata。
 - Docker 镜像构建不会执行 `db:generate`，生产环境只应用仓库中已提交的 `drizzle/*.sql` 迁移文件。
+- 若启动日志显示 migration 已完成，但数据库结构仍缺少新列，优先检查 `drizzle/meta/_journal.json` 中新增 migration 的排序是否正确；对于已发布环境，优先追加新的幂等补丁迁移，而不是回改旧 migration。
 - 若你的数据库里仍有旧结构且不需要保留数据，请先执行一次：
 
 ```sql

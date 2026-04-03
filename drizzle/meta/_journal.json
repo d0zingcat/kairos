@@ -29,6 +29,13 @@
       "when": 1743292800000,
       "tag": "0003_add_moderation_status",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1775203200000,
+      "tag": "0004_backfill_moderation_status",
+      "breakpoints": true
     }
   ]
 }
