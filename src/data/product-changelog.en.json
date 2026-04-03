@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.12.1",
+    "date": "2026-04-03",
+    "summary": "This update improves the accuracy of content moderation status to ensure better user experience.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Corrected an issue with content moderation status to reflect accurate information."
+      }
+    ]
+  },
+  {
     "version": "1.12.0",
     "date": "2026-04-01",
     "summary": "This update introduces content moderation to ensure a safer and more respectful community experience.",
