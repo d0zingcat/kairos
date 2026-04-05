@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/d0zingcat/kairos/compare/v1.12.1...v1.12.2) (2026-04-05)
+
+
+### Bug Fixes
+
+* **tmdb:** align TV season validation with community season selection strategy ([#58](https://github.com/d0zingcat/kairos/issues/58)) ([ab5d109](https://github.com/d0zingcat/kairos/commit/ab5d1097514d3eb627ca993466cb0ce016bf1634))
+
 ## [1.12.1](https://github.com/d0zingcat/kairos/compare/v1.12.0...v1.12.1) (2026-04-03)
 
 
