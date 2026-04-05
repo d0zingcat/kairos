@@ -53,9 +53,24 @@ async function validateTmdbTvSeasonSelection(input: {
       return null
     }
 
-    // Fall back: check community episode groups (type=7) which can define additional seasons
+    // Fall back: number_of_seasons is authoritative; seasons array may lag behind for airing shows
+    if (
+      detail.number_of_seasons != null &&
+      input.seasonNumber >= 1 &&
+      input.seasonNumber <= detail.number_of_seasons
+    ) {
+      return null
+    }
+
+    // Fall back: check community episode groups — mirror the same selection strategy as
+    // /api/tmdb/tv/[id]/seasons so that validation matches what the UI offers.
     const episodeGroups = await getTVEpisodeGroups(Number(input.externalId)).catch(() => [])
-    const tvGroup = episodeGroups.find((g) => g.type === 7)
+    const SEASON_NAME_RE = /season|剧集|季/i
+    const type7Groups = episodeGroups.filter((g) => g.type === 7 && g.group_count > 1)
+    const tvGroup =
+      type7Groups.find((g) => SEASON_NAME_RE.test(g.name)) ??
+      episodeGroups.find((g) => g.type === 6 && g.group_count > 1) ??
+      type7Groups[0]
     if (tvGroup && input.seasonNumber >= 1 && input.seasonNumber <= tvGroup.group_count) {
       return null
     }
