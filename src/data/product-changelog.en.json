@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.12.2",
+    "date": "2026-04-05",
+    "summary": "This update improves the accuracy of TV season selections to better match community preferences.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Correct TV season validation to align with how the community selects seasons, ensuring more reliable and expected results."
+      }
+    ]
+  },
+  {
     "version": "1.12.1",
     "date": "2026-04-03",
     "summary": "This update improves the accuracy of content moderation status to ensure better user experience.",
