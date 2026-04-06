@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/d0zingcat/kairos/compare/v1.12.2...v1.12.3) (2026-04-06)
+
+
+### Bug Fixes
+
+* **plaza:** show entry notes in public feeds ([#59](https://github.com/d0zingcat/kairos/issues/59)) ([1739bb3](https://github.com/d0zingcat/kairos/commit/1739bb37ccb705c1610d035f3993cb16f4d49589))
+
 ## [1.12.2](https://github.com/d0zingcat/kairos/compare/v1.12.1...v1.12.2) (2026-04-05)
 
 
