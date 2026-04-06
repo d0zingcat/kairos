@@ -8,6 +8,7 @@ export type FeedItem = {
   username: string
   mediaType: "book" | "music" | "watch" | "game"
   title: string
+  notes?: string | null
   musicType?: "track" | "album"
   watchType?: "movie" | "tv"
   seasonNumber?: number | null
@@ -166,6 +167,7 @@ export async function getPublicPlazaFeed(options?: {
       username: usernameMap.get(item.userId) ?? "unknown",
       mediaType: "book" as const,
       title: item.title,
+      notes: item.notes,
       createdAt: item.createdAt,
     })),
     ...recentMusic.map((item) => ({
@@ -174,6 +176,7 @@ export async function getPublicPlazaFeed(options?: {
       username: usernameMap.get(item.userId) ?? "unknown",
       mediaType: "music" as const,
       title: item.title,
+      notes: item.notes,
       musicType: item.type,
       createdAt: item.createdAt,
     })),
@@ -183,6 +186,7 @@ export async function getPublicPlazaFeed(options?: {
       username: usernameMap.get(item.userId) ?? "unknown",
       mediaType: "watch" as const,
       title: item.title,
+      notes: item.notes,
       watchType: item.type,
       seasonNumber: item.seasonNumber,
       createdAt: item.createdAt,
@@ -193,6 +197,7 @@ export async function getPublicPlazaFeed(options?: {
       username: usernameMap.get(item.userId) ?? "unknown",
       mediaType: "game" as const,
       title: item.title,
+      notes: item.notes,
       createdAt: item.createdAt,
     })),
   ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -319,6 +324,7 @@ export async function getPublicUserProfile(username: string, feedLimit = 30) {
       username: user.username,
       mediaType: "book" as const,
       title: item.title,
+      notes: item.notes,
       createdAt: item.createdAt,
     })),
     ...recentMusic.map((item) => ({
@@ -327,6 +333,7 @@ export async function getPublicUserProfile(username: string, feedLimit = 30) {
       username: user.username,
       mediaType: "music" as const,
       title: item.title,
+      notes: item.notes,
       musicType: item.type,
       createdAt: item.createdAt,
     })),
@@ -336,6 +343,7 @@ export async function getPublicUserProfile(username: string, feedLimit = 30) {
       username: user.username,
       mediaType: "watch" as const,
       title: item.title,
+      notes: item.notes,
       watchType: item.type,
       seasonNumber: item.seasonNumber,
       createdAt: item.createdAt,
@@ -346,6 +354,7 @@ export async function getPublicUserProfile(username: string, feedLimit = 30) {
       username: user.username,
       mediaType: "game" as const,
       title: item.title,
+      notes: item.notes,
       createdAt: item.createdAt,
     })),
   ]
