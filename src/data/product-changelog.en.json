@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.13.0",
+    "date": "2026-04-06",
+    "summary": "This release introduces a new feature to share recent activities, enhancing user interaction and content sharing.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Add a card that allows users to share their recent activities easily."
+      }
+    ]
+  },
+  {
     "version": "1.12.3",
     "date": "2026-04-06",
     "summary": "This update improves the visibility of entry notes in public feeds for a better user experience.",
