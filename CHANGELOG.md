@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/d0zingcat/kairos/compare/v1.12.3...v1.13.0) (2026-04-06)
+
+
+### Features
+
+* add recent activity share card ([#57](https://github.com/d0zingcat/kairos/issues/57)) ([756d3a3](https://github.com/d0zingcat/kairos/commit/756d3a3edaf6393e9962503054a45d0cdaca8e4c))
+
 ## [1.12.3](https://github.com/d0zingcat/kairos/compare/v1.12.2...v1.12.3) (2026-04-06)
 
 
