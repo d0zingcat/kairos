@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.12.3",
+    "date": "2026-04-06",
+    "summary": "This update improves the visibility of entry notes in public feeds for a better user experience.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Ensure entry notes are displayed correctly in public feeds."
+      }
+    ]
+  },
+  {
     "version": "1.12.2",
     "date": "2026-04-05",
     "summary": "This update improves the accuracy of TV season selections to better match community preferences.",
