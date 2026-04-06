@@ -140,6 +140,9 @@ export default async function PublicUserPage({
                     ) : null}
                   </div>
                 </div>
+                {item.notes ? (
+                  <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">“{item.notes}”</p>
+                ) : null}
                 <p className="mt-2 text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(item.createdAt), {
                     addSuffix: true,
