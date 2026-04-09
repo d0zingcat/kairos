@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.13.1",
+    "date": "2026-04-09",
+    "summary": "This update improves the appearance of shared content by adjusting the size of the QR code to better fit its container.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Resize QR code to properly fit within the share card container for a cleaner look."
+      }
+    ]
+  },
+  {
     "version": "1.13.0",
     "date": "2026-04-06",
     "summary": "This release introduces a new feature to share recent activities, enhancing user interaction and content sharing.",
