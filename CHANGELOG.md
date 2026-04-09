@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/d0zingcat/kairos/compare/v1.13.0...v1.13.1) (2026-04-09)
+
+
+### Bug Fixes
+
+* resize QR code to fit share card container ([#60](https://github.com/d0zingcat/kairos/issues/60)) ([c2ae291](https://github.com/d0zingcat/kairos/commit/c2ae29136a0e3b8f93f05eb4d3ec87f8138bddd4))
+
 # [1.13.0](https://github.com/d0zingcat/kairos/compare/v1.12.3...v1.13.0) (2026-04-06)
 
 
