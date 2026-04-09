@@ -201,11 +201,11 @@ export function RecentShareDialog({ item, shareUser }: RecentShareDialogProps) {
                         {qrSvg ? (
                           <div
                             aria-label={t("dashboard.shareQrTitle")}
-                            className="h-28 w-28"
+                            className="h-24 w-24 [&>svg]:h-full [&>svg]:w-full"
                             dangerouslySetInnerHTML={{ __html: qrSvg }}
                           />
                         ) : (
-                          <div className="flex h-28 w-28 items-center justify-center rounded-xl bg-zinc-100 text-xs text-zinc-500">
+                          <div className="flex h-24 w-24 items-center justify-center rounded-xl bg-zinc-100 text-xs text-zinc-500">
                             QR
                           </div>
                         )}
