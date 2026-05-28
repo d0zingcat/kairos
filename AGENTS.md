@@ -116,7 +116,7 @@ bun run release          # semantic-release (versioning + changelog)
 - **Plaza**: `/plaza` shows users who enabled "publish_to_plaza"
 - **Goodreads import**: `/dashboard/settings` → upload CSV
 - **Privacy settings**: `/dashboard/settings` → toggle public profile / plaza publish
-- **Image domains**: 13 external domains allowed (TMDB, Spotify, Google Books, etc.)
+- **Image domains**: External image domains allowed in `next.config.ts` (TMDB, Spotify, WeRead, etc.)
 - **Docker**: `output: "standalone"` + multi-stage build, GHCR tagging: `sha-{short}` + `latest`
 - **Auto-migration**: Runs on startup if `DB_AUTO_MIGRATE=true` (default)
 - **Branch protection**: `main` requires PR — NEVER push directly
