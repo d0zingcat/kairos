@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.14.0",
+    "date": "2026-05-28",
+    "summary": "This update introduces a new book search source to enhance your reading experience.",
+    "items": [
+      {
+        "tag": "feature",
+        "text": "Add WeRead as a new book search source, expanding the variety of books you can discover."
+      }
+    ]
+  },
+  {
     "version": "1.13.1",
     "date": "2026-04-09",
     "summary": "This update improves the appearance of shared content by adjusting the size of the QR code to better fit its container.",
