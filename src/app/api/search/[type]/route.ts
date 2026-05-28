@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { searchMovies, searchTV, posterUrl } from "@/lib/api/tmdb"
 import { lookupHardcoverBookByIsbn, searchHardcoverBooks } from "@/lib/api/hardcover"
+import { searchWereadBooks } from "@/lib/api/weread"
 import { searchGames, normalizeGameResult } from "@/lib/api/rawg"
 import { searchSpotify, normalizeSpotifyResult } from "@/lib/api/spotify"
 import { searchAlbums, searchTracks } from "@/lib/api/musicbrainz"
@@ -28,6 +29,25 @@ function getMusicSearchSources(): { spotify: boolean; musicbrainz: boolean } {
   return {
     spotify: sources.includes("spotify"),
     musicbrainz: sources.includes("musicbrainz"),
+  }
+}
+
+/**
+ * Parse BOOK_SEARCH_SOURCES environment variable to determine which book APIs to use.
+ * Defaults to "local,weread,hardcover" if not set.
+ * Examples: "local,hardcover" (skip WeRead), "local,weread" (skip Hardcover)
+ */
+function getBookSearchSources(): { local: boolean; weread: boolean; hardcover: boolean } {
+  const sources = (process.env.BOOK_SEARCH_SOURCES ?? "local,weread,hardcover")
+    .toLowerCase()
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  return {
+    local: sources.includes("local"),
+    weread: sources.includes("weread"),
+    hardcover: sources.includes("hardcover"),
   }
 }
 
@@ -69,6 +89,8 @@ export async function GET(
 
     switch (type) {
       case "book": {
+        const bookSources = getBookSearchSources()
+
         if (mode === "isbn") {
           const hardcoverBook = await lookupHardcoverBookByIsbn(query, { traceId }).catch((error) => {
             logger.warn("hardcover isbn lookup failed", {
@@ -108,19 +130,21 @@ export async function GET(
           break
         }
 
-        const localBooks = await db.query.books.findMany({
-          where: and(
-            eq(books.userId, currentUser.id),
-            or(
-              ilike(books.title, `%${query}%`),
-              ilike(books.subtitle, `%${query}%`),
-              sql`array_to_string(${books.authors}, ',') ilike ${`%${query}%`}`,
-              sql`array_to_string(${books.tags}, ',') ilike ${`%${query}%`}`
-            )
-          ),
-          orderBy: [desc(books.updatedAt)],
-          limit: 10,
-        })
+        const localBooks = bookSources.local
+          ? await db.query.books.findMany({
+              where: and(
+                eq(books.userId, currentUser.id),
+                or(
+                  ilike(books.title, `%${query}%`),
+                  ilike(books.subtitle, `%${query}%`),
+                  sql`array_to_string(${books.authors}, ',') ilike ${`%${query}%`}`,
+                  sql`array_to_string(${books.tags}, ',') ilike ${`%${query}%`}`
+                )
+              ),
+              orderBy: [desc(books.updatedAt)],
+              limit: 10,
+            })
+          : []
 
         const localResults: SearchResultItem[] = localBooks.map((book) => ({
           externalId: book.externalId ?? book.id,
@@ -147,14 +171,57 @@ export async function GET(
           },
         }))
 
-        const hardcoverBooks = await searchHardcoverBooks(query, { traceId }).catch((error) => {
-          logger.warn("hardcover search failed", {
-            query,
-            error: error instanceof Error ? error.message : "unknown",
-            traceId,
-          })
-          return []
-        })
+        const [wereadBooks, hardcoverBooks] = await Promise.all([
+          bookSources.weread
+            ? searchWereadBooks(query, { traceId }).catch((error) => {
+                logger.warn("weread search failed", {
+                  query,
+                  error: error instanceof Error ? error.message : "unknown",
+                  traceId,
+                })
+                return []
+              })
+            : Promise.resolve([]),
+          bookSources.hardcover
+            ? searchHardcoverBooks(query, { traceId }).catch((error) => {
+                logger.warn("hardcover search failed", {
+                  query,
+                  error: error instanceof Error ? error.message : "unknown",
+                  traceId,
+                })
+                return []
+              })
+            : Promise.resolve([]),
+        ])
+
+        const wereadResults = wereadBooks.map((book) => ({
+          externalId: `weread:${book.externalId}`,
+          title: book.title,
+          subtitle: book.authors.join(", ") || null,
+          coverUrl: book.coverUrl,
+          type: "book",
+          meta: {
+            source: "weread",
+            subtitle: book.publisher,
+            authors: book.authors,
+            categories: book.categories,
+            isbn: null,
+            pageCount: null,
+            coverUrl: book.coverUrl,
+            externalId: `weread:${book.externalId}`,
+            wereadBookId: book.externalId,
+            wereadUrl: book.readUrl,
+            intro: book.intro,
+            publisher: book.publisher,
+            rating: book.rating,
+            ratingCount: book.ratingCount,
+            ratingLabel: book.ratingLabel,
+            readingCount: book.readingCount,
+            soldout: book.soldout,
+            price: book.price,
+            searchIdx: book.searchIdx,
+          },
+        }))
 
         const hardcoverResults = hardcoverBooks.map((book) => ({
           externalId: book.externalId,
@@ -176,11 +243,14 @@ export async function GET(
 
         results = mergeUniqueResults([
           ...localResults,
+          ...wereadResults,
           ...hardcoverResults,
         ])
         logger.debug("book search completed", {
           query,
+          sources: bookSources,
           localCount: localResults.length,
+          wereadCount: wereadResults.length,
           hardcoverCount: hardcoverResults.length,
           mergedCount: results.length,
           traceId,
