@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/command"
 import { MEDIA_TYPES, type MediaType } from "@/lib/constants"
 import { Loader2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { EntryDialog } from "@/components/entry-dialog/entry-dialog"
 import { useI18n } from "@/components/i18n/i18n-provider"
 import type { SearchResultItem } from "@/lib/search-utils"
@@ -56,6 +57,13 @@ function parseSlashCommand(value: string): { searchType: SearchType; query: stri
   return { searchType: null, query: value }
 }
 
+function getSourceLabel(item: SearchResultItem): string | null {
+  const source = item.meta.source
+  if (source === "local") return "Local"
+  if (source === "weread") return "WeRead"
+  if (source === "hardcover") return "Hardcover"
+  return null
+}
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const router = useRouter()
@@ -211,39 +219,52 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               )}
               {!loading && results.length > 0 && (
                 <CommandGroup heading={t("search.searchType", { type: getSearchTypeLabel(searchType, t) })}>
-                  {results.map((item) => (
-                    <CommandItem
-                      key={item.externalId}
-                      value={`${item.title}-${item.externalId}`}
-                      onSelect={() => handleSelect(item)}
-                      className="flex items-center gap-3 py-2"
-                    >
-                      {item.coverUrl ? (
-                        <Image
-                          src={item.coverUrl}
-                          alt={item.title}
-                          width={32}
-                          height={40}
-                          unoptimized
-                          className="h-10 w-8 rounded object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-10 w-8 items-center justify-center rounded bg-muted text-xs text-muted-foreground">
-                          ?
-                        </div>
-                      )}
-                      <div className="flex-1 overflow-hidden">
-                        <p className="truncate text-sm font-medium text-foreground">
-                          {item.title}
-                        </p>
-                        {item.subtitle && (
-                          <p className="truncate text-xs text-muted-foreground">
-                            {item.subtitle}
-                          </p>
+                  {results.map((item) => {
+                    const sourceLabel = getSourceLabel(item)
+                    return (
+                      <CommandItem
+                        key={item.externalId}
+                        value={`${item.title}-${item.externalId}`}
+                        onSelect={() => handleSelect(item)}
+                        className="flex items-center gap-3 py-2"
+                      >
+                        {item.coverUrl ? (
+                          <Image
+                            src={item.coverUrl}
+                            alt={item.title}
+                            width={32}
+                            height={40}
+                            unoptimized
+                            className="h-10 w-8 rounded object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-8 items-center justify-center rounded bg-muted text-xs text-muted-foreground">
+                            ?
+                          </div>
                         )}
-                      </div>
-                    </CommandItem>
-                  ))}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex min-w-0 items-center gap-2">
+                            <p className="truncate text-sm font-medium text-foreground">
+                              {item.title}
+                            </p>
+                            {sourceLabel && (
+                              <Badge
+                                variant="outline"
+                                className="shrink-0 border-border/70 px-1.5 py-0 text-[10px] text-muted-foreground"
+                              >
+                                {sourceLabel}
+                              </Badge>
+                            )}
+                          </div>
+                          {item.subtitle && (
+                            <p className="truncate text-xs text-muted-foreground">
+                              {item.subtitle}
+                            </p>
+                          )}
+                        </div>
+                      </CommandItem>
+                    )
+                  })}
                 </CommandGroup>
               )}
             </>

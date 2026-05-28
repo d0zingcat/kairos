@@ -115,7 +115,9 @@ bun run db:seed
 | `LOG_LEVEL` | 服务端日志级别（debug/info/warn/error） | 可选 |
 | `TMDB_API_KEY` | TMDB API Key（影视搜索） | 搜索时需要 |
 | `GOOGLE_BOOKS_API_KEY` | Google Books API Key | 搜索时需要 |
-| `HARDCOVER_API_TOKEN` | Hardcover API Token（中文书搜索增强） | 推荐 |
+| `HARDCOVER_API_TOKEN` | Hardcover API Token（英文书与 ISBN 元数据增强） | 推荐 |
+| `WEREAD_API_KEY` | 微信读书 Agent API Key（中文书搜索增强） | 推荐 |
+| `BOOK_SEARCH_SOURCES` | 书籍搜索来源，默认 `local,weread,hardcover` | 可选 |
 | `RAWG_API_KEY` | RAWG API Key（游戏搜索） | 搜索时需要 |
 | `SPOTIFY_CLIENT_ID` | Spotify Client ID（音乐搜索优先源） | 推荐 |
 | `SPOTIFY_CLIENT_SECRET` | Spotify Client Secret | 推荐 |
