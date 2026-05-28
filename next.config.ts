@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "is4-ssl.mzstatic.com" },
       { protocol: "https", hostname: "is5-ssl.mzstatic.com" },
       { protocol: "https", hostname: "m.media-amazon.com" },
+      { protocol: "https", hostname: "res.weread.qq.com" },
+      { protocol: "https", hostname: "wfqqreader-1252317822.image.myqcloud.com" },
     ],
   },
 };

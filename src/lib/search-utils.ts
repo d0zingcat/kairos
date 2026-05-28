@@ -20,6 +20,11 @@ function getBookIsbn(item: SearchResultItem): string | null {
         : null
 }
 
+function getSource(item: SearchResultItem): string | null {
+    const source = item.meta.source
+    return typeof source === "string" ? source : null
+}
+
 /**
  * Deduplicates search results based on type, title, and subtitle to provide a cleaner UI.
  * Prefers items with cover URLs (typically from Spotify) over those without.
@@ -35,6 +40,10 @@ export function mergeUniqueResults(items: SearchResultItem[]): SearchResultItem[
 
         const existing = seen.get(key)
         if (!existing) {
+            seen.set(key, item)
+        } else if (getSource(existing) === "local") {
+            continue
+        } else if (getSource(item) === "local") {
             seen.set(key, item)
         } else if (!existing.coverUrl && item.coverUrl) {
             // Prefer the item with a cover URL if current one doesn't have one
