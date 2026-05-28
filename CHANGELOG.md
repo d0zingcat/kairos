@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/d0zingcat/kairos/compare/v1.14.0...v1.14.1) (2026-05-28)
+
+
+### Bug Fixes
+
+* broaden WeRead book search ([#62](https://github.com/d0zingcat/kairos/issues/62)) ([60d1bd7](https://github.com/d0zingcat/kairos/commit/60d1bd733e7ac4ad611302d6233df7328c20d475))
+
 # [1.14.0](https://github.com/d0zingcat/kairos/compare/v1.13.1...v1.14.0) (2026-05-28)
 
 
