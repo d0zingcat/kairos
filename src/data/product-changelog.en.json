@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.14.1",
+    "date": "2026-05-28",
+    "summary": "This update improves the book search experience by expanding the range of results available to users.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Enhanced the book search functionality to provide broader and more comprehensive results."
+      }
+    ]
+  },
+  {
     "version": "1.14.0",
     "date": "2026-05-28",
     "summary": "This update introduces a new book search source to enhance your reading experience.",
