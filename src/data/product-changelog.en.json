@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.14.2",
+    "date": "2026-05-28",
+    "summary": "This update improves image display by supporting cover images from a popular content delivery network.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Enable display of cover images from a widely used content delivery network to enhance visual content accessibility."
+      }
+    ]
+  },
+  {
     "version": "1.14.1",
     "date": "2026-05-28",
     "summary": "This update improves the book search experience by expanding the range of results available to users.",
