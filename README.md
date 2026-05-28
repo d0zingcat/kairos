@@ -129,6 +129,7 @@ bun run db:seed
 
 > 搜索 API 会在响应头返回 `x-trace-id`，可用该值串联后端日志排查问题。
 > 微信读书搜索会同时查询电子书与综合搜索结果，用于覆盖待上架等不出现在电子书 tab 的书籍。
+> 微信读书封面会通过 Next Image 加载，常见 WeRead 图片域名已在 `next.config.ts` 中放行。
 > 访问模式优先读取数据库中的管理设置；若无设置则回退到 `SITE_VISIBILITY`。
 > 首次启动后请访问 `/register` 注册账号；首个账号自动成为管理员。
 > 若 `NEXT_PUBLIC_GITHUB_REPO` 指向私有仓库，请同时配置 `GITHUB_TOKEN`，否则版本检查会显示“无法验证最新版本”而不是误报“已是最新”。
