@@ -2,6 +2,8 @@ import { createLogger } from "@/lib/logger"
 
 const WEREAD_API_BASE = "https://i.weread.qq.com/api/agent/gateway"
 const WEREAD_SKILL_VERSION = "1.0.3"
+const WEREAD_SCOPE_ALL = 0
+const WEREAD_SCOPE_EBOOK = 10
 
 const logger = createLogger("api/weread")
 
@@ -74,6 +76,23 @@ function uniqueStrings(values: Array<string | null | undefined>): string[] {
   )
 }
 
+function mergeUniqueBooks(books: WereadBookNormalized[]): WereadBookNormalized[] {
+  const seen = new Map<string, WereadBookNormalized>()
+
+  for (const book of books) {
+    if (!seen.has(book.externalId)) {
+      seen.set(book.externalId, book)
+    }
+  }
+
+  return Array.from(seen.values())
+}
+
+function extractWereadBooks(data: WereadSearchResponse): Record<string, unknown>[] {
+  const groups = Array.isArray(data.results) ? data.results : []
+  return groups.flatMap((group) => (Array.isArray(group.books) ? group.books : []))
+}
+
 export function normalizeWereadSearchResult(item: Record<string, unknown>): WereadBookNormalized | null {
   const bookInfo = toRecord(item.bookInfo)
   if (!bookInfo) return null
@@ -106,21 +125,18 @@ export function normalizeWereadSearchResult(item: Record<string, unknown>): Were
   }
 }
 
-export async function searchWereadBooks(
+async function fetchWereadSearch(
+  apiKey: string,
   query: string,
+  scope: number,
   context?: SearchLogContext,
-): Promise<WereadBookNormalized[]> {
-  const apiKey = getApiKey()
+): Promise<WereadSearchResponse | null> {
   const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
-  if (!apiKey) {
-    logger.debug("weread api key missing, skipping weread search", traceMeta)
-    return []
-  }
 
   const requestBody = {
     api_name: "/store/search",
     keyword: query,
-    scope: 10,
+    scope,
     skill_version: WEREAD_SKILL_VERSION,
   }
 
@@ -137,8 +153,8 @@ export async function searchWereadBooks(
     })
 
     if (!res.ok) {
-      logger.warn("weread search returned non-200", { status: res.status, query, ...traceMeta })
-      return []
+      logger.warn("weread search returned non-200", { status: res.status, query, scope, ...traceMeta })
+      return null
     }
 
     const data = (await res.json()) as WereadSearchResponse
@@ -147,9 +163,10 @@ export async function searchWereadBooks(
     if (data.upgrade_info?.message) {
       logger.warn("weread skill upgrade requested", {
         message: data.upgrade_info.message,
+        scope,
         ...traceMeta,
       })
-      return []
+      return null
     }
 
     if (typeof data.errcode === "number" && data.errcode !== 0) {
@@ -157,32 +174,53 @@ export async function searchWereadBooks(
         errcode: data.errcode,
         errmsg: data.errmsg,
         query,
+        scope,
         ...traceMeta,
       })
-      return []
+      return null
     }
 
-    const groups = Array.isArray(data.results) ? data.results : []
-    const ebookGroup = groups.find((group) => group.scope === 10) ?? groups[0]
-    const books = Array.isArray(ebookGroup?.books) ? ebookGroup.books : []
-    const normalized = books
-      .map((book) => normalizeWereadSearchResult(book))
-      .filter((book): book is WereadBookNormalized => book !== null)
-
-    logger.debug("weread search completed", {
-      query,
-      rawCount: books.length,
-      normalizedCount: normalized.length,
-      ...traceMeta,
-    })
-
-    return normalized
+    return data
   } catch (error) {
     logger.error("weread search failed unexpectedly", {
       query,
+      scope,
       error: error instanceof Error ? error.message : "unknown",
       ...traceMeta,
     })
+    return null
+  }
+}
+
+export async function searchWereadBooks(
+  query: string,
+  context?: SearchLogContext,
+): Promise<WereadBookNormalized[]> {
+  const apiKey = getApiKey()
+  const traceMeta = context?.traceId ? { traceId: context.traceId } : undefined
+  if (!apiKey) {
+    logger.debug("weread api key missing, skipping weread search", traceMeta)
     return []
   }
+
+  const ebookData = await fetchWereadSearch(apiKey, query, WEREAD_SCOPE_EBOOK, context)
+  const allData = await fetchWereadSearch(apiKey, query, WEREAD_SCOPE_ALL, context)
+  const rawBooks = [
+    ...(ebookData ? extractWereadBooks(ebookData) : []),
+    ...(allData ? extractWereadBooks(allData) : []),
+  ]
+  const normalized = mergeUniqueBooks(
+    rawBooks
+      .map((book) => normalizeWereadSearchResult(book))
+      .filter((book): book is WereadBookNormalized => book !== null),
+  )
+
+  logger.debug("weread search completed", {
+    query,
+    rawCount: rawBooks.length,
+    normalizedCount: normalized.length,
+    ...traceMeta,
+  })
+
+  return normalized
 }

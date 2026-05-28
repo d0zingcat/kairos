@@ -72,34 +72,44 @@ describe("searchWereadBooks", () => {
   it("sends a flat gateway request and returns normalized ebook results", async () => {
     const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>
 
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        sid: "search-session",
-        hasMore: 0,
-        results: [
-          {
-            title: "电子书",
-            scope: 10,
-            books: [
-              {
-                searchIdx: 1,
-                readingCount: 1234,
-                newRating: 88,
-                bookInfo: {
-                  bookId: "123",
-                  title: "活着",
-                  author: "余华",
-                  cover: "https://res.weread.qq.com/cover.jpg",
-                  category: "文学",
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          sid: "search-session",
+          hasMore: 0,
+          results: [
+            {
+              title: "电子书",
+              scope: 10,
+              books: [
+                {
+                  searchIdx: 1,
+                  readingCount: 1234,
+                  newRating: 88,
+                  bookInfo: {
+                    bookId: "123",
+                    title: "活着",
+                    author: "余华",
+                    cover: "https://res.weread.qq.com/cover.jpg",
+                    category: "文学",
+                  },
                 },
-              },
-            ],
-          },
-        ],
-      }),
-    } as Response)
+              ],
+            },
+          ],
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          sid: "all-search-session",
+          hasMore: 0,
+          results: [],
+        }),
+      } as Response)
 
     const results = await searchWereadBooks("活着", { traceId: "trace-1" })
 
@@ -111,7 +121,7 @@ describe("searchWereadBooks", () => {
       categories: ["文学"],
     })
 
-    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(fetchMock.mock.calls[0]?.[0]).toBe("https://i.weread.qq.com/api/agent/gateway")
     expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
       method: "POST",
@@ -125,6 +135,84 @@ describe("searchWereadBooks", () => {
       keyword: "活着",
       scope: 10,
       skill_version: "1.0.3",
+    })
+    expect(JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body))).toEqual({
+      api_name: "/store/search",
+      keyword: "活着",
+      scope: 0,
+      skill_version: "1.0.3",
+    })
+  })
+
+  it("supplements ebook search with all-scope results for pending WeRead books", async () => {
+    const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>
+
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          sid: "ebook-search-session",
+          hasMore: 0,
+          results: [
+            {
+              title: "电子书",
+              scope: 17,
+              books: [
+                {
+                  searchIdx: 1,
+                  bookInfo: {
+                    bookId: "45369856",
+                    title: "学习学习：快速变强四步法",
+                    author: "王专",
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          sid: "all-search-session",
+          hasMore: 0,
+          results: [
+            {
+              title: "待上架",
+              scope: 3,
+              books: [
+                {
+                  searchIdx: 1,
+                  bookInfo: {
+                    bookId: "3003653967",
+                    title: "学习究竟是什么 得到App超过11万人都在学 万维钢通才丛书",
+                    author: "万维钢 得到出品",
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      } as Response)
+
+    const results = await searchWereadBooks("学习究竟是什么")
+
+    expect(results).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          externalId: "3003653967",
+          title: "学习究竟是什么 得到App超过11万人都在学 万维钢通才丛书",
+          authors: ["万维钢 得到出品"],
+        }),
+      ]),
+    )
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body))).toMatchObject({
+      api_name: "/store/search",
+      keyword: "学习究竟是什么",
+      scope: 0,
     })
   })
 
@@ -140,14 +228,23 @@ describe("searchWereadBooks", () => {
   it("returns an empty list when the gateway reports an error", async () => {
     const fetchMock = fetch as unknown as ReturnType<typeof vi.fn>
 
-    fetchMock.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        errcode: 1,
-        errmsg: "invalid api key",
-      }),
-    } as Response)
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          errcode: 1,
+          errmsg: "invalid api key",
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          errcode: 1,
+          errmsg: "invalid api key",
+        }),
+      } as Response)
 
     await expect(searchWereadBooks("三体")).resolves.toEqual([])
   })
