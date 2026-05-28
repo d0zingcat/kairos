@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/d0zingcat/kairos/compare/v1.13.1...v1.14.0) (2026-05-28)
+
+
+### Features
+
+* add WeRead book search source ([#61](https://github.com/d0zingcat/kairos/issues/61)) ([9bf00b6](https://github.com/d0zingcat/kairos/commit/9bf00b6a4ccf5f9708e5faccd41be1893ba955de))
+
 ## [1.13.1](https://github.com/d0zingcat/kairos/compare/v1.13.0...v1.13.1) (2026-04-09)
 
 
