@@ -26,7 +26,7 @@ OPENAI_API_KEY=your_key bun run changelog:generate:product
 - 📆 **最近一年热力图** — 展示「过去 365 天到今天」，避免未来日期空白格
 - 🧩 **热力图日期键修正** — 统一活动日期键并按 `date(created_at)` 过滤，当天新增记录会正确着色显示
 - 📚 **书籍活动按阅读日期计入** — 书籍优先按 `startDate` / `finishDate` 计入热力图；仅在缺失时回退 `createdAt`
-- ⌘ **Cmd+K 快速录入** — 命令面板搜索并录入（支持 `/isbn 978...` 通过 Hardcover 按 ISBN 精确导入书籍元数据）
+- ⌘ **Cmd+K 快速录入** — 命令面板搜索并录入书籍、音乐、影视和游戏
 - 📚 **四大媒体类型** — 书 / 音乐 / 影视 / 游戏
 - ✏️ **卡片点击即编辑** — Books / Music / Watch / Games 支持直接点击已有卡片编辑
 - 🔎 **搜索高可用兜底** — 本地库优先 + 多上游聚合，第三方 API 不可用时仍可搜索本地数据

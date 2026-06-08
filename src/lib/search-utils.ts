@@ -25,6 +25,13 @@ function getSource(item: SearchResultItem): string | null {
     return typeof source === "string" ? source : null
 }
 
+function getTvSeasonNumber(item: SearchResultItem): number | null {
+    if (item.type !== "tv") return null
+
+    const seasonNumber = item.meta.seasonNumber
+    return typeof seasonNumber === "number" && seasonNumber > 0 ? seasonNumber : null
+}
+
 /**
  * Deduplicates search results based on type, title, and subtitle to provide a cleaner UI.
  * Prefers items with cover URLs (typically from Spotify) over those without.
@@ -34,9 +41,12 @@ export function mergeUniqueResults(items: SearchResultItem[]): SearchResultItem[
 
     for (const item of items) {
         const bookIsbn = getBookIsbn(item)
+        const tvSeasonNumber = getTvSeasonNumber(item)
         const key = bookIsbn
             ? `${item.type}::isbn::${bookIsbn}`
-            : `${item.type}::${normalizeKeyPart(item.title)}::${normalizeKeyPart(item.subtitle)}`
+            : tvSeasonNumber
+                ? `${item.type}::season::${tvSeasonNumber}::${normalizeKeyPart(item.title)}::${normalizeKeyPart(item.subtitle)}`
+                : `${item.type}::${normalizeKeyPart(item.title)}::${normalizeKeyPart(item.subtitle)}`
 
         const existing = seen.get(key)
         if (!existing) {

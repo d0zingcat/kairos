@@ -53,6 +53,18 @@ describe("Search Utils", () => {
       expect(merged).toHaveLength(1)
     })
 
+    it("keeps separate TV seasons with the same title", () => {
+      const items: SearchResultItem[] = [
+        { externalId: "tv-s1", title: "Oshi no Ko", subtitle: null, type: "tv", coverUrl: null, meta: { seasonNumber: 1 } },
+        { externalId: "tv-s2", title: "Oshi no Ko", subtitle: null, type: "tv", coverUrl: null, meta: { seasonNumber: 2 } },
+      ]
+
+      const merged = mergeUniqueResults(items)
+
+      expect(merged).toHaveLength(2)
+      expect(merged.map((item) => item.externalId)).toEqual(["tv-s1", "tv-s2"])
+    })
+
     it("should deduplicate books by isbn before title", () => {
       const items: SearchResultItem[] = [
         { externalId: "1", title: "Three-Body", subtitle: "Liu Cixin", type: "book", coverUrl: null, meta: { isbn: "9780765377067" } },
