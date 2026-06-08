@@ -23,11 +23,10 @@ interface CommandPaletteProps {
   onOpenChange: (open: boolean) => void
 }
 
-type SearchType = "book" | "music" | "movie" | "tv" | "game" | "isbn" | null
+type SearchType = "book" | "music" | "movie" | "tv" | "game" | null
 
 const CATEGORY_OPTIONS: { type: Exclude<SearchType, null>; labelKey: string }[] = [
   { type: "book", labelKey: "search.searchBook" },
-  { type: "isbn", labelKey: "search.searchIsbn" },
   { type: "music", labelKey: "search.searchMusic" },
   { type: "movie", labelKey: "search.searchMovie" },
   { type: "tv", labelKey: "search.searchTv" },
@@ -37,7 +36,6 @@ const CATEGORY_OPTIONS: { type: Exclude<SearchType, null>; labelKey: string }[] 
 function getSearchTypeLabel(type: SearchType, t: (key: string) => string): string {
   switch (type) {
     case "book": return t("search.book")
-    case "isbn": return t("search.isbn")
     case "music": return t("search.music")
     case "movie": return t("search.movie")
     case "tv": return t("search.tv")
@@ -46,23 +44,21 @@ function getSearchTypeLabel(type: SearchType, t: (key: string) => string): strin
   }
 }
 
-function parseSlashCommand(value: string): { searchType: SearchType; query: string } {
-  const lowerInput = value.toLowerCase()
-  if (lowerInput === "/book" || lowerInput.startsWith("/book ")) return { searchType: "book", query: value.slice(5).trimStart() }
-  if (lowerInput === "/isbn" || lowerInput.startsWith("/isbn ")) return { searchType: "isbn", query: value.slice(5).trimStart() }
-  if (lowerInput === "/music" || lowerInput.startsWith("/music ")) return { searchType: "music", query: value.slice(6).trimStart() }
-  if (lowerInput === "/movie" || lowerInput.startsWith("/movie ")) return { searchType: "movie", query: value.slice(6).trimStart() }
-  if (lowerInput === "/tv" || lowerInput.startsWith("/tv ")) return { searchType: "tv", query: value.slice(3).trimStart() }
-  if (lowerInput === "/game" || lowerInput.startsWith("/game ")) return { searchType: "game", query: value.slice(5).trimStart() }
-  return { searchType: null, query: value }
-}
-
 function getSourceLabel(item: SearchResultItem): string | null {
   const source = item.meta.source
   if (source === "local") return "Local"
   if (source === "weread") return "WeRead"
   if (source === "hardcover") return "Hardcover"
   return null
+}
+
+function getSeasonLabel(item: SearchResultItem): string | null {
+  if (item.type !== "tv") return null
+
+  const seasonNumber = item.meta.seasonNumber
+  return typeof seasonNumber === "number" && seasonNumber > 0
+    ? `S${seasonNumber}`
+    : null
 }
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
@@ -77,7 +73,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const query = input.trim()
-  const isIsbnSearch = searchType === "isbn"
 
   const handleInputChange = useCallback((value: string) => {
     setSearchType(null)
@@ -124,13 +119,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     setLoading(true)
     debounceRef.current = setTimeout(async () => {
       try {
-        const searchPath = isIsbnSearch ? "/api/search/book" : `/api/search/${searchType}`
         const searchParams = new URLSearchParams({ q: query })
-        if (isIsbnSearch) {
-          searchParams.set("mode", "isbn")
-        }
         const res = await fetch(
-          `${searchPath}?${searchParams.toString()}`
+          `/api/search/${searchType}?${searchParams.toString()}`
         )
         const data = await res.json()
         setResults(data.results ?? [])
@@ -144,7 +135,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [isIsbnSearch, query, searchType])
+  }, [query, searchType])
 
   const handleSelect = useCallback(
     (item: SearchResultItem) => {
@@ -162,17 +153,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     onOpenChange(false)
   }, [onOpenChange])
 
-  const handleClearSearchType = useCallback(() => {
-    setSearchType(null)
-    setResults([])
-    setLoading(false)
-  }, [])
-
   const activeMediaType: MediaType | null =
     searchType === "movie" || searchType === "tv"
       ? "watch"
-      : searchType === "isbn"
-        ? "book"
       : searchType
 
   return (
@@ -215,12 +198,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 </div>
               )}
               {!loading && results.length === 0 && (
-                <CommandEmpty>{isIsbnSearch ? t("search.noIsbnResults") : t("search.noResults")}</CommandEmpty>
+                <CommandEmpty>{t("search.noResults")}</CommandEmpty>
               )}
               {!loading && results.length > 0 && (
                 <CommandGroup heading={t("search.searchType", { type: getSearchTypeLabel(searchType, t) })}>
                   {results.map((item) => {
                     const sourceLabel = getSourceLabel(item)
+                    const seasonLabel = getSeasonLabel(item)
                     return (
                       <CommandItem
                         key={item.externalId}
@@ -253,6 +237,14 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                                 className="shrink-0 border-border/70 px-1.5 py-0 text-[10px] text-muted-foreground"
                               >
                                 {sourceLabel}
+                              </Badge>
+                            )}
+                            {seasonLabel && (
+                              <Badge
+                                variant="secondary"
+                                className="shrink-0 px-1.5 py-0 text-[10px]"
+                              >
+                                {seasonLabel}
                               </Badge>
                             )}
                           </div>
