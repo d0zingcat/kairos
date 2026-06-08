@@ -1,3 +1,10 @@
+## [1.14.3](https://github.com/d0zingcat/kairos/compare/v1.14.2...v1.14.3) (2026-06-08)
+
+
+### Bug Fixes
+
+* show TV seasons in discovery results ([#64](https://github.com/d0zingcat/kairos/issues/64)) ([7c222c8](https://github.com/d0zingcat/kairos/commit/7c222c8d254408cc60aa6a67ab7629c5a82cb87e))
+
 ## [1.14.2](https://github.com/d0zingcat/kairos/compare/v1.14.1...v1.14.2) (2026-05-28)
 
 
