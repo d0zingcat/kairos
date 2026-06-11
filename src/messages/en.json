@@ -210,6 +210,8 @@
     "game": "Games",
     "titleSecondary": "καιρός — Greek for \"the right moment\"",
     "builtWith": "Built with Next.js, Tailwind CSS & shadcn/ui",
+    "tmdbAttribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "dataSources": "Metadata is provided by third-party services including TMDB, Spotify, RAWG, Google Books, Hardcover, and MusicBrainz. Bring your own API keys when self-hosting.",
     "allRightsReserved": "All rights reserved."
   },
   "version": {

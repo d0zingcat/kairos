@@ -78,7 +78,9 @@ export default function Home() {
           </Link>
         </p>
         <p className="mt-2">{t("home.builtWith")}</p>
-        <p className="mt-1">&copy; {new Date().getFullYear()} {process.env.NEXT_PUBLIC_SITE_AUTHOR || "d0zingcat"}. {t("home.allRightsReserved")}</p>
+        <p className="mx-auto mt-3 max-w-xl px-4">{t("home.tmdbAttribution")}</p>
+        <p className="mx-auto mt-1 max-w-xl px-4">{t("home.dataSources")}</p>
+        <p className="mt-3">&copy; {new Date().getFullYear()} {process.env.NEXT_PUBLIC_SITE_AUTHOR || "d0zingcat"}. {t("home.allRightsReserved")}</p>
       </footer>
     </div>
   )
