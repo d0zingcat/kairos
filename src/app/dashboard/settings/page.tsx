@@ -7,6 +7,7 @@ import { GoodreadsImportCard } from "@/components/dashboard/goodreads-import-car
 import { ProfileVisibilityForm } from "@/components/dashboard/profile-visibility-form"
 import { Button } from "@/components/ui/button"
 import { ShieldCheck, Download, ScrollText } from "lucide-react"
+import { SiteAttribution } from "@/components/site-attribution"
 import { getI18n } from "@/lib/i18n"
 
 export default async function SettingsPage() {
@@ -57,6 +58,8 @@ export default async function SettingsPage() {
         </Button>
         <p className="mt-2 text-xs text-muted-foreground">{t("settings.exportDesc")}</p>
       </div>
+
+      <SiteAttribution className="rounded-2xl border border-border/60 bg-card/30 p-5" />
     </div>
   )
 }

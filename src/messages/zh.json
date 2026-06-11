@@ -209,6 +209,8 @@
     "game": "游戏",
     "titleSecondary": "καιρός — 希腊语「恰当的时刻」",
     "builtWith": "基于 Next.js, Tailwind CSS 和 shadcn/ui 构建",
+    "tmdbAttribution": "本产品使用 TMDB API，但未获 TMDB 认可或认证。",
+    "dataSources": "元数据来自 TMDB、Spotify、RAWG、Google Books、Hardcover、MusicBrainz 等第三方服务；自托管时请自备相应 API Key。",
     "allRightsReserved": "保留所有权利。"
   },
   "version": {
