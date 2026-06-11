@@ -52,7 +52,7 @@ OPENAI_API_KEY=your_key bun run changelog:generate:product
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/your-user/kairos.git
+git clone https://github.com/d0zingcat/kairos.git
 cd kairos
 
 # 2. 配置环境变量
@@ -75,7 +75,7 @@ docker compose exec app bun run db:seed
 docker run --rm \
   --network <your_network> \
   -e DATABASE_URL='postgresql://user:pass@db:5432/kairos' \
-  ghcr.io/<owner>/<repo>:latest \
+  ghcr.io/d0zingcat/kairos:latest \
   bun dist/migrate.js
 ```
 
@@ -128,6 +128,37 @@ bun run db:seed
 > 访问模式优先读取数据库中的管理设置；若无设置则回退到 `SITE_VISIBILITY`。
 > 首次启动后请访问 `/register` 注册账号；首个账号自动成为管理员。
 > 若 `NEXT_PUBLIC_GITHUB_REPO` 指向私有仓库，请同时配置 `GITHUB_TOKEN`，否则版本检查会显示“无法验证最新版本”而不是误报“已是最新”。
+
+## 安全部署
+
+自托管并面向公网时，请务必：
+
+- **设置强随机 `JWT_SECRET`**（≥32 字符）。未配置时开发环境会使用内置 fallback，**生产环境绝不可依赖该默认值**。
+- **修改数据库默认凭据**。`docker-compose.yml` 与 README 示例中的 `kairos/kairos` 仅适合本地开发。
+- **不要在生产环境执行 `db:seed`**。该脚本会创建演示账号，默认密码为 `admin12345`。
+- **妥善保管 API Key**。所有第三方密钥通过 `.env` 注入，勿提交到版本库。
+- 根据威胁模型配置 `SITE_VISIBILITY`、注册策略与反向代理（HTTPS、速率限制等）。
+
+更多说明见 [SECURITY.md](SECURITY.md)。
+
+## 数据来源与归属
+
+搜索与元数据来自以下第三方服务，自托管时需自行申请 API Key 并遵守各自使用条款：
+
+| 服务 | 用途 | 文档 |
+|------|------|------|
+| TMDB | 影视搜索与海报 | https://www.themoviedb.org/documentation/api |
+| Spotify | 音乐搜索（优先源） | https://developer.spotify.com/documentation/web-api |
+| RAWG | 游戏搜索 | https://rawg.io/apidocs |
+| Google Books | 书籍搜索 | https://developers.google.com/books |
+| Hardcover | 中文书籍增强 | https://hardcover.app/account/api |
+| MusicBrainz | 音乐元数据兜底 | https://musicbrainz.org/doc/MusicBrainz_API |
+| Last.fm | 音乐封面兜底 | https://www.last.fm/api |
+| OpenAI | 广场内容审核（可选） | https://platform.openai.com/docs |
+
+使用 TMDB 数据时，应用页脚与设置页会展示归属声明：
+
+> *This product uses the TMDB API but is not endorsed or certified by TMDB.*
 
 ## 多用户与广场说明
 
@@ -190,6 +221,16 @@ create schema public;
 - 可通过口令 `收尾` 或 `ship` 触发：更新文档、更新 `CHANGELOG`、bump version、commit、push、创建/更新 PR。
 - 禁止代理直接向 `main` 提交，所有变更必须通过 PR 合并。
 
+## 开源
+
+本项目以 [MIT License](LICENSE) 发布。欢迎 Fork、自托管与贡献；变更请通过 Pull Request 提交。
+
+将仓库设为 Public 前，请确认：
+
+- `.env` 未提交且 git 历史中无密钥泄露
+- 生产实例已更换默认凭据与 `JWT_SECRET`
+- GHCR 镜像若需公开分发，请在 GitHub Packages 设置中调整可见性
+
 ## 许可
 
-MIT
+[MIT](LICENSE) — Copyright (c) 2026 d0zingcat
