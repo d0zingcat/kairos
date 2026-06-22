@@ -156,7 +156,7 @@ export async function searchMovies(query: string) {
 - **Multi-source search**: Books (Google + Hardcover), Music (Spotify + MusicBrainz)
 - **Response normalization**: All APIs return unified shape `{ id, title, coverUrl, ... }`
 - **Chinese support**: Hardcover integration for better Chinese book coverage
-- **Image domains**: 13 external domains whitelisted in `next.config.ts`
+- **Image domains**: 13+ external domains whitelisted in `next.config.ts`
 
 ## TESTING
 
@@ -169,13 +169,14 @@ export async function searchMovies(query: string) {
 - **6 API clients** — Books (2), Music (2), Movies (1), Games (1)
 - **Redis caching** — All APIs cached (1h search, 6h details)
 - **Rate limits**: TMDB (40 req/10s), Spotify (no limit), RAWG (no limit specified)
-- **Image domains** (13 total):
+- **Image domains**:
   - TMDB: `image.tmdb.org`
   - Google Books: `books.google.com`
   - RAWG: `media.rawg.io`
   - MusicBrainz: `coverartarchive.org`
   - Last.fm: `lastfm.freetls.fastly.net`
   - Hardcover: `images.hardcover.app`, `assets.hardcover.app`
+  - WeRead: `cdn.weread.qq.com`
   - Spotify: `i.scdn.co`
   - Apple Music: `is1-ssl.mzstatic.com` through `is5-ssl.mzstatic.com`
   - Amazon: `m.media-amazon.com`
