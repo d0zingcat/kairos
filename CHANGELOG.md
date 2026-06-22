@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/d0zingcat/kairos/compare/v1.12.0...v1.12.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* allow WeRead image CDN ([#67](https://github.com/d0zingcat/kairos/issues/67)) ([5fc4df4](https://github.com/d0zingcat/kairos/commit/5fc4df43941d16e400d28987e8bb817d4e328aae))
+
 # [1.12.0](https://github.com/d0zingcat/kairos/compare/v1.11.0...v1.12.0) (2026-04-01)
 
 
