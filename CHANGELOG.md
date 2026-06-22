@@ -1,4 +1,4 @@
-## [1.12.1](https://github.com/d0zingcat/kairos/compare/v1.12.0...v1.12.1) (2026-06-22)
+## [1.14.4](https://github.com/d0zingcat/kairos/compare/v1.14.3...v1.14.4) (2026-06-22)
 
 
 ### Bug Fixes
