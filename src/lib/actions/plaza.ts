@@ -1,5 +1,6 @@
 import { db } from "@/db"
 import { books, games, music, users, watches } from "@/db/schema"
+import type { PlazaMediaStatus } from "@/lib/plaza-feed"
 import { and, count, desc, eq, inArray, lt, ne } from "drizzle-orm"
 
 export type FeedItem = {
@@ -8,6 +9,7 @@ export type FeedItem = {
   username: string
   mediaType: "book" | "music" | "watch" | "game"
   title: string
+  status?: PlazaMediaStatus
   musicType?: "track" | "album"
   watchType?: "movie" | "tv"
   seasonNumber?: number | null
@@ -166,6 +168,7 @@ export async function getPublicPlazaFeed(options?: {
       username: usernameMap.get(item.userId) ?? "unknown",
       mediaType: "book" as const,
       title: item.title,
+      status: item.status,
       createdAt: item.createdAt,
     })),
     ...recentMusic.map((item) => ({
@@ -183,6 +186,7 @@ export async function getPublicPlazaFeed(options?: {
       username: usernameMap.get(item.userId) ?? "unknown",
       mediaType: "watch" as const,
       title: item.title,
+      status: item.status,
       watchType: item.type,
       seasonNumber: item.seasonNumber,
       createdAt: item.createdAt,
@@ -193,6 +197,7 @@ export async function getPublicPlazaFeed(options?: {
       username: usernameMap.get(item.userId) ?? "unknown",
       mediaType: "game" as const,
       title: item.title,
+      status: item.status,
       createdAt: item.createdAt,
     })),
   ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -319,6 +324,7 @@ export async function getPublicUserProfile(username: string, feedLimit = 30) {
       username: user.username,
       mediaType: "book" as const,
       title: item.title,
+      status: item.status,
       createdAt: item.createdAt,
     })),
     ...recentMusic.map((item) => ({
@@ -336,6 +342,7 @@ export async function getPublicUserProfile(username: string, feedLimit = 30) {
       username: user.username,
       mediaType: "watch" as const,
       title: item.title,
+      status: item.status,
       watchType: item.type,
       seasonNumber: item.seasonNumber,
       createdAt: item.createdAt,
@@ -346,6 +353,7 @@ export async function getPublicUserProfile(username: string, feedLimit = 30) {
       username: user.username,
       mediaType: "game" as const,
       title: item.title,
+      status: item.status,
       createdAt: item.createdAt,
     })),
   ]
