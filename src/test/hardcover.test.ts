@@ -47,6 +47,17 @@ describe("normalizeHardcoverBookResult", () => {
 
     expect(normalized?.categories).toEqual(["Novella"])
   })
+
+  it("filters generic book category labels from Hardcover categories", () => {
+    const normalized = normalizeHardcoverBookResult({
+      id: 100,
+      title: "Example Book",
+      tags: ["Book", "Literary Fiction"],
+      book_category_id: 1,
+    })
+
+    expect(normalized?.categories).toEqual(["Literary Fiction"])
+  })
 })
 
 describe("normalizeIsbn", () => {

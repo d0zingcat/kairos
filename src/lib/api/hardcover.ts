@@ -1,6 +1,7 @@
-const HARDCOVER_API_BASE = "https://api.hardcover.app/v1/graphql"
+import { normalizeBookCategories } from "@/lib/book-categories"
 import { createLogger } from "@/lib/logger"
 
+const HARDCOVER_API_BASE = "https://api.hardcover.app/v1/graphql"
 const logger = createLogger("api/hardcover")
 
 const HARDCOVER_BOOK_CATEGORY_LABELS: Record<number, string> = {
@@ -174,7 +175,7 @@ function extractHardcoverCategories(item: Record<string, unknown>): string[] {
       ? HARDCOVER_BOOK_CATEGORY_LABELS[bookCategoryId] ?? null
       : null
 
-  return uniqueStrings([...genres, ...tags, bookCategoryLabel])
+  return normalizeBookCategories([...genres, ...tags, bookCategoryLabel])
 }
 
 async function fetchHardcoverBookCategories(
@@ -303,7 +304,7 @@ function normalizeHardcoverEditionResult(item: Record<string, unknown>): Hardcov
 
   if (!title) return null
 
-  const categories = uniqueStrings([
+  const categories = normalizeBookCategories([
     ...extractCachedTagNames(item.cached_tags),
     ...extractHardcoverCategories(book ?? {}),
   ])
