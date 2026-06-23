@@ -6,7 +6,7 @@ import { BookOpen, Film, Gamepad2, Loader2, Disc, Disc3 } from "lucide-react"
 import { useTranslation } from "@/components/i18n/i18n-provider"
 import { formatDistanceToNow } from "date-fns"
 import { enUS, zhCN } from "date-fns/locale"
-import { formatPlazaWatchSeasonLabel } from "@/lib/plaza-feed"
+import { formatPlazaMediaActionKey, formatPlazaWatchSeasonLabel, type PlazaMediaStatus } from "@/lib/plaza-feed"
 
 export type PlazaFeedItem = {
   id: string
@@ -14,6 +14,7 @@ export type PlazaFeedItem = {
   username: string
   mediaType: "book" | "music" | "watch" | "game"
   title: string
+  status?: PlazaMediaStatus
   musicType?: "track" | "album"
   watchType?: "movie" | "tv"
   seasonNumber?: number | null
@@ -53,15 +54,7 @@ export function InfiniteFeed({
 
   const dateLocale = locale === "zh" ? zhCN : enUS
 
-  const getMediaAction = (type: string) => {
-    switch (type) {
-      case "book": return t("feed.read")
-      case "music": return t("feed.listened")
-      case "watch": return t("feed.watched")
-      case "game": return t("feed.played")
-      default: return ""
-    }
-  }
+  const getMediaAction = (item: PlazaFeedItem) => t(formatPlazaMediaActionKey(item))
 
   const getWatchSeasonLabel = (item: PlazaFeedItem) =>
     formatPlazaWatchSeasonLabel(locale, item.watchType, item.seasonNumber)
@@ -163,7 +156,7 @@ export function InfiniteFeed({
               <Link href={`/u/${item.username}`} className="font-medium text-sky-500 hover:text-sky-400">
                 @{item.username}
               </Link>
-              <span className="mx-1 text-muted-foreground">{getMediaAction(item.mediaType)}</span>
+              <span className="mx-1 text-muted-foreground">{getMediaAction(item)}</span>
               <span className="font-medium">{item.title}</span>
               {getWatchSeasonLabel(item) ? (
                 <span className="ml-2 text-xs text-muted-foreground">· {getWatchSeasonLabel(item)}</span>
