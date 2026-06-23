@@ -1,3 +1,10 @@
+## [1.14.6](https://github.com/d0zingcat/kairos/compare/v1.14.5...v1.14.6) (2026-06-23)
+
+
+### Bug Fixes
+
+* normalize book categories ([a47b6d7](https://github.com/d0zingcat/kairos/commit/a47b6d70651abcc481f717d9449f0647b5b6bbde))
+
 ## [1.14.5](https://github.com/d0zingcat/kairos/compare/v1.14.4...v1.14.5) (2026-06-23)
 
 
