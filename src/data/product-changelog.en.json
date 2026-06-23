@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.14.5",
+    "date": "2026-06-23",
+    "summary": "This update improves the visibility of item statuses in the plaza feed for a clearer user experience.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Display the status of items in the plaza feed to keep users better informed."
+      }
+    ]
+  },
+  {
     "version": "1.12.0",
     "date": "2026-04-01",
     "summary": "This update introduces content moderation to ensure a safer and more respectful community experience.",
