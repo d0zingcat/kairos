@@ -1,3 +1,10 @@
+## [1.14.5](https://github.com/d0zingcat/kairos/compare/v1.14.4...v1.14.5) (2026-06-23)
+
+
+### Bug Fixes
+
+* show plaza feed item status ([cd86116](https://github.com/d0zingcat/kairos/commit/cd86116c307975fbb6de5f3119a0d3bdd512566b))
+
 ## [1.14.4](https://github.com/d0zingcat/kairos/compare/v1.14.3...v1.14.4) (2026-06-22)
 
 
