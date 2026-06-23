@@ -1,5 +1,16 @@
 [
   {
+    "version": "1.14.6",
+    "date": "2026-06-23",
+    "summary": "This update improves the consistency of book category organization for a better browsing experience.",
+    "items": [
+      {
+        "tag": "fix",
+        "text": "Standardize book categories to ensure uniform classification across the platform."
+      }
+    ]
+  },
+  {
     "version": "1.14.5",
     "date": "2026-06-23",
     "summary": "This update improves the visibility of item statuses in the plaza feed for a clearer user experience.",
