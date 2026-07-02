@@ -1,77 +1,79 @@
-# Kairos — 记录生命中的每个瞬间
+# Kairos — Record Every Moment of Life
 
-> καιρός — 希腊语「恰当的时刻」
+> καιρόs — Greek for "the right or opportune moment"
 
-一个现代化的个人生活动态记录应用，追踪你的书、音乐、影视和游戏。
+[中文版 README](README.zh.md)
 
-详细更新记录请见 [CHANGELOG.md](CHANGELOG.md)。
-面向用户的版本摘要数据维护在 `src/data/product-changelog.{zh,en}.json`，用于产品更新日志页面（入口位于 `/dashboard/settings`）。
-产品方向与执行优先级请见 [docs/product-roadmap.md](docs/product-roadmap.md)。
+A modern personal life tracking app for your books, music, movies, and games.
 
-可选：使用 OpenAI 自动从 `CHANGELOG.md` 生成用户向版本摘要（支持中英文，自动处理技术术语）。脚本只会读取最新一个 release，并将新版本追加到 `src/data/product-changelog.{zh,en}.json` 顶部，不会改写历史版本描述：
+For detailed release history, see [CHANGELOG.md](CHANGELOG.md).
+User-facing release summary data is maintained in `src/data/product-changelog.{zh,en}.json`, powering the product changelog page (accessible at `/dashboard/settings`).
+Product direction and execution priorities are documented in [docs/product-roadmap.en.md](docs/product-roadmap.en.md) (Chinese: [docs/product-roadmap.md](docs/product-roadmap.md)).
+
+Optional: Use OpenAI to auto-generate user-facing release summaries from `CHANGELOG.md` (supports both Chinese and English, with automatic technical term handling). The script reads only the most recent release and prepends the new entry to the top of `src/data/product-changelog.{zh,en}.json` — historical entries are never rewritten:
 
 ```bash
 OPENAI_API_KEY=your_key bun run changelog:generate:product
 ```
 
-可通过 `OPENAI_CHANGELOG_MODEL` 覆盖默认模型（默认：`gpt-4o-mini`）。
+Override the default model with `OPENAI_CHANGELOG_MODEL` (default: `gpt-4o-mini`).
 
 ![Kairos](https://img.shields.io/badge/Next.js-16-black?style=flat-square)
 ![Tailwind](https://img.shields.io/badge/Tailwind-v4-blue?style=flat-square)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square)
 
-## 特性
+## Features
 
-- 📊 **GitHub 风格活动热力图** — 一眼看到你的记录频率
-- 📆 **最近一年热力图** — 展示「过去 365 天到今天」，避免未来日期空白格
-- 🧩 **热力图日期键修正** — 统一活动日期键并按 `date(created_at)` 过滤，当天新增记录会正确着色显示
-- 📚 **书籍活动按阅读日期计入** — 书籍优先按 `startDate` / `finishDate` 计入热力图；仅在缺失时回退 `createdAt`
-- ⌘ **Cmd+K 快速录入** — 命令面板搜索并录入（支持 `/isbn 978...` 通过 Hardcover 按 ISBN 精确导入书籍元数据）
-- 📚 **四大媒体类型** — 书 / 音乐 / 影视 / 游戏
-- ✏️ **卡片点击即编辑** — Books / Music / Watch / Games 支持直接点击已有卡片编辑
-- 🔎 **搜索高可用兜底** — 本地库优先 + 多上游聚合，第三方 API 不可用时仍可搜索本地数据
-- 🧭 **可观测性增强** — 搜索链路分级日志 + `x-trace-id` 端到端追踪
-- 🌓 **白天/暗夜/自动主题** — 支持手动切换和跟随系统主题自动切换
-- 🌐 **多语言支持 (i18n)** — 支持中英文切换，适配多语言用户
-- 💾 **数据管理 (JSON 备份)** — 支持在管理设置页导出所有媒体记录为 JSON 文件，方便备份与迁移
-- 📝 **产品更新日志入口整合** — 「更新日志」入口已收纳到设置页，减少外层导航冗余
-- 🔒 **三种访问模式** — 支持 `public` / `private` / `password`，可在「管理设置」页实时切换（`/dashboard/settings`）
-- 🏷️ **标签录入与多作者支持** — 采用 `TagInput` 组件，支持回车/逗号录入多个作者与类别，分类标签自动配色，作者标签简洁去色
-- 🗑️ **记录删除与动态同步** — 编辑已有记录时支持点击垃圾桶图标删除，删除后实时从个人仪表盘及广场同步移除
-- 💿 **音乐类型区分** — 支持专辑 (Album) 和单曲 (Track) 类型，Spotify 搜索自动识别，外部数据源类型锁定，广场动态显示类型图标
-- 📝 **预留用户名保护** — 注册时自动保留 admin、official、system 等官方用户名，防止被占用
-- 👥 **多用户账号体系** — 支持注册账号，每位用户默认仅查看自己的时间线
-- 🌐 **公开广场 (Plaza)** — 用户可切换“是否公开摘要动态”，并在广场（`/plaza`）展示最近活动
-- 📥 **Goodreads 一键导入** — 在「管理设置」页上传 CSV，自动追加导入并跳过重复
-- 🐳 **Docker 一键部署** — PostgreSQL + App 容器化
-- 🗄️ **镜像内可执行迁移** — `latest` 镜像内置 `dist/migrate.js`，支持无源码环境初始化数据库
+- 📊 **GitHub-style Activity Heatmap** — See your recording frequency at a glance
+- 📆 **Past-Year Heatmap** — Displays "past 365 days through today", avoiding blank cells for future dates
+- 🧭 **Heatmap Date Key Fix** — Unified activity date keys with filtering by `date(created_at)`; same-day entries render with correct coloring
+- 📚 **Books Count by Reading Date** — Books are counted toward the heatmap by `startDate` / `finishDate` first; falls back to `createdAt` only when those are missing
+- ⌘ **Cmd+K Quick Entry** — Command palette for searching and logging (supports `/isbn 978...` for precise book metadata import via Hardcover by ISBN)
+- 📚 **Four Media Types** — Books / Music / Movies & TV / Games
+- ✏️ **Click-to-Edit Cards** — Books / Music / Watch / Games all support editing by clicking existing cards
+- 🔎 **Resilient Search Fallback** — Local library first + multi-source aggregation; search still works with local data when third-party APIs are unavailable
+- 🔭 **Enhanced Observability** — Tiered logging for the search pipeline + `x-trace-id` end-to-end tracing
+- 🌓 **Light / Dark / Auto Themes** — Manual toggle and automatic system-theme following
+- 🌐 **Internationalization (i18n)** — Chinese and English UI switching for multilingual users
+- 💾 **Data Management (JSON Backup)** — Export all media records as a JSON file from the admin settings page, for easy backup and migration
+- 📝 **Changelog Entry Consolidated** — The "Changelog" entry has been moved into the settings page, reducing outer-nav redundancy
+- 🔒 **Three Access Modes** — Supports `public` / `private` / `password`, switchable in real time from "Admin Settings" (`/dashboard/settings`)
+- 🏷️ **Tag Input & Multi-Author Support** — Uses the `TagInput` component; supports Enter / comma-separated author and category entry, colored category tags, and clean author tags
+- 🗑️ **Record Deletion & Live Sync** — Delete records via the trash icon while editing; removed in real time from both your Dashboard and the Plaza
+- 💿 **Music Type Differentiation** — Supports Album and Track types; Spotify search auto-detects type; external source type is locked; Plaza feed shows a type icon
+- 📝 **Reserved Username Protection** — Usernames like `admin`, `official`, `system` are automatically reserved at registration
+- 👥 **Multi-User Account System** — Register an account; each user sees only their own timeline by default
+- 🌐 **Public Plaza** — Users can toggle "whether to publish summary activity" and showcase recent activity on the Plaza (`/plaza`)
+- 📥 **Goodreads One-Click Import** — Upload a CSV from "Admin Settings"; auto-appends and skips duplicates
+- 🐳 **Docker One-Click Deployment** — PostgreSQL + App, fully containerized
+- 🗄️ **In-Image Migrations** — The `latest` image bundles `dist/migrate.js`, supporting database initialization without source code
 
-## 快速开始
+## Quick Start
 
-### Docker Compose（推荐）
+### Docker Compose (Recommended)
 
 ```bash
-# 1. 克隆项目
+# 1. Clone the project
 git clone https://github.com/d0zingcat/kairos.git
 cd kairos
 
-# 2. 配置环境变量
+# 2. Configure environment variables
 cp .env.example .env
-# 编辑 .env，填入 DATABASE_URL / JWT_SECRET / 各搜索 API Keys
+# Edit .env — fill in DATABASE_URL / JWT_SECRET / search API Keys
 
-# 4. 启动
+# 3. Start
 docker compose up -d
 
-# 5. （可选）填充示例数据
+# 4. (Optional) Load sample data
 docker compose exec app bun run db:seed
 
-# 访问 http://localhost:3000
+# Visit http://localhost:3000
 ```
 
-### 仅镜像部署时初始化数据库
+### Database Migration for Image-Only Deployment
 
 ```bash
-# 远端只有镜像、没有源码时可直接执行
+# Run directly when you have only the image and no source code
 docker run --rm \
   --network <your_network> \
   -e DATABASE_URL='postgresql://user:pass@db:5432/kairos' \
@@ -79,13 +81,13 @@ docker run --rm \
   bun dist/migrate.js
 ```
 
-### 本地开发
+### Local Development
 
 ```bash
-# 安装依赖
+# Install dependencies
 bun install
 
-# 启动 PostgreSQL（需要本地安装或 Docker）
+# Start PostgreSQL (local install or Docker)
 docker run -d --name kairos-pg \
   -e POSTGRES_USER=kairos \
   -e POSTGRES_PASSWORD=kairos \
@@ -93,144 +95,144 @@ docker run -d --name kairos-pg \
   -p 5432:5432 \
   postgres:16-alpine
 
-# 配置环境变量
+# Configure environment variables
 cp .env.example .env
 
-# 启动开发服务器（启动时会自动执行 migration）
+# Start the dev server (migrations run automatically on boot)
 bun run dev
 
-# （可选）填充示例数据
+# (Optional) Load sample data
 bun run db:seed
 ```
 
-## 环境变量
+## Environment Variables
 
-| 变量 | 说明 | 必须 |
-|------|------|:----:|
-| `DATABASE_URL` | PostgreSQL 连接字符串 | ✅ |
-| `DB_AUTO_MIGRATE` | 启动时自动执行 migration（默认开启） | 可选 |
-| `JWT_SECRET` | JWT 签名密钥（≥32字符） | ✅ |
-| `SITE_VISIBILITY` | 默认访问模式（数据库未初始化时兜底） | 可选 |
-| `LOG_LEVEL` | 服务端日志级别（debug/info/warn/error） | 可选 |
-| `TMDB_API_KEY` | TMDB API Key（影视搜索） | 搜索时需要 |
-| `GOOGLE_BOOKS_API_KEY` | Google Books API Key | 搜索时需要 |
-| `HARDCOVER_API_TOKEN` | Hardcover API Token（中文书搜索增强） | 推荐 |
-| `RAWG_API_KEY` | RAWG API Key（游戏搜索） | 搜索时需要 |
-| `SPOTIFY_CLIENT_ID` | Spotify Client ID（音乐搜索优先源） | 推荐 |
-| `SPOTIFY_CLIENT_SECRET` | Spotify Client Secret | 推荐 |
-| `LASTFM_API_KEY` | Last.fm API Key（音乐封面兜底） | 搜索时需要 |
-| `NEXT_PUBLIC_SITE_AUTHOR` | 网站底部显示的作者名称，默认 d0zingcat | 可选 |
-| `NEXT_PUBLIC_GITHUB_URL` | 网站底部 GitHub 图标跳转链接，默认跳转作者仓库 | 可选 |
-| `NEXT_PUBLIC_GITHUB_REPO` | 设置页版本检查使用的 GitHub 仓库，格式 `owner/repo` | 可选 |
-| `GITHUB_TOKEN` | 私有仓库版本检查使用的服务端 GitHub Token | 私有仓库推荐 |
+| Variable | Description | Required |
+|----------|-------------|:--------:|
+| `DATABASE_URL` | PostgreSQL connection string | ✅ |
+| `DB_AUTO_MIGRATE` | Auto-run migrations on boot (on by default) | Optional |
+| `JWT_SECRET` | JWT signing key (≥32 chars) | ✅ |
+| `SITE_VISIBILITY` | Default access mode (fallback when DB is uninitialized) | Optional |
+| `LOG_LEVEL` | Server log level (debug/info/warn/error) | Optional |
+| `TMDB_API_KEY` | TMDB API Key (movie & TV search) | When searching |
+| `GOOGLE_BOOKS_API_KEY` | Google Books API Key | When searching |
+| `HARDCOVER_API_TOKEN` | Hardcover API Token (Chinese book search enhancement) | Recommended |
+| `RAWG_API_KEY` | RAWG API Key (game search) | When searching |
+| `SPOTIFY_CLIENT_ID` | Spotify Client ID (preferred music search source) | Recommended |
+| `SPOTIFY_CLIENT_SECRET` | Spotify Client Secret | Recommended |
+| `LASTFM_API_KEY` | Last.fm API Key (music cover fallback) | When searching |
+| `NEXT_PUBLIC_SITE_AUTHOR` | Author name shown in the site footer (default: d0zingcat) | Optional |
+| `NEXT_PUBLIC_GITHUB_URL` | GitHub icon link in the site footer (defaults to author's repo) | Optional |
+| `NEXT_PUBLIC_GITHUB_REPO` | GitHub repo used for version checks in settings, format `owner/repo` | Optional |
+| `GITHUB_TOKEN` | Server-side GitHub Token for private-repo version checks | Recommended for private repos |
 
-> 搜索 API 会在响应头返回 `x-trace-id`，可用该值串联后端日志排查问题。
-> 访问模式优先读取数据库中的管理设置；若无设置则回退到 `SITE_VISIBILITY`。
-> 首次启动后请访问 `/register` 注册账号；首个账号自动成为管理员。
-> 若 `NEXT_PUBLIC_GITHUB_REPO` 指向私有仓库，请同时配置 `GITHUB_TOKEN`，否则版本检查会显示“无法验证最新版本”而不是误报“已是最新”。
+> Search APIs return an `x-trace-id` response header; use it to correlate backend logs for troubleshooting.
+> Access mode prefers the admin setting stored in the database; falls back to `SITE_VISIBILITY` if none is set.
+> After first boot, visit `/register` to create an account; the first registered user becomes admin automatically.
+> If `NEXT_PUBLIC_GITHUB_REPO` points to a private repository, also configure `GITHUB_TOKEN` — otherwise the version check will show "unable to verify the latest version" instead of falsely reporting "up to date."
 
-## 安全部署
+## Security Deployment
 
-自托管并面向公网时，请务必：
+When self-hosting and exposing to the public internet:
 
-- **设置强随机 `JWT_SECRET`**（≥32 字符）。未配置时开发环境会使用内置 fallback，**生产环境绝不可依赖该默认值**。
-- **修改数据库默认凭据**。`docker-compose.yml` 与 README 示例中的 `kairos/kairos` 仅适合本地开发。
-- **不要在生产环境执行 `db:seed`**。该脚本会创建演示账号，默认密码为 `admin12345`。
-- **妥善保管 API Key**。所有第三方密钥通过 `.env` 注入，勿提交到版本库。
-- 根据威胁模型配置 `SITE_VISIBILITY`、注册策略与反向代理（HTTPS、速率限制等）。
+- **Set a strong, random `JWT_SECRET`** (≥32 characters). A built-in fallback exists for development — **never rely on it in production**.
+- **Change default database credentials**. The `kairos/kairos` in `docker-compose.yml` and README examples is for local development only.
+- **Never run `db:seed` in production**. That script creates a demo account with a default password of `admin12345`.
+- **Guard your API keys**. All third-party secrets are injected via `.env`; never commit them to version control.
+- Configure `SITE_VISIBILITY`, registration policy, and reverse proxy (HTTPS, rate limiting, etc.) according to your threat model.
 
-更多说明见 [SECURITY.md](SECURITY.md)。
+More details in [SECURITY.md](SECURITY.md).
 
-## 数据来源与归属
+## Data Sources & Attribution
 
-搜索与元数据来自以下第三方服务，自托管时需自行申请 API Key 并遵守各自使用条款：
+Search and metadata are provided by the following third-party services; self-hosters must obtain their own API keys and comply with each service's terms:
 
-| 服务 | 用途 | 文档 |
-|------|------|------|
-| TMDB | 影视搜索与海报 | https://www.themoviedb.org/documentation/api |
-| Spotify | 音乐搜索（优先源） | https://developer.spotify.com/documentation/web-api |
-| RAWG | 游戏搜索 | https://rawg.io/apidocs |
-| Google Books | 书籍搜索 | https://developers.google.com/books |
-| Hardcover | 中文书籍增强 | https://hardcover.app/account/api |
-| MusicBrainz | 音乐元数据兜底 | https://musicbrainz.org/doc/MusicBrainz_API |
-| Last.fm | 音乐封面兜底 | https://www.last.fm/api |
-| OpenAI | 广场内容审核（可选） | https://platform.openai.com/docs |
+| Service | Purpose | Docs |
+|---------|---------|------|
+| TMDB | Movie & TV search and posters | https://www.themoviedb.org/documentation/api |
+| Spotify | Music search (preferred source) | https://developer.spotify.com/documentation/web-api |
+| RAWG | Game search | https://rawg.io/apidocs |
+| Google Books | Book search | https://developers.google.com/books |
+| Hardcover | Chinese book enhancement | https://hardcover.app/account/api |
+| MusicBrainz | Music metadata fallback | https://musicbrainz.org/doc/MusicBrainz_API |
+| Last.fm | Music cover fallback | https://www.last.fm/api |
+| OpenAI | Plaza content moderation (optional) | https://platform.openai.com/docs |
 
-使用 TMDB 数据时，应用页脚与设置页会展示归属声明：
+When TMDB data is used, the app displays an attribution statement in the footer and settings page:
 
 > *This product uses the TMDB API but is not endorsed or certified by TMDB.*
 
-## 多用户与广场说明
+## Multi-User & Plaza
 
-- 默认情况下，用户只能查看和管理自己的记录（书/音乐/影视/游戏）。
-- 在 `Dashboard -> Settings` 可切换“公开个人摘要”开关，控制是否出现在广场。
-- 广场页面位于 `/plaza`，展示已公开用户的摘要与最近动态。
-- 公开用户主页位于 `/u/<username>`，未公开用户不会暴露主页内容。
-- 广场动态采用无限滚动加载，网络失败时支持“点击重试”，恢复后会显示短暂提示。
+- By default, users can only view and manage their own records (books, music, movies & TV, games).
+- From `Dashboard -> Settings`, toggle the "Publish summary publicly" switch to control visibility on the Plaza.
+- The Plaza page is at `/plaza`, showing summaries and recent activity from users who have opted in.
+- Public profile pages are at `/u/<username>`; non-public users expose no profile content.
+- The Plaza feed uses infinite scroll, with a "click to retry" fallback on network failure and a brief toast when loading resumes.
 
-## 技术栈
+## Tech Stack
 
-- **框架**: Next.js 16 (App Router, RSC)
+- **Framework**: Next.js 16 (App Router, RSC)
 - **UI**: Tailwind CSS v4 + shadcn/ui
-- **数据库**: PostgreSQL 16 + Drizzle ORM
-- **缓存**: Redis (ioredis) — 用于加速第三方 API 搜索与详情查询
-- **认证**: JWT (jose) + bcrypt
-- **自动化测试**: Vitest + Playwright
-- **动画**: Framer Motion
-- **热力图**: react-activity-calendar
-- **包管理**: Bun
-- **部署**: Docker Compose
+- **Database**: PostgreSQL 16 + Drizzle ORM
+- **Cache**: Redis (ioredis) — accelerates third-party API search and detail queries
+- **Auth**: JWT (jose) + bcrypt
+- **Automated Testing**: Vitest + Playwright
+- **Animation**: Framer Motion
+- **Heatmap**: react-activity-calendar
+- **Package Manager**: Bun
+- **Deployment**: Docker Compose
 
-## 脚本
+## Scripts
 
 ```bash
-bun run dev         # 开发服务器
-bun run build       # 生产构建
-bun run build:migrate # 构建运行时迁移脚本
-bun run start       # 启动生产服务器
-bun run lint        # ESLint 检查
-bun run db:generate # 生成迁移文件
-bun run db:push     # 推送 schema 到数据库（可选：本地快速同步 schema）
-bun run db:migrate  # 运行迁移
-bun run db:migrate:runtime # 执行镜像内运行时迁移脚本（远端/生产镜像推荐）
-bun run db:studio   # 打开 Drizzle Studio
-bun run db:seed     # 填充示例数据
-bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId>          # 导入 Goodreads 书单
-bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId> --clear  # 导入前清空该用户 books
+bun run dev                    # Development server
+bun run build                  # Production build
+bun run build:migrate          # Build the runtime migration script
+bun run start                  # Start the production server
+bun run lint                   # ESLint check
+bun run db:generate            # Generate migration files
+bun run db:push                # Push schema to the database (optional: fast local schema sync)
+bun run db:migrate             # Run migrations
+bun run db:migrate:runtime     # Run the in-image runtime migration script (recommended for remote/production images)
+bun run db:studio              # Open Drizzle Studio
+bun run db:seed                # Load sample data
+bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId>          # Import Goodreads library
+bun run db:import:goodreads -- /path/to/goodreads_library_export.csv <userId> --clear  # Clear the user's books before import
 ```
 
-### Migration 基线重置说明（破坏性）
+### Migration Baseline Reset (Destructive)
 
-- 当前仓库已重置为新的 Drizzle 基线迁移：`drizzle/0000_init.sql`。
-- 启动时自动迁移仅调用 Drizzle 官方 migrator，不会手动修改 Drizzle metadata。
-- Docker 镜像构建不会执行 `db:generate`，生产环境只应用仓库中已提交的 `drizzle/*.sql` 迁移文件。
-- 若你的数据库里仍有旧结构且不需要保留数据，请先执行一次：
+- The repository has been reset to a new Drizzle baseline migration: `drizzle/0000_init.sql`.
+- Auto-migration at boot invokes only Drizzle's official migrator; it does not manually modify Drizzle metadata.
+- The Docker image build never runs `db:generate`; production environments only apply committed `drizzle/*.sql` migration files.
+- If your database still has the old schema and you don't need to preserve data, run this first:
 
 ```sql
 drop schema if exists public cascade;
 create schema public;
 ```
 
-- 然后再启动应用（`bun run dev` / `bun run start`）让自动迁移重建表结构。
+- Then start the app (`bun run dev` / `bun run start`) and auto-migration will rebuild the schema.
 
-后台导入入口：`/dashboard/settings` → Goodreads 导入。
+Import Dashboard entry: `/dashboard/settings` → Goodreads Import.
 
-## Agent 协作约定
+## Agent Collaboration Conventions
 
-- 仓库根目录新增 `AGENTS.md`，用于统一 Codex / Claude Code 的默认收尾流程。
-- 可通过口令 `收尾` 或 `ship` 触发：更新文档、更新 `CHANGELOG`、bump version、commit、push、创建/更新 PR。
-- 禁止代理直接向 `main` 提交，所有变更必须通过 PR 合并。
+- A new `AGENTS.md` at the repository root standardizes the default finish-up workflow for Codex / Claude Code.
+- Trigger via the shortcut `收尾` or `ship`: updates documentation, updates `CHANGELOG`, bumps version, commits, pushes, and creates or updates a PR.
+- Agents are forbidden from committing directly to `main`; all changes must land through PRs.
 
-## 开源
+## Open Source
 
-本项目以 [MIT License](LICENSE) 发布。欢迎 Fork、自托管与贡献；变更请通过 Pull Request 提交。
+This project is released under the [MIT License](LICENSE). Forking, self-hosting, and contributions are welcome; please submit changes via Pull Request.
 
-将仓库设为 Public 前，请确认：
+Before making the repository public, please confirm:
 
-- `.env` 未提交且 git 历史中无密钥泄露
-- 生产实例已更换默认凭据与 `JWT_SECRET`
-- GHCR 镜像若需公开分发，请在 GitHub Packages 设置中调整可见性
+- `.env` has not been committed and no secrets are leaked in git history
+- Production instances have had default credentials and `JWT_SECRET` changed
+- If the GHCR image needs public distribution, adjust visibility in GitHub Packages settings
 
-## 许可
+## License
 
 [MIT](LICENSE) — Copyright (c) 2026 d0zingcat
