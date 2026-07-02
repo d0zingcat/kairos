@@ -225,7 +225,7 @@ Import Dashboard entry: `/dashboard/settings` → Goodreads Import.
 
 ## Open Source
 
-This project is released under the [MIT License](LICENSE). Forking, self-hosting, and contributions are welcome; please submit changes via Pull Request.
+This project is released under the [AGPL-3.0 License](LICENSE). Forking, self-hosting, and contributions are welcome; please submit changes via Pull Request.
 
 Before making the repository public, please confirm:
 
@@ -235,4 +235,4 @@ Before making the repository public, please confirm:
 
 ## License
 
-[MIT](LICENSE) — Copyright (c) 2026 d0zingcat
+[AGPL-3.0](LICENSE) — Copyright (c) 2025 d0zingcat

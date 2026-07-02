@@ -225,7 +225,7 @@ create schema public;
 
 ## 开源
 
-本项目以 [MIT License](LICENSE) 发布。欢迎 Fork、自托管与贡献；变更请通过 Pull Request 提交。
+本项目以 [AGPL-3.0 License](LICENSE) 发布。欢迎 Fork、自托管与贡献；变更请通过 Pull Request 提交。
 
 将仓库设为 Public 前，请确认：
 
@@ -235,4 +235,4 @@ create schema public;
 
 ## 许可
 
-[MIT](LICENSE) — Copyright (c) 2026 d0zingcat
+[AGPL-3.0](LICENSE) — Copyright (c) 2025 d0zingcat
